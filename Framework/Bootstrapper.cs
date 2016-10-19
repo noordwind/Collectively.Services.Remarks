@@ -18,6 +18,7 @@ using Nancy.Configuration;
 using NLog;
 using RawRabbit;
 using RawRabbit.vNext;
+using RawRabbit.Configuration;
 
 namespace Coolector.Services.Remarks.Framework
 {
@@ -69,7 +70,9 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
                 builder.RegisterType<FileHandler>().As<IFileHandler>();
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
-                builder.RegisterInstance(BusClientFactory.CreateDefault()).As<IBusClient>();
+                var rawRabbitConfiguration = _configuration.GetSettings<RawRabbitConfiguration>();
+                builder.RegisterInstance(rawRabbitConfiguration).SingleInstance();
+                builder.RegisterInstance(BusClientFactory.CreateDefault(rawRabbitConfiguration)).As<IBusClient>();
 
                 var coreAssembly = typeof(Startup).GetTypeInfo().Assembly;
                 builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(IEventHandler<>));
