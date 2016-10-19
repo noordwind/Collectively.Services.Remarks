@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
-using Structure.Sketching;
 using File = Coolector.Services.Remarks.Domain.File;
 
 namespace Coolector.Services.Remarks.Services
@@ -11,14 +11,14 @@ namespace Coolector.Services.Remarks.Services
         {
             try
             {
-                using(var stream = new MemoryStream(file.Bytes))
+                using (var stream = new MemoryStream(file.Bytes))
                 {
-                    var image = new Image(stream);
+                    var image = Image.FromStream(stream);
 
                     return image.Width > 0 && image.Height > 0;
                 }
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 return false;
             }
