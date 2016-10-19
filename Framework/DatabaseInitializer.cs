@@ -17,6 +17,9 @@ namespace Coolector.Services.Remarks.Framework
 
         public async Task SeedAsync()
         {
+            if (await _database.Categories().AsQueryable().AnyAsync())
+                return;
+
             await _database.Categories().InsertOneAsync(new Category("litter"));
             await _database.Categories().InsertOneAsync(new Category("damages"));
             await _database.Categories().InsertOneAsync(new Category("accidents"));
