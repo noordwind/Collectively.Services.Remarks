@@ -17,6 +17,7 @@ namespace Coolector.Services.Remarks
                 .SubscribeToCommand<DeleteRemark>()
                 .SubscribeToCommand<ResolveRemark>()
                 .SubscribeToEvent<NewUserSignedIn>()
+                .SubscribeToEvent<UserNameChanged>()
                 .Build()
                 .Run();
         }

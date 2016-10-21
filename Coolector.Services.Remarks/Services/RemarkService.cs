@@ -90,6 +90,15 @@ namespace Coolector.Services.Remarks.Services
             await _remarkRepository.UpdateAsync(remark.Value);
         }
 
+        public async Task UpdateUserNamesAsync(string userId, string name)
+        {
+            var user = await _userRepository.GetByUserIdAsync(userId);
+            if (user.HasNoValue)
+                throw new ArgumentException($"User with id: {userId} has not been found.");
+
+            await _remarkRepository.UpdateUserNamesAsync(userId, name);
+        }
+
         public async Task DeleteAsync(Guid id, string userId)
         {
             var remark = await _remarkRepository.GetByIdAsync(id);

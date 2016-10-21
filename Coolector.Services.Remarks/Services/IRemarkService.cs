@@ -18,6 +18,7 @@ namespace Coolector.Services.Remarks.Services
             Location location, string description = null);
 
         Task ResolveAsync(Guid id, string userId, File photo, Location location);
+        Task UpdateUserNamesAsync(string userId, string name);
 
         Task DeleteAsync(Guid id, string userId);
     }
