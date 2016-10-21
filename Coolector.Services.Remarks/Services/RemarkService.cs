@@ -7,12 +7,15 @@ using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Extensions;
 using Coolector.Services.Remarks.Queries;
 using Coolector.Services.Remarks.Repositories;
+using NLog;
 using File = Coolector.Services.Remarks.Domain.File;
 
 namespace Coolector.Services.Remarks.Services
 {
     public class RemarkService : IRemarkService
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private const double AllowedDistance = 15.0;
 
         private readonly IFileHandler _fileHandler;
@@ -46,6 +49,7 @@ namespace Coolector.Services.Remarks.Services
         public async Task CreateAsync(Guid id, string userId, Guid categoryId, File photo, 
             Location location, string description = null)
         {
+            Logger.Debug($"Create remark, id:{id}, userId:{userId}, categoryId:{categoryId}, photo:{photo.Name}, lat:{location.Latitude}, long:{location.Longitude}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
                 throw new ArgumentException($"User with id: {userId} has not been found.");
@@ -67,6 +71,7 @@ namespace Coolector.Services.Remarks.Services
 
         public async Task ResolveAsync(Guid id, string userId, File photo, Location location)
         {
+            Logger.Debug($"Resolve remark, id:{id}, userId:{userId}, photo:{photo.Name}, lat:{location.Latitude}, long:{location.Longitude}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
                 throw new ArgumentException($"User with id: {userId} has not been found.");
@@ -92,6 +97,7 @@ namespace Coolector.Services.Remarks.Services
 
         public async Task UpdateUserNamesAsync(string userId, string name)
         {
+            Logger.Debug($"Update user's remarks with new userName, userid: {userId}, userName: {name}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
                 throw new ArgumentException($"User with id: {userId} has not been found.");
@@ -101,6 +107,7 @@ namespace Coolector.Services.Remarks.Services
 
         public async Task DeleteAsync(Guid id, string userId)
         {
+            Logger.Debug($"Delete remark, id:{id}, userId: {userId}");
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
                 throw new ServiceException($"Remark with id: {id} does not exist!");
