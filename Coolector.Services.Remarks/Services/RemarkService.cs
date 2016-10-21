@@ -57,7 +57,7 @@ namespace Coolector.Services.Remarks.Services
             var remarkPhoto = RemarkPhoto.Empty;
             var extension = photo.Name.Split('.').Last();
             var fileName = $"remark-{id:N}.{extension}";
-            await _fileHandler.UploadAsync(photo, fileId =>
+            await _fileHandler.UploadAsync(photo, fileName, fileId =>
             {
                 remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
             });
@@ -81,7 +81,7 @@ namespace Coolector.Services.Remarks.Services
             var remarkPhoto = RemarkPhoto.Empty;
             var extension = photo.Name.Split('.').Last();
             var fileName = $"remark-{id:N}-resolved.{extension}";
-            await _fileHandler.UploadAsync(photo, fileId =>
+            await _fileHandler.UploadAsync(photo, fileName, fileId =>
             {
                 remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
             });

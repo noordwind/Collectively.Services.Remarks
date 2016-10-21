@@ -1,6 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Globalization;
+using Amazon;
+using Amazon.S3;
 using Autofac;
 using Coolector.Common.Commands;
 using Coolector.Common.Events;
@@ -19,6 +22,7 @@ using RawRabbit;
 using RawRabbit.vNext;
 using RawRabbit.Configuration;
 using Coolector.Common.Extensions;
+using Coolector.Services.Remarks.Settings;
 
 namespace Coolector.Services.Remarks.Framework
 {
@@ -48,17 +52,10 @@ namespace Coolector.Services.Remarks.Framework
             base.ConfigureApplicationContainer(container);
             container.Update(builder =>
             {
-                builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>());
+                var generalSettings = _configuration.GetSettings<GeneralSettings>();
+                builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
+                builder.RegisterInstance(generalSettings).SingleInstance();
                 builder.RegisterModule<MongoDbModule>();
-                builder.Register(c =>
-                    {
-                        var database = c.Resolve<IMongoDatabase>();
-                        var bucket = new GridFSBucket(database);
-
-                        return bucket;
-                    })
-                    .As<IGridFSBucket>()
-                    .SingleInstance();
                 builder.RegisterType<MongoDbInitializer>().As<IDatabaseInitializer>();
                 builder.RegisterType<DatabaseSeeder>().As<IDatabaseSeeder>();
                 builder.RegisterType<RemarkRepository>().As<IRemarkRepository>();
@@ -68,12 +65,11 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<RemarkService>().As<IRemarkService>();
                 builder.RegisterType<UserService>().As<IUserService>();
                 builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
-                builder.RegisterType<FileHandler>().As<IFileHandler>();
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
                 var rawRabbitConfiguration = _configuration.GetSettings<RawRabbitConfiguration>();
                 builder.RegisterInstance(rawRabbitConfiguration).SingleInstance();
                 builder.RegisterInstance(BusClientFactory.CreateDefault(rawRabbitConfiguration)).As<IBusClient>();
-
+                ConfigureStorage(builder, generalSettings);
                 var coreAssembly = typeof(Startup).GetTypeInfo().Assembly;
                 builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(IEventHandler<>));
                 builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(ICommandHandler<>));
@@ -106,6 +102,46 @@ namespace Coolector.Services.Remarks.Framework
                     "Authorization, Origin, X-Requested-With, Content-Type, Accept");
             };
             Logger.Info("Coolector.Services.Remarks API Started");
+        }
+
+        private void ConfigureStorage(ContainerBuilder builder, GeneralSettings generalSettings)
+        {
+            var storage = generalSettings.Storage.ToLowerInvariant();
+            switch (storage)
+            {
+                case "gridfs":
+                {
+                    builder.RegisterType<GridFsFileHandler>().As<IFileHandler>();
+                    builder.Register(c =>
+                        {
+                            var database = c.Resolve<IMongoDatabase>();
+                            var bucket = new GridFSBucket(database);
+
+                            return bucket;
+                        })
+                        .As<IGridFSBucket>()
+                        .SingleInstance();
+
+                    return;
+                }
+                case "awss3":
+                {
+                    builder.RegisterInstance(_configuration.GetSettings<AwsS3Settings>()).SingleInstance();
+                    builder.Register(c =>
+                        {
+                            var settings = c.Resolve<AwsS3Settings>();
+
+                            return new AmazonS3Client(settings.AccessKey, settings.SecretKey,
+                                RegionEndpoint.GetBySystemName(settings.Region));
+                        })
+                        .As<IAmazonS3>();
+                    builder.RegisterType<AwsS3FileHandler>().As<IFileHandler>();
+
+                    return;
+                }
+                default:
+                    throw new ArgumentException($"Invalid storage: {storage}", nameof(storage));
+            }
         }
 
         private void FixNumberFormat(NancyContext ctx)

@@ -11,18 +11,18 @@ using File = Coolector.Services.Remarks.Domain.File;
 
 namespace Coolector.Services.Remarks.Services
 {
-    public class FileHandler : IFileHandler
+    public class GridFsFileHandler : IFileHandler
     {
         private readonly IGridFSBucket _bucket;
         private readonly IRemarkRepository _remarkRepository;
 
-        public FileHandler(IGridFSBucket bucket, IRemarkRepository remarkRepository)
+        public GridFsFileHandler(IGridFSBucket bucket, IRemarkRepository remarkRepository)
         {
             _bucket = bucket;
             _remarkRepository = remarkRepository;
         }
 
-        public async Task UploadAsync(File file, Action<string> onUploaded = null)
+        public async Task UploadAsync(File file, string newName, Action<string> onUploaded = null)
         {
             var fileInBucketId = string.Empty;
             using (var stream = new MemoryStream(file.Bytes))
