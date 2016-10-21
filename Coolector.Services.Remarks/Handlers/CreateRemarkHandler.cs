@@ -6,12 +6,15 @@ using Coolector.Common.Events.Remarks;
 using Coolector.Common.Events.Remarks.Models;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
+using NLog;
 using RawRabbit;
 
 namespace Coolector.Services.Remarks.Handlers
 {
     public class CreateRemarkHandler : ICommandHandler<CreateRemark>
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly IBusClient _bus;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
@@ -30,13 +33,21 @@ namespace Coolector.Services.Remarks.Handlers
 
         public async Task HandleAsync(CreateRemark command)
         {
+            Logger.Debug($"Handle {nameof(CreateRemark)} command, userId:{command.UserId}, categoryId:{command.CategoryId}, lat-long:{command.Latitude}-{command.Longitude}");
             var file = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
             if (file.HasNoValue)
+            {
+                Logger.Warn($"File cannot be resolved from base64, photoName:{command.Photo.Name}, contentType:{command.Photo.ContentType}, userId:{command.UserId}");
                 return;
+            }
+                
 
             var isImage = _fileValidator.IsImage(file.Value);
-            if(!isImage)
+            if (!isImage)
+            {
+                Logger.Warn($"File is not an image! name:{file.Value.Name}, contentType:{file.Value.ContentType}, userId:{command.UserId}");
                 return;
+            }
 
             var remarkId = Guid.NewGuid();
             var location = Location.Create(command.Latitude, command.Longitude, command.Address);
