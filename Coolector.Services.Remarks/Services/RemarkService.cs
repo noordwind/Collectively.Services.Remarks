@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Types;
 using Coolector.Common.Domain;
+using Coolector.Common.Extensions;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Extensions;
 using Coolector.Services.Remarks.Queries;
@@ -43,8 +44,8 @@ namespace Coolector.Services.Remarks.Services
         public async Task<Maybe<PagedResult<Category>>> BrowseCategoriesAsync(BrowseCategories query)
             => await _categoryRepository.BrowseAsync(query);
 
-        public async Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id)
-            => await _fileHandler.GetFileStreamInfoAsync(id);
+        public async Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size)
+            => await _fileHandler.GetFileStreamInfoAsync(id, size);
 
         public async Task CreateAsync(Guid id, string userId, Guid categoryId, File photo, 
             Location location, string description = null)
@@ -61,11 +62,12 @@ namespace Coolector.Services.Remarks.Services
             var remarkPhoto = RemarkPhoto.Empty;
             var extension = photo.Name.Split('.').Last();
             var fileName = $"remark-{id:N}.{extension}";
-            await _fileHandler.UploadAsync(photo, fileName, fileId =>
-            {
-                remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
-            });
-            var remark = new Remark(id, user.Value, category.Value, location, remarkPhoto, description);
+            //TODO
+            //await _fileHandler.UploadAsync(photo, fileName, fileId =>
+            //{
+            //    remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
+            //});
+            var remark = new Remark(id, user.Value, category.Value, location, description);
             await _remarkRepository.AddAsync(remark);
         }
 
@@ -86,12 +88,13 @@ namespace Coolector.Services.Remarks.Services
             var remarkPhoto = RemarkPhoto.Empty;
             var extension = photo.Name.Split('.').Last();
             var fileName = $"remark-{id:N}-resolved.{extension}";
-            await _fileHandler.UploadAsync(photo, fileName, fileId =>
-            {
-                remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
-            });
+            //TODO
+            //await _fileHandler.UploadAsync(photo, fileName, fileId =>
+            //{
+            //    remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
+            //});
 
-            remark.Value.Resolve(user.Value, remarkPhoto);
+            remark.Value.Resolve(user.Value);
             await _remarkRepository.UpdateAsync(remark.Value);
         }
 
@@ -115,8 +118,14 @@ namespace Coolector.Services.Remarks.Services
             if (remark.Value.Author.UserId != userId)
                 throw new ServiceException($"User: {userId} is not allowed to delete remark: {id}");
 
-            await _fileHandler.DeleteAsync(remark.Value.Photo.FileId);
             await _remarkRepository.DeleteAsync(remark.Value);
+            foreach (var photo in remark.Value.Photos)
+            {
+                if (photo.Id.Empty())
+                    continue;
+
+                await _fileHandler.DeleteAsync(photo.Id);
+            }
         }
     }
 }

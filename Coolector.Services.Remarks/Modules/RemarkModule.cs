@@ -22,7 +22,7 @@ namespace Coolector.Services.Remarks.Modules
             Get("{id}/photo", async args => await Fetch<GetRemarkPhoto, Response>
             (async x =>
                 {
-                    var stream = await remarkService.GetPhotoAsync(x.Id);
+                    var stream = await remarkService.GetPhotoAsync(x.Id, x.Size);
                     if (stream.HasNoValue)
                         return new Maybe<Response>();
 

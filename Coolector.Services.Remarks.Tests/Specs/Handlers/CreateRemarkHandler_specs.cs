@@ -63,8 +63,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Initialize();
             Location = Location.Create(Command.Latitude, Command.Longitude, Command.Address);
             File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
-            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user"), new Category("test"), Location, 
-                RemarkPhoto.Create("file", File.Name, File.Name, File.ContentType), Command.Description);
+            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user"), 
+                new Category("test"), Location, Command.Description);
             FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);
             FileValidatorMock.Setup(x => x.IsImage(Moq.It.IsAny<File>())).Returns(true);

@@ -41,8 +41,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
 
             var user = new User(UserId, "name");
             var category = new Category("category");
-            var photo = RemarkPhoto.Empty;
-            Remark = new Remark(RemarkId, user, category, Location, photo);
+            Remark = new Remark(RemarkId, user, category, Location);
 
             RemarkRepositoryMock.Setup(x => x.GetByIdAsync(Moq.It.IsAny<Guid>()))
                 .ReturnsAsync(Remark);
@@ -141,7 +140,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
 
         It should_upload_file = () =>
         {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<Action<string>>()), Times.Once);
+            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Once);
         };
     }
 
@@ -172,7 +171,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
 
         It should_not_upload_file = () =>
         {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<Action<string>>()), Times.Never);
+            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Never);
         };
     }
 
@@ -203,7 +202,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
 
         It should_not_upload_file = () =>
         {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<Action<string>>()), Times.Never);
+            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Never);
         };
     }
 
@@ -233,7 +232,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
 
         It should_not_upload_file = () =>
         {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<Action<string>>()), Times.Never);
+            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Never);
         };
     }
 }
