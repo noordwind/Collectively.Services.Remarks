@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
@@ -57,8 +58,8 @@ namespace Coolector.Services.Remarks.Handlers
             await _bus.PublishAsync(new RemarkCreated(remarkId, command.UserId,
                 new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
                 new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
-                new RemarkFile(remark.Value.Photo.FileId, file.Value.Bytes, remark.Value.Photo.Name,
-                    file.Value.ContentType), command.Description));
+                remark.Value.Photos.Select(x => new RemarkFile(x.Size, x.Url, x.Metadata)), 
+                command.Description));
         }
     }
 }

@@ -29,8 +29,8 @@ namespace Coolector.Services.Remarks.Repositories
             return results.Paginate(query);
         }
 
-        public async Task<Maybe<string>> GetPhotoIdAsync(Guid id)
-            => await _database.Remarks().GetPhotoIdAsync(id);
+        public async Task<Maybe<string>> GetPhotoIdAsync(Guid id, string size)
+            => await _database.Remarks().GetPhotoIdAsync(id, size);
 
         public async Task AddAsync(Remark remark)
             => await _database.Remarks().InsertOneAsync(remark);

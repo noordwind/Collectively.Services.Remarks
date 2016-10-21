@@ -6,39 +6,44 @@ namespace Coolector.Services.Remarks.Domain
 {
     public class RemarkPhoto : ValueObject<RemarkPhoto>
     {
-        public string FileId { get; protected set; }
-        public string Name { get; protected set; }
-        public string OriginalName { get; protected set; }
-        public string ContentType { get; protected set; }
+        public string Id { get; protected set; }
+        public string Size { get; protected set; }
+        public string Url { get; protected set; }
+        public string Metadata { get; protected set; }
 
         protected RemarkPhoto()
         {
         }
 
-        protected RemarkPhoto(string fileId, string name, string originalName, string contentType)
+        protected RemarkPhoto(string size, string url, string metadata, string id = null)
         {
-            if (fileId.Empty())
-                throw new ArgumentException("Photo file id can not be empty.", nameof(fileId));
-            if (name.Empty())
-                throw new ArgumentException("Photo name id can not be empty.", nameof(name));
-            if (originalName.Empty())
-                throw new ArgumentException("Photo original name id can not be empty.", nameof(originalName));
-            if (contentType.Empty())
-                throw new ArgumentException("Photo content type id can not be empty.", nameof(contentType));
+            if (size.Empty())
+                throw new ArgumentException("Photo size can not be empty.", nameof(size));
+            if (url.Empty())
+                throw new ArgumentException("Photo Url can not be empty.", nameof(url));
 
-            FileId = fileId;
-            Name = name;
-            OriginalName = originalName;
-            ContentType = contentType;
+            Size = size;
+            Url = url;
+            Metadata = metadata;
+            Id = id;
         }
 
         public static RemarkPhoto Empty => new RemarkPhoto();
 
-        public static RemarkPhoto Create(string fileId, string name, string originalName, string contentType)
-            => new RemarkPhoto(fileId, name, originalName, contentType);
+        public static RemarkPhoto Small(string url, string metadata = null, string id = null)
+            => new RemarkPhoto("small", url, metadata, id);
 
-        protected override bool EqualsCore(RemarkPhoto other) => FileId.Equals(other.FileId);
+        public static RemarkPhoto Medium(string url, string metadata = null, string id = null)
+            => new RemarkPhoto("medium", url, metadata, id);
 
-        protected override int GetHashCodeCore() => FileId.GetHashCode();
+        public static RemarkPhoto Big(string url, string metadata = null, string id = null)
+            => new RemarkPhoto("big", url, metadata, id);
+
+        public static RemarkPhoto Original(string url, string metadata = null, string id = null)
+            => new RemarkPhoto("original", url, metadata, id);
+
+        protected override bool EqualsCore(RemarkPhoto other) => Url.Equals(other.Url);
+
+        protected override int GetHashCodeCore() => Url.GetHashCode();
     }
 }

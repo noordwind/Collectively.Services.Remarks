@@ -25,13 +25,12 @@ namespace Coolector.Services.Remarks.Services
         {
             using (var stream = new MemoryStream(file.Bytes))
             {
-
                 await _client.UploadObjectFromStreamAsync(_settings.Bucket, newName,
                     stream, new Dictionary<string, object>());
             }
         }
 
-        public async Task<Maybe<FileStreamInfo>> GetFileStreamInfoAsync(Guid remarkId)
+        public async Task<Maybe<FileStreamInfo>> GetFileStreamInfoAsync(Guid remarkId, string size)
         {
             return new Maybe<FileStreamInfo>();
         }

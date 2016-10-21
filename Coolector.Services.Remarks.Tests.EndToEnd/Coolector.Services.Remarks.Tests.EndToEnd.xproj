@@ -6,7 +6,7 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>ba47e362-72b2-4f60-ae21-55330c44e4f7</ProjectGuid>
+    <ProjectGuid>f5456bae-d1cb-49bc-b2d5-3c8747e8ca04</ProjectGuid>
     <RootNamespace>Coolector.Services.Remarks.Tests.EndToEnd</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>

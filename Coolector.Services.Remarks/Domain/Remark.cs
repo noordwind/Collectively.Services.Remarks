@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Coolector.Common.Domain;
 using Coolector.Common.Extensions;
 
@@ -6,29 +7,36 @@ namespace Coolector.Services.Remarks.Domain
 {
     public class Remark : IdentifiableEntity, ITimestampable
     {
+        private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
+
         public RemarkAuthor Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
-        public RemarkPhoto Photo { get; protected set; }
+
+        public IEnumerable<RemarkPhoto> Photos
+        {
+            get { return _photos; }
+            protected set { _photos = new HashSet<RemarkPhoto>(value); }
+        }
+
         public string Description { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
         public RemarkAuthor Resolver { get; protected set; }
         public DateTime? ResolvedAt { get; protected set; }
-        public RemarkPhoto ResolvedPhoto { get; protected set; }
         public bool Resolved => Resolver != null;
+
 
         protected Remark()
         {
         }
 
         public Remark(Guid id, User author, Category category, Location location,
-            RemarkPhoto photo, string description = null)
+            string description = null)
         {
             Id = id;
             SetAuthor(author);
             SetCategory(category);
             SetLocation(location);
-            SetPhoto(photo);
             SetDescription(description);
             CreatedAt = DateTime.UtcNow;
         }
@@ -57,18 +65,16 @@ namespace Coolector.Services.Remarks.Domain
             Location = location;
         }
 
-        public void SetPhoto(RemarkPhoto photo)
+        public void AddPhoto(RemarkPhoto photo)
         {
             if (photo == null)
             {
-                Photo = RemarkPhoto.Empty;
-
                 return;
             }
-            Photo = photo;
+            _photos.Add(photo);
         }
 
-        public void Resolve(User resolver, RemarkPhoto photo)
+        public void Resolve(User resolver)
         {
             if (Resolved)
             {
@@ -77,7 +83,6 @@ namespace Coolector.Services.Remarks.Domain
             }
             Resolver = RemarkAuthor.Create(resolver);
             ResolvedAt = DateTime.UtcNow;
-            ResolvedPhoto = photo;
         }
 
         public void SetDescription(string description)

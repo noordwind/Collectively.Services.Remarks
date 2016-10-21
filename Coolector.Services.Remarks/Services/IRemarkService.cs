@@ -12,7 +12,7 @@ namespace Coolector.Services.Remarks.Services
         Task<Maybe<Remark>> GetAsync(Guid id);
         Task<Maybe<PagedResult<Remark>>> BrowseAsync(BrowseRemarks query);
         Task<Maybe<PagedResult<Category>>> BrowseCategoriesAsync(BrowseCategories query);
-        Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id);
+        Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size);
 
         Task CreateAsync(Guid id, string userId, Guid categoryId, File photo,
             Location location, string description = null);
