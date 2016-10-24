@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Types;
@@ -59,15 +60,8 @@ namespace Coolector.Services.Remarks.Services
             if (category.HasNoValue)
                 throw new ArgumentException($"Category with id: {userId} has not been found.");
 
-            var remarkPhoto = RemarkPhoto.Empty;
-            var extension = photo.Name.Split('.').Last();
-            var fileName = $"remark-{id:N}.{extension}";
-            //TODO
-            //await _fileHandler.UploadAsync(photo, fileName, fileId =>
-            //{
-            //    remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
-            //});
             var remark = new Remark(id, user.Value, category.Value, location, description);
+            await UploadImagesWithDifferentSizesAsync(remark, photo);
             await _remarkRepository.AddAsync(remark);
         }
 
@@ -85,15 +79,7 @@ namespace Coolector.Services.Remarks.Services
             if (remark.Value.Location.IsInRange(location, AllowedDistance) == false)
                 throw new ServiceException($"The distance between user and remark: {id} is to high!");
 
-            var remarkPhoto = RemarkPhoto.Empty;
-            var extension = photo.Name.Split('.').Last();
-            var fileName = $"remark-{id:N}-resolved.{extension}";
-            //TODO
-            //await _fileHandler.UploadAsync(photo, fileName, fileId =>
-            //{
-            //    remarkPhoto = RemarkPhoto.Create(fileId, fileName, photo.Name, photo.ContentType);
-            //});
-
+            await UploadImagesWithDifferentSizesAsync(remark.Value, photo, "resolved");
             remark.Value.Resolve(user.Value);
             await _remarkRepository.UpdateAsync(remark.Value);
         }
@@ -121,11 +107,33 @@ namespace Coolector.Services.Remarks.Services
             await _remarkRepository.DeleteAsync(remark.Value);
             foreach (var photo in remark.Value.Photos)
             {
-                if (photo.Id.Empty())
+                if (photo.Name.Empty())
                     continue;
 
-                await _fileHandler.DeleteAsync(photo.Id);
+                await _fileHandler.DeleteAsync(photo.Name);
             }
+        }
+
+        private async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, string metadata = null)
+        {
+            var extension = originalPhoto.Name.Split('.').Last();
+            //Fetch from ImageService
+            var photos = new Dictionary<string, File>()
+            {
+                {"original", originalPhoto}
+            };
+            var tasks = new List<Task>();
+            foreach (var photo in photos)
+            {
+                var size = photo.Key;
+                var fileName = $"remark_{remark.Id:N}_{size}.{extension}";
+                var task = _fileHandler.UploadAsync(photo.Value, fileName, url =>
+                {
+                    remark.AddPhoto(RemarkPhoto.Create(fileName, size, url, metadata));
+                });
+                tasks.Add(task);
+            }
+            await Task.WhenAll(tasks);
         }
     }
 }

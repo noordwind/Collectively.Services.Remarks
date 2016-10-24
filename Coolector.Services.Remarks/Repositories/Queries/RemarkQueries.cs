@@ -24,18 +24,6 @@ namespace Coolector.Services.Remarks.Repositories.Queries
             return await remarks.AsQueryable().FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public static async Task<string> GetPhotoIdAsync(this IMongoCollection<Remark> remarks, Guid id, string size)
-        {
-            if (id == Guid.Empty)
-                return null;
-
-            return await remarks.AsQueryable().Where(x => x.Id == id)
-                .SelectMany(x => x.Photos)
-                .Where(x => x.Size == size)
-                .Select(x => x.Id)
-                .FirstOrDefaultAsync(_ => true);
-        }
-
         public static async Task<IEnumerable<Remark>> QueryAsync(this IMongoCollection<Remark> remarks,
             BrowseRemarks query)
         {

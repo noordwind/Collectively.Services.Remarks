@@ -1,9 +1,13 @@
-﻿using Coolector.Services.Remarks.Framework;
+﻿using System;
+using Coolector.Common.Extensions;
+using Coolector.Services.Remarks.Framework;
+using Coolector.Services.Remarks.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Nancy.Owin;
+using Newtonsoft.Json;
 using NLog.Extensions.Logging;
 
 namespace Coolector.Services.Remarks
