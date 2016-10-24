@@ -58,7 +58,7 @@ namespace Coolector.Services.Remarks.Handlers
 
             await _bus.PublishAsync(new RemarkResolved(command.RemarkId,
                 command.UserId,
-                remark.Value.Photos.Select(x => new RemarkFile(x.Size, x.Url, x.Metadata)),
+                remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)),
                 remark.Value.ResolvedAt.GetValueOrDefault()));
         }
     }
