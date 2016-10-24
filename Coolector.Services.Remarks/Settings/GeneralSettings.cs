@@ -2,6 +2,5 @@
 {
     public class GeneralSettings
     {
-        public string Storage { get; set; }
     }
 }

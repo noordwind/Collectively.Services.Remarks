@@ -31,9 +31,6 @@ namespace Coolector.Services.Remarks.Tests.EndToEnd.Specs
 
         protected static Remark FetchRemark(Guid id)
             => HttpClient.GetAsync<Remark>($"remarks/{id}").WaitForResult();
-
-        protected static Stream FetchPhoto(Guid id)
-            => HttpClient.GetStreamAsync($"remarks/{id}/photo").WaitForResult();
     }
 
     [Subject("RemarkService fetch remarks")]
@@ -76,21 +73,5 @@ namespace Coolector.Services.Remarks.Tests.EndToEnd.Specs
         It should_not_be_null = () => Categories.ShouldNotBeNull();
 
         It should_not_be_empty = () => Categories.ShouldNotBeEmpty();
-    }
-
-    [Subject("RemarkService fetch photo")]
-    public class when_fetching_photo : RemarkModule_specs
-    {
-        protected static Stream Photo;
-
-        Establish context = () => InitializeAndFetch();
-
-        Because of = () => Photo = FetchPhoto(RemarkId);
-
-        It should_not_be_null = () =>
-        {
-            Photo.ShouldNotBeNull();
-            Photo.CanRead.ShouldBeTrue();
-        };
     }
 }
