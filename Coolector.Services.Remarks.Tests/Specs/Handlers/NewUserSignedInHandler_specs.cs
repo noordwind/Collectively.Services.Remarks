@@ -1,16 +1,10 @@
 ﻿using System;
-using Coolector.Common.Commands.Remarks;
-using Coolector.Common.Domain;
-using Coolector.Common.Events.Remarks;
 using Coolector.Common.Events.Users;
 using It = Machine.Specifications.It;
-using RawRabbit;
 using Moq;
 using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Handlers;
 using Machine.Specifications;
-using RawRabbit.Configuration.Publish;
-using FluentAssertions;
 
 namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 {

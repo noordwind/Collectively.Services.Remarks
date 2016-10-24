@@ -18,19 +18,6 @@ namespace Coolector.Services.Remarks.Modules
 
             Get("{id}", async args => await Fetch<GetRemark, Remark>
                 (async x => await remarkService.GetAsync(x.Id)).HandleAsync());
-
-            Get("{id}/photo", async args => await Fetch<GetRemarkPhoto, Response>
-            (async x =>
-                {
-                    var stream = await remarkService.GetPhotoAsync(x.Id, x.Size);
-                    if (stream.HasNoValue)
-                        return new Maybe<Response>();
-
-                    var streamInfo = stream.Value;
-
-                    return FromStream(streamInfo.Stream, streamInfo.Name, streamInfo.ContentType);
-                }
-            ).HandleAsync());
         }
     }
 }

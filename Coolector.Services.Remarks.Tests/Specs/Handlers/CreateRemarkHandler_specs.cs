@@ -10,7 +10,6 @@ using System;
 using Coolector.Common.Events.Remarks;
 using Coolector.Common.Types;
 using It = Machine.Specifications.It;
-using FluentAssertions;
 using RawRabbit.Configuration.Publish;
 
 namespace Coolector.Services.Remarks.Tests.Specs.Handlers

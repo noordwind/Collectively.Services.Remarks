@@ -11,7 +11,6 @@ using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Handlers;
 using Machine.Specifications;
 using RawRabbit.Configuration.Publish;
-using FluentAssertions;
 using Coolector.Services.Remarks.Domain;
 
 namespace Coolector.Services.Remarks.Tests.Specs.Handlers
@@ -23,7 +22,6 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
-
         protected static ResolveRemark Command;
         protected static string UserId = "UserId";
         protected static Guid RemarkId = Guid.NewGuid();
