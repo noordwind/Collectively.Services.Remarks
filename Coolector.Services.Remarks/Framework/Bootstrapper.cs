@@ -64,6 +64,7 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<UserRepository>().As<IUserRepository>();
                 builder.RegisterType<RemarkService>().As<IRemarkService>();
                 builder.RegisterType<UserService>().As<IUserService>();
+                builder.RegisterType<ImageService>().As<IImageService>();
                 builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
                 var rawRabbitConfiguration = _configuration.GetSettings<RawRabbitConfiguration>();
