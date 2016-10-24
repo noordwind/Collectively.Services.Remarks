@@ -9,7 +9,7 @@
       "type": "platform",
       "version": "1.0.0"
     },
-    "Coolector.Common": "1.0.0-*",
+    "Coolector.Common": "1.0.*",
     //"CoreCompat.System.Drawing": "1.0.0-beta006",
     "Autofac": "4.1.0",
     "AWSSDK.S3": "3.3.1",
