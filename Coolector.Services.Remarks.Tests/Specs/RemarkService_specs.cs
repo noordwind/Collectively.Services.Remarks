@@ -17,6 +17,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
         protected static Mock<IRemarkRepository> RemarkRepositoryMock;
         protected static Mock<IUserRepository> UserRepositoryMock;
         protected static Mock<ICategoryRepository> CategoryRepositoryMock;
+        protected static Mock<IImageService> ImageServiceMock;
 
         protected static string UserId = "userId";
         protected static User User = new User(UserId, "TestUser");
@@ -33,11 +34,13 @@ namespace Coolector.Services.Remarks.Tests.Specs
             RemarkCategoryRepositoryMock = new Mock<ICategoryRepository>();
             UserRepositoryMock = new Mock<IUserRepository>();
             CategoryRepositoryMock = new Mock<ICategoryRepository>();
+            ImageServiceMock = new Mock<IImageService>();
 
             RemarkService = new RemarkService(FileHandlerMock.Object, 
                 RemarkRepositoryMock.Object, 
                 UserRepositoryMock.Object,
-                CategoryRepositoryMock.Object);
+                CategoryRepositoryMock.Object,
+                ImageServiceMock.Object);
 
             var user = new User(UserId, "name");
             var category = new Category("category");

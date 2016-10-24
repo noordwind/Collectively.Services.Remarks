@@ -41,9 +41,6 @@ namespace Coolector.Services.Remarks.Domain
         public static RemarkPhoto Big(string name, string url, string metadata = null)
             => new RemarkPhoto(name, "big", url, metadata);
 
-        public static RemarkPhoto Original(string name, string url, string metadata = null)
-            => new RemarkPhoto(name, "original", url, metadata);
-
         public static RemarkPhoto Create(string name, string size, string url, string metadata = null)
             => new RemarkPhoto(name, size, url, metadata);
 

@@ -23,16 +23,19 @@ namespace Coolector.Services.Remarks.Services
         private readonly IFileHandler _fileHandler;
         private readonly IRemarkRepository _remarkRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IImageService _imageService;
         private readonly IUserRepository _userRepository;
 
         public RemarkService(IFileHandler fileHandler, 
             IRemarkRepository remarkRepository, 
             IUserRepository userRepository,
-            ICategoryRepository categoryRepository)
+            ICategoryRepository categoryRepository,
+            IImageService imageService)
         {
             _fileHandler = fileHandler;
             _remarkRepository = remarkRepository;
             _categoryRepository = categoryRepository;
+            _imageService = imageService;
             _userRepository = userRepository;
         }
 
@@ -117,11 +120,7 @@ namespace Coolector.Services.Remarks.Services
         private async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, string metadata = null)
         {
             var extension = originalPhoto.Name.Split('.').Last();
-            //Fetch from ImageService
-            var photos = new Dictionary<string, File>()
-            {
-                {"original", originalPhoto}
-            };
+            var photos = _imageService.ProcessImage(originalPhoto);
             var tasks = new List<Task>();
             foreach (var photo in photos)
             {

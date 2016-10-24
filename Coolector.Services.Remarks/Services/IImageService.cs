@@ -5,6 +5,7 @@ using NLog;
 using Structure.Sketching;
 using Structure.Sketching.Filters.Resampling;
 using Structure.Sketching.Filters.Resampling.Enums;
+using Structure.Sketching.Formats;
 using File = Coolector.Services.Remarks.Domain.File;
 
 namespace Coolector.Services.Remarks.Services
@@ -18,9 +19,9 @@ namespace Coolector.Services.Remarks.Services
     public class ImageService : IImageService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private const double SmallSize = 640;
-        private const double MediumSize = 1024;
-        private const double BigSize = 1600;
+        private static readonly double SmallSize = 200;
+        private static readonly double MediumSize = 640;
+        private static readonly double BigSize = 1200;
 
         public IDictionary<string, File> ProcessImage(File file)
         {
@@ -33,28 +34,34 @@ namespace Coolector.Services.Remarks.Services
                 var smallImage = ScaleImage(originalImage, SmallSize);
                 var mediumImage = ScaleImage(originalImage, MediumSize);
                 var bigImage = ScaleImage(originalImage, BigSize);
-
+                
                 var dictionary = new Dictionary<string, File>
                 {
-                    {"small", File.Create(file.Name, file.ContentType, smallImage.Pixels)},
-                    {"medium", File.Create(file.Name, file.ContentType, mediumImage.Pixels)},
-                    {"big", File.Create(file.Name, file.ContentType, bigImage.Pixels)},
-                    {"original", file}
+                    {"small", File.Create(file.Name, file.ContentType, smallImage)},
+                    {"medium", File.Create(file.Name, file.ContentType, mediumImage)},
+                    {"big", File.Create(file.Name, file.ContentType, bigImage)}
                 };
 
                 return dictionary;
             }
         }
 
-        private Image ScaleImage(Image image, double maxSize)
+        private byte[] ScaleImage(Image image, double maxSize)
         {
             var ratioX = maxSize/image.Width;
             var ratioY = maxSize/image.Height;
             var ratio = Math.Min(ratioX, ratioY);
-            var newWidth = (int) (image.Width*ratio);
-            var newHeight = (int) (image.Height*ratio);
+            var newWidth = (int) (image.Width* ratio);
+            var newHeight = (int) (image.Height* ratio);
 
-            return new Image(image).Apply(new Resize(newWidth, newHeight, ResamplingFiltersAvailable.Cosine));
+            using (var stream = new MemoryStream())
+            {
+                var newImage = new Image(image)
+                    .Apply(new Resize(newWidth, newHeight, ResamplingFiltersAvailable.Bell));
+                newImage.Save(stream, FileFormats.JPEG);
+
+                return stream.ToArray();
+            }
         }
     }
 }
