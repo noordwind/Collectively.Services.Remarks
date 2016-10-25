@@ -13,7 +13,7 @@
     //"CoreCompat.System.Drawing": "1.0.0-beta006",
     "Autofac": "4.1.0",
     "AWSSDK.S3": "3.3.1",
-    "Lockbox.Client": "1.0.0-alpha-2",
+    "Lockbox.Client": "1.0.0-alpha-3",
     "Nancy": "2.0.0-barneyrubble",
     "NLog.Extensions.Logging": "1.0.0-*",
     "MongoDB.Driver": "2.3.0-rc1",
