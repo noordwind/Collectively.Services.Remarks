@@ -125,7 +125,7 @@ namespace Coolector.Services.Remarks.Services
             foreach (var photo in photos)
             {
                 var size = photo.Key;
-                var fileName = $"remark_{remark.Id:N}_{size}.{extension}";
+                var fileName = $"{remark.Id:N}_{size}_{metadata}.{extension}";
                 var task = _fileHandler.UploadAsync(photo.Value, fileName, url =>
                 {
                     remark.AddPhoto(RemarkPhoto.Create(fileName, size, url, metadata));
