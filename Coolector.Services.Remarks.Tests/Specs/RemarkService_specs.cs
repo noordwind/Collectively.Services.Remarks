@@ -5,6 +5,7 @@ using Coolector.Services.Remarks.Services;
 using Machine.Specifications;
 using Moq;
 using System;
+using System.Collections.Generic;
 using It = Machine.Specifications.It;
 
 namespace Coolector.Services.Remarks.Tests.Specs
@@ -51,6 +52,13 @@ namespace Coolector.Services.Remarks.Tests.Specs
                 .ReturnsAsync(Remark);
             UserRepositoryMock.Setup(x => x.GetByUserIdAsync(Moq.It.IsAny<string>()))
                 .ReturnsAsync(User);
+            ImageServiceMock.Setup(x => x.ProcessImage(Moq.It.IsAny<File>()))
+                .Returns(new Dictionary<string, File>
+                {
+                    {"small", File},
+                    {"medium", File},
+                    {"big", File}
+                });
         }
     }
 
@@ -144,7 +152,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
 
         It should_upload_file = () =>
         {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Once);
+            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Exactly(3));
         };
     }
 
