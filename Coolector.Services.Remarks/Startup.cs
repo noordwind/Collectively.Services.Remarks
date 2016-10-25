@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Nancy.Owin;
 using Newtonsoft.Json;
 using NLog.Extensions.Logging;
+using Lockbox.Client.Extensions;
 
 namespace Coolector.Services.Remarks
 {
@@ -25,6 +26,11 @@ namespace Coolector.Services.Remarks
                 .AddJsonFile($"appsettings.{EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables()
                 .SetBasePath(env.ContentRootPath);
+
+            if (env.IsProduction())
+            {
+                builder.AddLockbox();
+            }
 
             Configuration = builder.Build();
         }
