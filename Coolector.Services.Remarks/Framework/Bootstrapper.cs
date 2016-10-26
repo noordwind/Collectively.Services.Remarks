@@ -12,8 +12,6 @@ using Coolector.Common.Nancy;
 using Coolector.Services.Remarks.Repositories;
 using Coolector.Services.Remarks.Services;
 using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Configuration;
@@ -23,6 +21,8 @@ using RawRabbit.vNext;
 using RawRabbit.Configuration;
 using Coolector.Common.Extensions;
 using Coolector.Services.Remarks.Settings;
+using Polly;
+using RabbitMQ.Client.Exceptions;
 
 namespace Coolector.Services.Remarks.Framework
 {
@@ -50,6 +50,16 @@ namespace Coolector.Services.Remarks.Framework
         protected override void ConfigureApplicationContainer(ILifetimeScope container)
         {
             base.ConfigureApplicationContainer(container);
+
+            var rmqRetryPolicy = Policy
+                .Handle<ConnectFailureException>()
+                .WaitAndRetry(5, retryAttempt =>
+                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) => {
+                        Logger.Error(exception, $"Cannot connect to RabbitMQ. retryCount:{retryCount}, duration:{timeSpan}");
+                    }
+                );
+
             container.Update(builder =>
             {
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
@@ -69,7 +79,10 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
                 var rawRabbitConfiguration = _configuration.GetSettings<RawRabbitConfiguration>();
                 builder.RegisterInstance(rawRabbitConfiguration).SingleInstance();
-                builder.RegisterInstance(BusClientFactory.CreateDefault(rawRabbitConfiguration)).As<IBusClient>();
+                rmqRetryPolicy.Execute(() => builder
+                        .RegisterInstance(BusClientFactory.CreateDefault(rawRabbitConfiguration))
+                        .As<IBusClient>()
+                );
                 ConfigureStorage(builder);
                 var coreAssembly = typeof(Startup).GetTypeInfo().Assembly;
                 builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(IEventHandler<>));
