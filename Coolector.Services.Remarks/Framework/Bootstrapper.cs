@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using Amazon;
 using Amazon.S3;
 using Autofac;
@@ -53,6 +54,8 @@ namespace Coolector.Services.Remarks.Framework
 
             var rmqRetryPolicy = Policy
                 .Handle<ConnectFailureException>()
+                .Or<BrokerUnreachableException>()
+                .Or<IOException>()
                 .WaitAndRetry(5, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan, retryCount, context) => {
