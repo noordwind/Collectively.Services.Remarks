@@ -41,7 +41,7 @@ namespace Coolector.Services.Remarks.Repositories.Queries
             {
                 if (query.Nearest)
                 {
-                    filter = filter & filterBuilder.Near(x => x.Location,
+                    filter = filter & filterBuilder.NearSphere(x => x.Location,
                                  query.Longitude, query.Latitude, maxDistance: query.Radius / 1000 / 6378.1);
                 }
                 else
