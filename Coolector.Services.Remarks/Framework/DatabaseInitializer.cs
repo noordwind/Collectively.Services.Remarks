@@ -17,6 +17,12 @@ namespace Coolector.Services.Remarks.Framework
 
         public async Task SeedAsync()
         {
+            if (await _database.Remarks().AsQueryable().AnyAsync() == false)
+            {
+                var index = new IndexKeysDefinitionBuilder<Remark>().Geo2DSphere(x => x.Location);
+                await _database.Remarks().Indexes.CreateOneAsync(index);
+            }
+
             if (await _database.Categories().AsQueryable().AnyAsync())
                 return;
 
