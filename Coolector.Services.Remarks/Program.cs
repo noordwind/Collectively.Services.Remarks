@@ -12,7 +12,7 @@ namespace Coolector.Services.Remarks
             WebServiceHost
                 .Create<Startup>(port: 10002)
                 .UseAutofac(Bootstrapper.LifetimeScope)
-                .UseRabbitMq()
+                .UseRabbitMq(queueName: typeof(Program).Namespace)
                 .SubscribeToCommand<CreateRemark>()
                 .SubscribeToCommand<DeleteRemark>()
                 .SubscribeToCommand<ResolveRemark>()
