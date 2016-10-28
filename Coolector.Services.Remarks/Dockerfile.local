@@ -7,6 +7,6 @@ RUN ["dotnet", "build"]
  
 EXPOSE 10002/tcp
 ENV ASPNETCORE_URLS http://*:10002
-ENV ASPNETCORE_ENVIRONMENT docker
+ENV ASPNETCORE_ENVIRONMENT local
  
 ENTRYPOINT ["dotnet", "run"]
