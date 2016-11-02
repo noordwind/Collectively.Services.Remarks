@@ -61,9 +61,9 @@ namespace Coolector.Services.Remarks.Repositories.Queries
             if (query.State.NotEmpty() && query.State != "all")
             {
                 if (query.State == "resolved")
-                    filter = filter & filterBuilder.Where(x => x.Resolved);
+                    filter = filter & filterBuilder.Where(x => x.Resolver != null);
                 else
-                    filter = filter & filterBuilder.Where(x => x.Resolved == false);
+                    filter = filter & filterBuilder.Where(x => x.Resolver == null);
             }
 
             var result = remarks.Find(filter);

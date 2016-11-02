@@ -29,6 +29,12 @@ namespace Coolector.Services.Remarks.Tests.EndToEnd.Specs
         protected static IEnumerable<Remark> FetchNearestRemarks()
             => HttpClient.GetCollectionAsync<Remark>("remarks?results=100&radius=10000&longitude=1.0&latitude=1.0&nearest=true").WaitForResult();
 
+        protected static IEnumerable<Remark> GetRemarksWithCategory(string categoryName)
+            => HttpClient.GetCollectionAsync<Remark>($"remarks?radius=10000&longitude=1.0&latitude=1.0&categories={categoryName}").WaitForResult();
+
+        protected static IEnumerable<Remark> GetRemarksWithState(string state)
+            => HttpClient.GetCollectionAsync<Remark>($"remarks?radius=10000&longitude=1.0&latitude=1.0&state={state}").WaitForResult();
+
         protected static IEnumerable<Category> FetchCategories()
             => HttpClient.GetAsync<IEnumerable<Category>>("remarks/categories").WaitForResult();
 
@@ -68,6 +74,87 @@ namespace Coolector.Services.Remarks.Tests.EndToEnd.Specs
                 previousRemark = remark;
             }
         };
+    }
+
+    [Subject("RemarkService fetch remarks with category")]
+    public class when_fetching_remarks_with_specific_category : RemarkModule_specs
+    {
+        protected static string Category = "damages";
+
+        Because of = () => Remarks = GetRemarksWithCategory(Category);
+
+        It should_return_non_empty_collection = () =>
+        {
+            Remarks.ShouldNotBeEmpty();
+            foreach (var remark in Remarks)
+            {
+                remark.Id.ShouldNotEqual(Guid.Empty);
+                remark.Author.UserId.ShouldNotBeEmpty();
+                remark.Author.Name.ShouldNotBeEmpty();
+                remark.Category.Id.ShouldNotEqual(Guid.Empty);
+                remark.Category.Name.ShouldNotBeEmpty();
+                remark.Location.Coordinates.Length.ShouldEqual(2);
+                remark.Location.Coordinates[0].ShouldNotEqual(0);
+                remark.Location.Coordinates[1].ShouldNotEqual(0);
+            }
+        };
+
+        It should_contain_remarks_with_the_same_category = ()
+            => Remarks.All(x => x.Category.Name == Category).ShouldBeTrue();
+    }
+
+    [Subject("RemarkService fetch resolved remarks")]
+    public class when_fetching_resolved_remarks : RemarkModule_specs
+    {
+        protected static string State = "resolved";
+
+        Because of = () => Remarks = GetRemarksWithState(State);
+
+        It should_return_non_empty_collection = () =>
+        {
+            Remarks.ShouldNotBeEmpty();
+            foreach (var remark in Remarks)
+            {
+                remark.Id.ShouldNotEqual(Guid.Empty);
+                remark.Author.UserId.ShouldNotBeEmpty();
+                remark.Author.Name.ShouldNotBeEmpty();
+                remark.Category.Id.ShouldNotEqual(Guid.Empty);
+                remark.Category.Name.ShouldNotBeEmpty();
+                remark.Location.Coordinates.Length.ShouldEqual(2);
+                remark.Location.Coordinates[0].ShouldNotEqual(0);
+                remark.Location.Coordinates[1].ShouldNotEqual(0);
+            }
+        };
+
+        It should_contain_only_resolved_remarks = ()
+            => Remarks.All(x => x.Resolved).ShouldBeTrue();
+    }
+
+    [Subject("RemarkService fetch remarks with all states")]
+    public class when_fetching_remarks_with_all_states : RemarkModule_specs
+    {
+        protected static string State = "all";
+
+        Because of = () => Remarks = GetRemarksWithState(State);
+
+        It should_return_non_empty_collection = () =>
+        {
+            Remarks.ShouldNotBeEmpty();
+            foreach (var remark in Remarks)
+            {
+                remark.Id.ShouldNotEqual(Guid.Empty);
+                remark.Author.UserId.ShouldNotBeEmpty();
+                remark.Author.Name.ShouldNotBeEmpty();
+                remark.Category.Id.ShouldNotEqual(Guid.Empty);
+                remark.Category.Name.ShouldNotBeEmpty();
+                remark.Location.Coordinates.Length.ShouldEqual(2);
+                remark.Location.Coordinates[0].ShouldNotEqual(0);
+                remark.Location.Coordinates[1].ShouldNotEqual(0);
+            }
+        };
+
+        It should_return_resolved_and_active_remarks = ()
+            => Remarks.Select(x => x.Resolved).Distinct().Count().ShouldEqual(2);
     }
 
     [Subject("RemarkService fetch single remark")]
