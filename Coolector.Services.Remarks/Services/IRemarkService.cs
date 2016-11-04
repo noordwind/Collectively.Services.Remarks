@@ -14,7 +14,7 @@ namespace Coolector.Services.Remarks.Services
         Task<Maybe<PagedResult<Category>>> BrowseCategoriesAsync(BrowseCategories query);
         Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size);
 
-        Task CreateAsync(Guid id, string userId, Guid categoryId, File photo,
+        Task CreateAsync(Guid id, string userId, string category, File photo,
             Location location, string description = null);
 
         Task ResolveAsync(Guid id, string userId, File photo, Location location);

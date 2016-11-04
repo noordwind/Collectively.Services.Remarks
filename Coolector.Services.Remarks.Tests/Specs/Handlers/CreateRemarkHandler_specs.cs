@@ -33,7 +33,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Command = new CreateRemark
             {
                 UserId = "userId",
-                CategoryId = Guid.NewGuid(),
+                Category = "litter",
                 Longitude = 1,
                 Latitude = 1,
                 Description = "test",
@@ -86,7 +86,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.CategoryId, File, Location, Command.Description), Times.Once);
+                Command.Category, File, Location, Command.Description), Times.Once);
         };
 
         It should_call_get_async_on_remark_service = () =>
@@ -158,7 +158,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         It should_not_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.CategoryId, File, Moq.It.IsAny<Location>(), Command.Description), Times.Never);
+                Command.Category, File, Moq.It.IsAny<Location>(), Command.Description), Times.Never);
         };
     }
 }

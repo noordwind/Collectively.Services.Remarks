@@ -51,19 +51,20 @@ namespace Coolector.Services.Remarks.Services
         public async Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size)
             => await _fileHandler.GetFileStreamInfoAsync(id, size);
 
-        public async Task CreateAsync(Guid id, string userId, Guid categoryId, File photo, 
+        public async Task CreateAsync(Guid id, string userId, string category, File photo,
             Location location, string description = null)
         {
-            Logger.Debug($"Create remark, id:{id}, userId:{userId}, categoryId:{categoryId}, photo:{photo.Name}, lat:{location.Latitude}, long:{location.Longitude}");
+            Logger.Debug($"Create remark, id:{id}, userId:{userId}, category: {category}, " +
+                         $"photo: {photo.Name}, lat: {location.Latitude}, lng: {location.Longitude}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
                 throw new ArgumentException($"User with id: {userId} has not been found.");
 
-            var category = await _categoryRepository.GetByIdAsync(categoryId);
-            if (category.HasNoValue)
-                throw new ArgumentException($"Category with id: {userId} has not been found.");
+            var remarkCategory = await _categoryRepository.GetByNameAsync(category);
+            if (remarkCategory.HasNoValue)
+                throw new ArgumentException($"Category {category} has not been found.");
 
-            var remark = new Remark(id, user.Value, category.Value, location, description);
+            var remark = new Remark(id, user.Value, remarkCategory.Value, location, description);
             await UploadImagesWithDifferentSizesAsync(remark, photo);
             await _remarkRepository.AddAsync(remark);
         }

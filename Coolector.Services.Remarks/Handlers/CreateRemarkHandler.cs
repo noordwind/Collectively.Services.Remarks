@@ -34,7 +34,8 @@ namespace Coolector.Services.Remarks.Handlers
 
         public async Task HandleAsync(CreateRemark command)
         {
-            Logger.Debug($"Handle {nameof(CreateRemark)} command, userId:{command.UserId}, categoryId:{command.CategoryId}, lat-long:{command.Latitude}-{command.Longitude}");
+            Logger.Debug($"Handle {nameof(CreateRemark)} command, userId: {command.UserId}, category: {command.Category}," +
+                         $" lat/lng: {command.Latitude} {command.Longitude}");
             var file = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
             if (file.HasNoValue)
             {
@@ -52,7 +53,7 @@ namespace Coolector.Services.Remarks.Handlers
 
             var remarkId = Guid.NewGuid();
             var location = Location.Create(command.Latitude, command.Longitude, command.Address);
-            await _remarkService.CreateAsync(remarkId, command.UserId, command.CategoryId,
+            await _remarkService.CreateAsync(remarkId, command.UserId, command.Category,
                 file.Value, location, command.Description);
             var remark = await _remarkService.GetAsync(remarkId);
             await _bus.PublishAsync(new RemarkCreated(remarkId, command.UserId,
