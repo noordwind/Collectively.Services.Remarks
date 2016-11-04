@@ -9,6 +9,7 @@ using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Extensions;
 using Coolector.Services.Remarks.Queries;
 using Coolector.Services.Remarks.Repositories;
+using Coolector.Services.Remarks.Settings;
 using NLog;
 using File = Coolector.Services.Remarks.Domain.File;
 
@@ -18,25 +19,26 @@ namespace Coolector.Services.Remarks.Services
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private const double AllowedDistance = 15.0;
-
         private readonly IFileHandler _fileHandler;
         private readonly IRemarkRepository _remarkRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IImageService _imageService;
         private readonly IUserRepository _userRepository;
+        private readonly GeneralSettings _settings;
 
         public RemarkService(IFileHandler fileHandler, 
             IRemarkRepository remarkRepository, 
             IUserRepository userRepository,
             ICategoryRepository categoryRepository,
-            IImageService imageService)
+            IImageService imageService,
+            GeneralSettings settings)
         {
             _fileHandler = fileHandler;
             _remarkRepository = remarkRepository;
             _categoryRepository = categoryRepository;
             _imageService = imageService;
             _userRepository = userRepository;
+            _settings = settings;
         }
 
         public async Task<Maybe<Remark>> GetAsync(Guid id)
@@ -69,9 +71,9 @@ namespace Coolector.Services.Remarks.Services
             await _remarkRepository.AddAsync(remark);
         }
 
-        public async Task ResolveAsync(Guid id, string userId, File photo, Location location)
+        public async Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null)
         {
-            Logger.Debug($"Resolve remark, id:{id}, userId:{userId}, photo:{photo.Name}, lat:{location.Latitude}, long:{location.Longitude}");
+            Logger.Debug($"Resolve remark, id:{id}, userId:{userId}, photo:{photo?.Name ?? "none"}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
                 throw new ArgumentException($"User with id: {userId} has not been found.");
@@ -80,10 +82,15 @@ namespace Coolector.Services.Remarks.Services
             if (remark.HasNoValue)
                 throw new ServiceException($"Remark with id: {id} does not exist!");
 
-            if (remark.Value.Location.IsInRange(location, AllowedDistance) == false)
-                throw new ServiceException($"The distance between user and remark: {id} is to high!");
+            if (location != null && remark.Value.Location.IsInRange(location, _settings.AllowedDistance) == false)
+            {
+                throw new ServiceException($"The distance between user and remark: {id} is to high! " +
+                                           $"lat:{location.Latitude}, long:{location.Longitude}");
+            }
 
-            await UploadImagesWithDifferentSizesAsync(remark.Value, photo, "resolved");
+            if (photo != null)
+                await UploadImagesWithDifferentSizesAsync(remark.Value, photo, "resolved");
+
             remark.Value.Resolve(user.Value);
             await _remarkRepository.UpdateAsync(remark.Value);
         }
@@ -126,7 +133,9 @@ namespace Coolector.Services.Remarks.Services
             foreach (var photo in photos)
             {
                 var size = photo.Key;
-                var fileName = $"{remark.Id:N}_{size}_{metadata}.{extension}";
+                var fileName = metadata == null 
+                    ? $"{remark.Id:N}_{size}.{extension}"
+                    : $"{remark.Id:N}_{size}_{metadata}.{extension}";
                 var task = _fileHandler.UploadAsync(photo.Value, fileName, url =>
                 {
                     remark.AddPhoto(RemarkPhoto.Create(fileName, size, url, metadata));

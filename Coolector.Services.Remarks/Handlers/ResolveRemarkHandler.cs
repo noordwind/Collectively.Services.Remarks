@@ -4,6 +4,7 @@ using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Events.Remarks;
 using Coolector.Common.Events.Remarks.Models;
+using Coolector.Common.Types;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
 using NLog;
@@ -35,24 +36,33 @@ namespace Coolector.Services.Remarks.Handlers
         {
             Logger.Debug($"Handle {nameof(ResolveRemark)} command, remarkId:{command.RemarkId}, " +
                 $"userId:{command.UserId}, lat-long:{command.Latitude}-{command.Longitude}");
-            var file = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
-            if (file.HasNoValue)
+
+            File file = null;
+            if (command.ValidatePhoto)
             {
-                Logger.Warn($"File cannot be resolved from base64, photoName:{command.Photo.Name}, " +
-                    $"contentType:{command.Photo.ContentType}, userId:{command.UserId}");
-                return;
+                var resolvedFile = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
+                if (resolvedFile.HasNoValue)
+                {
+                    Logger.Warn($"File cannot be resolved from base64, photoName:{command.Photo.Name}, " +
+                        $"contentType:{command.Photo.ContentType}, userId:{command.UserId}");
+                    return;
+                }
+                file = resolvedFile.Value;
+
+                var isImage = _fileValidator.IsImage(file);
+                if (isImage == false)
+                {
+                    Logger.Warn($"File is not an image! name:{file.Name}, contentType:{file.ContentType}, " +
+                        $"userId:{command.UserId}");
+                    return;
+                }
             }
 
-            var isImage = _fileValidator.IsImage(file.Value);
-            if (isImage == false)
-            {
-                Logger.Warn($"File is not an image! name:{file.Value.Name}, contentType:{file.Value.ContentType}, " +
-                    $"userId:{command.UserId}");
-                return;
-            }
+            Location location = null;
+            if (command.ValidateLocation)
+                location = Location.Create(command.Latitude, command.Longitude);
 
-            var location = Location.Create(command.Latitude, command.Longitude);
-            await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file.Value, location);
+            await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file, location);
 
             var remark = await _remarkService.GetAsync(command.RemarkId);
 

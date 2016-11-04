@@ -17,7 +17,7 @@ namespace Coolector.Services.Remarks.Services
         Task CreateAsync(Guid id, string userId, string category, File photo,
             Location location, string description = null);
 
-        Task ResolveAsync(Guid id, string userId, File photo, Location location);
+        Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null);
         Task UpdateUserNamesAsync(string userId, string name);
 
         Task DeleteAsync(Guid id, string userId);

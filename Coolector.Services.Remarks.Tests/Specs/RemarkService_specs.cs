@@ -6,6 +6,7 @@ using Machine.Specifications;
 using Moq;
 using System;
 using System.Collections.Generic;
+using Coolector.Services.Remarks.Settings;
 using It = Machine.Specifications.It;
 
 namespace Coolector.Services.Remarks.Tests.Specs
@@ -19,6 +20,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
         protected static Mock<IUserRepository> UserRepositoryMock;
         protected static Mock<ICategoryRepository> CategoryRepositoryMock;
         protected static Mock<IImageService> ImageServiceMock;
+        protected static GeneralSettings GeneralSettings;
 
         protected static string UserId = "userId";
         protected static User User = new User(UserId, "TestUser");
@@ -36,12 +38,17 @@ namespace Coolector.Services.Remarks.Tests.Specs
             UserRepositoryMock = new Mock<IUserRepository>();
             CategoryRepositoryMock = new Mock<ICategoryRepository>();
             ImageServiceMock = new Mock<IImageService>();
+            GeneralSettings = new GeneralSettings
+            {
+                AllowedDistance = 15.0
+            };
 
             RemarkService = new RemarkService(FileHandlerMock.Object, 
                 RemarkRepositoryMock.Object, 
                 UserRepositoryMock.Object,
                 CategoryRepositoryMock.Object,
-                ImageServiceMock.Object);
+                ImageServiceMock.Object,
+                GeneralSettings);
 
             var user = new User(UserId, "name");
             var category = new Category("category");
