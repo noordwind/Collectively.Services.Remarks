@@ -130,10 +130,10 @@ namespace Coolector.Services.Remarks.Tests.EndToEnd.Specs
             => Remarks.All(x => x.Resolved).ShouldBeTrue();
     }
 
-    [Subject("RemarkService fetch remarks with all states")]
+    [Subject("RemarkService fetch active remarks")]
     public class when_fetching_remarks_with_all_states : RemarkModule_specs
     {
-        protected static string State = "all";
+        protected static string State = "active";
 
         Because of = () => Remarks = GetRemarksWithState(State);
 
@@ -153,8 +153,8 @@ namespace Coolector.Services.Remarks.Tests.EndToEnd.Specs
             }
         };
 
-        It should_return_resolved_and_active_remarks = ()
-            => Remarks.Select(x => x.Resolved).Distinct().Count().ShouldEqual(2);
+        It should_return_active_remarks = ()
+            => Remarks.All(x => x.Resolved == false).ShouldBeTrue();
     }
 
     [Subject("RemarkService fetch single remark")]
