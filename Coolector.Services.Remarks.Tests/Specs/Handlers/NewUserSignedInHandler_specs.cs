@@ -18,7 +18,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         protected static void Initialize()
         {
             UserServiceMock = new Mock<IUserService>();
-            Event = new NewUserSignedIn("user", "user@email.com", "name",
+            Event = new NewUserSignedIn(Guid.NewGuid(), "user", "user@email.com", "name",
                 "picture", "user", "active", DateTime.UtcNow);
             Handler = new NewUserSignedInHandler(UserServiceMock.Object);
         }

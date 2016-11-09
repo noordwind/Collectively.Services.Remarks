@@ -25,7 +25,7 @@ namespace Coolector.Services.Remarks.Handlers
         {
             Logger.Debug($"Handle {nameof(DeleteRemark)} command, remarkId:{command.RemarkId}, userId:{command.UserId}");
             await _remarkService.DeleteAsync(command.RemarkId, command.UserId);
-            await _bus.PublishAsync(new RemarkDeleted(command.RemarkId));
+            await _bus.PublishAsync(new RemarkDeleted(command.Request.Id, command.RemarkId, command.UserId));
         }
     }
 }

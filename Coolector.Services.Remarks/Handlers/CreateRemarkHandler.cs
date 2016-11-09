@@ -56,7 +56,7 @@ namespace Coolector.Services.Remarks.Handlers
             await _remarkService.CreateAsync(remarkId, command.UserId, command.Category,
                 file.Value, location, command.Description);
             var remark = await _remarkService.GetAsync(remarkId);
-            await _bus.PublishAsync(new RemarkCreated(remarkId, command.UserId,
+            await _bus.PublishAsync(new RemarkCreated(command.Request.Id, remarkId, command.UserId,
                 new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
                 new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
                 remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
