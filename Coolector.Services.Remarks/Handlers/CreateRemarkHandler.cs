@@ -51,12 +51,11 @@ namespace Coolector.Services.Remarks.Handlers
                 return;
             }
 
-            var remarkId = Guid.NewGuid();
             var location = Location.Create(command.Latitude, command.Longitude, command.Address);
-            await _remarkService.CreateAsync(remarkId, command.UserId, command.Category,
+            await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
                 file.Value, location, command.Description);
-            var remark = await _remarkService.GetAsync(remarkId);
-            await _bus.PublishAsync(new RemarkCreated(command.Request.Id, remarkId, command.UserId,
+            var remark = await _remarkService.GetAsync(command.RemarkId);
+            await _bus.PublishAsync(new RemarkCreated(command.Request.Id, command.RemarkId, command.UserId,
                 new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
                 new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
                 remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
