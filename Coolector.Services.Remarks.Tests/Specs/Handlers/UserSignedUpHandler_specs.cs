@@ -19,7 +19,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         {
             UserServiceMock = new Mock<IUserService>();
             Event = new UserSignedUp(Guid.NewGuid(), "user", "user@email.com", "name",
-                "picture", "user", "active", "coolector", DateTime.UtcNow);
+                "picture", "user", "active", "coolector", string.Empty, DateTime.UtcNow);
             Handler = new UserSignedUpHandler(UserServiceMock.Object);
         }
     }
