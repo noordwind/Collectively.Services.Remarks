@@ -67,7 +67,7 @@ namespace Coolector.Services.Remarks.Handlers
             var remark = await _remarkService.GetAsync(command.RemarkId);
 
             await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
-                command.UserId,
+                command.UserId, remark.Value.Resolver.Name,
                 remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
                 remark.Value.ResolvedAt.GetValueOrDefault()));
         }
