@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
+using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
 using Coolector.Services.Remarks.Services;
 using NLog;
@@ -23,9 +24,16 @@ namespace Coolector.Services.Remarks.Handlers
 
         public async Task HandleAsync(DeleteRemark command)
         {
-            Logger.Debug($"Handle {nameof(DeleteRemark)} command, remarkId:{command.RemarkId}, userId:{command.UserId}");
-            await _remarkService.DeleteAsync(command.RemarkId, command.UserId);
-            await _bus.PublishAsync(new RemarkDeleted(command.Request.Id, command.RemarkId, command.UserId));
+            try
+            {
+                Logger.Debug($"Handle {nameof(DeleteRemark)} command, remarkId:{command.RemarkId}, userId:{command.UserId}");
+                await _remarkService.DeleteAsync(command.RemarkId, command.UserId);
+                await _bus.PublishAsync(new RemarkDeleted(command.Request.Id, command.RemarkId, command.UserId));
+            }
+            catch (ServiceException ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }

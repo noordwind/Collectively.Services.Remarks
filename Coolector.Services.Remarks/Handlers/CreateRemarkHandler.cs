@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
+using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
 using Coolector.Common.Events.Remarks.Models;
 using Coolector.Services.Remarks.Domain;
@@ -52,15 +53,23 @@ namespace Coolector.Services.Remarks.Handlers
             }
 
             var location = Location.Create(command.Latitude, command.Longitude, command.Address);
-            await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
-                file.Value, location, command.Description);
-            var remark = await _remarkService.GetAsync(command.RemarkId);
-            await _bus.PublishAsync(new RemarkCreated(command.Request.Id, command.RemarkId, 
-                command.UserId, remark.Value.Author.Name,
-                new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
-                new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
-                remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
-                command.Description, remark.Value.CreatedAt));
+
+            try
+            {
+                await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
+                    file.Value, location, command.Description);
+                var remark = await _remarkService.GetAsync(command.RemarkId);
+                await _bus.PublishAsync(new RemarkCreated(command.Request.Id, command.RemarkId, 
+                    command.UserId, remark.Value.Author.Name,
+                    new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
+                    new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
+                    remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
+                    command.Description, remark.Value.CreatedAt));
+            }
+            catch (ArgumentException ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }

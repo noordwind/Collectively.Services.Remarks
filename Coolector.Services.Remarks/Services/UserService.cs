@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Coolector.Common.Domain;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Repositories;
@@ -33,7 +34,7 @@ namespace Coolector.Services.Remarks.Services
             Logger.Debug($"Update userName, userId:{userId}, name:{name}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
-                throw new ServiceException($"User with id: {userId} does not exist");
+                throw new ArgumentException($"User with id: {userId} does not exist");
 
             user.Value.SetName(name);
             await _userRepository.UpdateAsync(user.Value);

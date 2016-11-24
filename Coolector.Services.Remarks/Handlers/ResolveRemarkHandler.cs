@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
+using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
 using Coolector.Common.Events.Remarks.Models;
 using Coolector.Common.Types;
@@ -62,14 +64,25 @@ namespace Coolector.Services.Remarks.Handlers
             if (command.ValidateLocation)
                 location = Location.Create(command.Latitude, command.Longitude);
 
-            await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file, location);
+            try
+            {
+                await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file, location);
 
-            var remark = await _remarkService.GetAsync(command.RemarkId);
+                var remark = await _remarkService.GetAsync(command.RemarkId);
 
-            await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
-                command.UserId, remark.Value.Resolver.Name,
-                remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
-                remark.Value.ResolvedAt.GetValueOrDefault()));
+                await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
+                    command.UserId, remark.Value.Resolver.Name,
+                    remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
+                    remark.Value.ResolvedAt.GetValueOrDefault()));
+            }
+            catch (ArgumentException ex)
+            {
+                Logger.Error(ex);
+            }
+            catch (ServiceException ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }
