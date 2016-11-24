@@ -83,6 +83,10 @@ namespace Coolector.Services.Remarks.Handlers
             {
                 Logger.Error(ex);
             }
+            catch (InvalidOperationException ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }
