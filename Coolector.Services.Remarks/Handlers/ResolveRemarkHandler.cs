@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Coolector.Common;
 using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
 using Coolector.Common.Events.Remarks.Models;
-using Coolector.Common.Types;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
 using NLog;
@@ -78,14 +78,20 @@ namespace Coolector.Services.Remarks.Handlers
             catch (ArgumentException ex)
             {
                 Logger.Error(ex);
+                await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
+                    command.UserId, command.RemarkId, OperationCodes.InvalidUser, ex.Message));
             }
             catch (ServiceException ex)
             {
                 Logger.Error(ex);
+                await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
+                    command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
             }
             catch (InvalidOperationException ex)
             {
                 Logger.Error(ex);
+                await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
+                    command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
             }
         }
     }

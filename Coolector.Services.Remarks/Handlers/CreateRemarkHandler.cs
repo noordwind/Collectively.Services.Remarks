@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Coolector.Common;
 using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
@@ -69,6 +70,8 @@ namespace Coolector.Services.Remarks.Handlers
             catch (ArgumentException ex)
             {
                 Logger.Error(ex);
+                await _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
+                    command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
             }
         }
     }
