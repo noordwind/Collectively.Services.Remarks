@@ -1,4 +1,5 @@
 ﻿using System;
+using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
@@ -26,6 +27,14 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             RemarkServiceMock = new Mock<IRemarkService>();
             Command = new DeleteRemark
             {
+                Request = new Request
+                {
+                    Name = "delete_remark",
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.Now,
+                    Origin = "test",
+                    Resource = ""
+                },
                 UserId = "userId",
                 RemarkId = Guid.NewGuid()
             };

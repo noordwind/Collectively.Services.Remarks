@@ -7,8 +7,10 @@ using Machine.Specifications;
 using Moq;
 using RawRabbit;
 using System;
+using Coolector.Common.Commands;
 using Coolector.Common.Events.Remarks;
 using Coolector.Common.Types;
+using Newtonsoft.Json;
 using It = Machine.Specifications.It;
 using RawRabbit.Configuration.Publish;
 
@@ -32,6 +34,15 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             RemarkServiceMock = new Mock<IRemarkService>();
             Command = new CreateRemark
             {
+                RemarkId = Guid.NewGuid(),
+                Request = new Request
+                {
+                    Name = "create_remark",
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.Now,
+                    Origin = "test",
+                    Resource = ""
+                },
                 UserId = "userId",
                 Category = "litter",
                 Longitude = 1,

@@ -1,4 +1,6 @@
 ﻿using System;
+using Coolector.Common;
+using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Commands.Remarks.Models;
 using Coolector.Common.Domain;
@@ -47,6 +49,14 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
             Command = new ResolveRemark
             {
+                Request = new Request
+                {
+                    Name = "resolve_remark",
+                    Id = Guid.NewGuid(),
+                    CreatedAt = DateTime.Now,
+                    Origin = "test",
+                    Resource = ""
+                },
                 RemarkId = RemarkId,
                 UserId = UserId,
                 Longitude = 1,
@@ -56,7 +66,9 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                     Base64 = "base64",
                     Name = "file.png",
                     ContentType = "image/png"
-                }
+                },
+                ValidatePhoto = true,
+                ValidateLocation = true
             };
 
             File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
@@ -284,20 +296,28 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     [Subject("ResolveRemarkHandler HandleAsync")]
     public class when_when_invoking_resolve_remark_handle_async_and_resolve_async_fails : ResolveRemarkHandler_specs
     {
+        protected static string ErrorMessage = "Error"; 
+
         Establish context = () =>
         {
             Initialize();
             RemarkServiceMock.Setup(x => x.ResolveAsync(Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<string>(),
                 Moq.It.IsAny<File>(),
-                Moq.It.IsAny<Location>())).Throws<ServiceException>();
+                Moq.It.IsAny<Location>())).Throws(new ServiceException(ErrorMessage));
         };
 
         Because of = () => Exception = Catch.Exception(() => Handler.HandleAsync(Command).Await());
 
-        It should_throw_service_exception = () =>
+        It should_publish_resolve_remark_rejected_message = () =>
         {
-            Exception.ShouldBeOfExactType<ServiceException>();
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<ResolveRemarkRejected>(m =>
+                    m.RemarkId == Command.RemarkId
+                    && m.UserId == Command.UserId
+                    && m.Code == OperationCodes.Error
+                    && m.Reason == ErrorMessage), 
+                Moq.It.IsAny<Guid>(),
+                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
         };
 
         It should_resolve_file_from_base64 = () =>
