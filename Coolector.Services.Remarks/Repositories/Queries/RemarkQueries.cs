@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Extensions;
 using Coolector.Common.Mongo;
+using Coolector.Common.Types;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Queries;
 using MongoDB.Driver;
@@ -24,49 +25,24 @@ namespace Coolector.Services.Remarks.Repositories.Queries
             return await remarks.AsQueryable().FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public static async Task<IEnumerable<Remark>> QueryAsync(this IMongoCollection<Remark> remarks,
+        public static async Task<PagedResult<Remark>> QueryAsync(this IMongoCollection<Remark> remarks,
             BrowseRemarks query)
         {
-            if (!IsLocationProvided(query) && query.AuthorId.Empty() && !query.Latest)
-                return Enumerable.Empty<Remark>();
-
             if (query.Page <= 0)
                 query.Page = 1;
             if (query.Results <= 0)
                 query.Results = 10;
 
-            var filterBuilder = new FilterDefinitionBuilder<Remark>();
             var filter = FilterDefinition<Remark>.Empty;
-            if (IsLocationProvided(query))
-            {
-                filter = filter & filterBuilder.NearSphere(x => x.Location,
-                                 query.Longitude, query.Latitude, maxDistance: query.Radius / 1000 / 6378.1);
-            }
-            if (query.Latest)
-                filter = filterBuilder.Where(x => x.Id != Guid.Empty);
-            if (query.AuthorId.NotEmpty())
-                filter = filter & filterBuilder.Where(x => x.Author.UserId == query.AuthorId);
-            if (!query.Description.Empty())
-                filter = filter & filterBuilder.Where(x => x.Description.Contains(query.Description));
-            if (query.Categories?.Any() == true)
-                filter = filter & filterBuilder.Where(x => query.Categories.Contains(x.Category.Name));
-            if (query.State.NotEmpty() && query.State != "all")
-            {
-                if (query.State == "resolved")
-                    filter = filter & filterBuilder.Where(x => x.Resolver != null);
-                else
-                    filter = filter & filterBuilder.Where(x => x.Resolver == null);
-            }
+            var totalCount = await remarks.CountAsync(filter);
+            var totalPages = (int)totalCount / query.Results + 1;
 
-            return await remarks.Find(filter)
+            var result =  await remarks.Find(filter)
                 .Skip(query.Results * (query.Page - 1))
                 .Limit(query.Results)
                 .ToListAsync();
-        }
 
-        private static bool IsLocationProvided(BrowseRemarks query)
-            => (Math.Abs(query.Latitude) <= 0.0000000001
-                || Math.Abs(query.Longitude) <= 0.0000000001
-                || query.Radius <= 0) == false;
+            return PagedResult<Remark>.Create(result, query.Page, query.Results, totalPages, totalCount);
+        }
     }
 }

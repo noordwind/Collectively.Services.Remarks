@@ -22,12 +22,7 @@ namespace Coolector.Services.Remarks.Repositories
             => await _database.Remarks().GetByIdAsync(id);
 
         public async Task<Maybe<PagedResult<Remark>>> BrowseAsync(BrowseRemarks query)
-        {
-            var results = await _database.Remarks()
-                .QueryAsync(query);
-
-            return results.Paginate(query);
-        }
+            => await _database.Remarks().QueryAsync(query);
 
         public async Task AddAsync(Remark remark)
             => await _database.Remarks().InsertOneAsync(remark);
