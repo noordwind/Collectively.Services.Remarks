@@ -68,6 +68,7 @@ namespace Coolector.Services.Remarks.Framework
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
                 builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
                 builder.RegisterInstance(generalSettings).SingleInstance();
+                builder.RegisterInstance(AutoMapperConfig.InitializeMapper());
                 builder.RegisterModule<MongoDbModule>();
                 builder.RegisterType<MongoDbInitializer>().As<IDatabaseInitializer>();
                 builder.RegisterType<DatabaseSeeder>().As<IDatabaseSeeder>();
