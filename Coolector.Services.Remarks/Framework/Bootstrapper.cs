@@ -21,6 +21,7 @@ using RawRabbit;
 using RawRabbit.vNext;
 using RawRabbit.Configuration;
 using Coolector.Common.Extensions;
+using Coolector.Common.Services;
 using Coolector.Services.Remarks.Settings;
 using Polly;
 using RabbitMQ.Client.Exceptions;
@@ -81,6 +82,7 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<ImageService>().As<IImageService>();
                 builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
+                builder.RegisterType<Handler>().As<IHandler>().SingleInstance();
                 var rawRabbitConfiguration = _configuration.GetSettings<RawRabbitConfiguration>();
                 builder.RegisterInstance(rawRabbitConfiguration).SingleInstance();
                 rmqRetryPolicy.Execute(() => builder

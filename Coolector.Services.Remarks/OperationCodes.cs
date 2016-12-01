@@ -14,6 +14,8 @@
         public static string EmailNotFound => "email_not_found";
         public static string InvalidPasswordResetToken => "invalid_password_reset_token";
         public static string FileTooBig => "file_too_big";
+        public static string FileCannotBeResolved => "file_cannot_be_resolved";
+        public static string FileInvalidType => "invalid_file_type";
         public static string TextTooLong => "text_too_long";
         public static string Error => "error";
         public static string InvalidUser => "invalid_user";

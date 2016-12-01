@@ -9,6 +9,7 @@ using RawRabbit;
 using System;
 using Coolector.Common.Commands;
 using Coolector.Common.Events.Remarks;
+using Coolector.Common.Services;
 using Coolector.Common.Types;
 using Newtonsoft.Json;
 using It = Machine.Specifications.It;
@@ -18,7 +19,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 {
     public abstract class CreateRemarkHandler_specs
     {
-        protected static CreateRemarkHandler Handler;
+        protected static CreateRemarkHandler CreateRemarkHandler;
+        protected static IHandler Handler;
         protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
@@ -28,6 +30,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
+            Handler = new Handler();
             BusClientMock = new Mock<IBusClient>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
@@ -56,7 +59,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                     ContentType = "image/png"
                 }
             };
-            Handler = new CreateRemarkHandler(BusClientMock.Object, FileResolverMock.Object,
+            CreateRemarkHandler = new CreateRemarkHandler(Handler, BusClientMock.Object, FileResolverMock.Object,
                 FileValidatorMock.Object, RemarkServiceMock.Object);
         }
     }
@@ -73,7 +76,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Initialize();
             Location = Location.Create(Command.Latitude, Command.Longitude, Command.Address);
             File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
-            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user"), 
+            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user"),
                 new Category("test"), Location, Command.Description);
             FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);
@@ -81,7 +84,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             RemarkServiceMock.Setup(x => x.GetAsync(Moq.It.IsAny<Guid>())).ReturnsAsync(Remark);
         };
 
-        Because of = () => Handler.HandleAsync(Command).Await();
+        Because of = () => CreateRemarkHandler.HandleAsync(Command).Await();
 
         It should_call_from_base_64_on_file_resolver = () =>
         {
@@ -107,8 +110,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_publish_remark_created_event = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkCreated>(), 
-                Moq.It.IsAny<Guid>(), 
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkCreated>(),
+                Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
         };
     }
@@ -123,7 +126,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(new Maybe<File>());
         };
 
-        Because of = () => Handler.HandleAsync(Command).Await();
+        Because of = () => CreateRemarkHandler.HandleAsync(Command).Await();
 
         It should_call_from_base_64_on_file_resolver = () =>
         {
@@ -153,7 +156,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         };
 
-        Because of = () => Handler.HandleAsync(Command).Await();
+        Because of = () => CreateRemarkHandler.HandleAsync(Command).Await();
 
         It should_call_from_base_64_on_file_resolver = () =>
         {
