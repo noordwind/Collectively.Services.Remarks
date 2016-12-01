@@ -5,6 +5,7 @@ using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Commands.Remarks.Models;
 using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
+using Coolector.Common.Services;
 using Coolector.Common.Types;
 using It = Machine.Specifications.It;
 using RawRabbit;
@@ -19,7 +20,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 {
     public class ResolveRemarkHandler_specs
     {
-        protected static ResolveRemarkHandler Handler;
+        protected static ResolveRemarkHandler ResolveRemarkHandler;
+        protected static IHandler Handler;
         protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IFileResolver> FileResolverMock;
@@ -37,12 +39,14 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
+            Handler = new Handler();
             BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
 
-            Handler = new ResolveRemarkHandler(BusClientMock.Object, 
+            ResolveRemarkHandler = new ResolveRemarkHandler(Handler,
+                BusClientMock.Object, 
                 RemarkServiceMock.Object,
                 FileResolverMock.Object,
                 FileValidatorMock.Object);
@@ -90,7 +94,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     {
         Establish context = () => Initialize();
 
-        Because of = () => Handler.HandleAsync(Command).Await();
+        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -133,7 +137,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 .Returns(new Maybe<File>());
         };
 
-        Because of = () => Handler.HandleAsync(Command).Await();
+        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -173,7 +177,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 .Returns(false);
         };
 
-        Because of = () => Handler.HandleAsync(Command).Await();
+        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -212,7 +216,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Command.Latitude = 100;
         };
 
-        Because of = () => Exception = Catch.Exception(() => Handler.HandleAsync(Command).Await());
+        Because of = () => Exception = Catch.Exception(() => ResolveRemarkHandler.HandleAsync(Command).Await());
 
         It should_throw_argument_exception = () =>
         {
@@ -257,7 +261,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Command.Longitude = 200;
         };
 
-        Because of = () => Exception = Catch.Exception(() => Handler.HandleAsync(Command).Await());
+        Because of = () => Exception = Catch.Exception(() => ResolveRemarkHandler.HandleAsync(Command).Await());
 
         It should_throw_argument_exception = () =>
         {
@@ -307,7 +311,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 Moq.It.IsAny<Location>())).Throws(new ServiceException(ErrorMessage));
         };
 
-        Because of = () => Exception = Catch.Exception(() => Handler.HandleAsync(Command).Await());
+        Because of = () => Exception = Catch.Exception(() => ResolveRemarkHandler.HandleAsync(Command).Await());
 
         It should_publish_resolve_remark_rejected_message = () =>
         {

@@ -7,6 +7,7 @@ using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
 using Coolector.Common.Events.Remarks.Models;
+using Coolector.Common.Services;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
 using NLog;
@@ -18,16 +19,19 @@ namespace Coolector.Services.Remarks.Handlers
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
 
-        public ResolveRemarkHandler(IBusClient bus,
+        public ResolveRemarkHandler(IHandler handler,
+            IBusClient bus,
             IRemarkService remarkService,
             IFileResolver fileResolver,
             IFileValidator fileValidator)
         {
+            _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
             _fileResolver = fileResolver;
@@ -36,63 +40,55 @@ namespace Coolector.Services.Remarks.Handlers
 
         public async Task HandleAsync(ResolveRemark command)
         {
-            Logger.Debug($"Handle {nameof(ResolveRemark)} command, remarkId:{command.RemarkId}, " +
-                $"userId:{command.UserId}, lat-long:{command.Latitude}-{command.Longitude}");
-
-            File file = null;
-            if (command.ValidatePhoto)
-            {
-                var resolvedFile = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
-                if (resolvedFile.HasNoValue)
+            await _handler
+                .Run(async () =>
                 {
-                    Logger.Warn($"File cannot be resolved from base64, photoName:{command.Photo.Name}, " +
-                        $"contentType:{command.Photo.ContentType}, userId:{command.UserId}");
-                    return;
-                }
-                file = resolvedFile.Value;
+                    Logger.Debug($"Handle {nameof(ResolveRemark)} command, remarkId:{command.RemarkId}, " +
+                        $"userId:{command.UserId}, lat-long:{command.Latitude}-{command.Longitude}");
 
-                var isImage = _fileValidator.IsImage(file);
-                if (isImage == false)
+                    File file = null;
+                    if (command.ValidatePhoto)
+                    {
+                        var resolvedFile = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
+                        if (resolvedFile.HasNoValue)
+                        {
+                            Logger.Error($"File cannot be resolved from base64, photoName:{command.Photo.Name}, " +
+                                $"contentType:{command.Photo.ContentType}, userId:{command.UserId}");
+                            throw new ServiceException(OperationCodes.CannotConvertFile);
+                        }
+                        file = resolvedFile.Value;
+
+                        var isImage = _fileValidator.IsImage(file);
+                        if (isImage == false)
+                        {
+                            Logger.Warn($"File is not an image! name:{file.Name}, contentType:{file.ContentType}, " +
+                                $"userId:{command.UserId}");
+                            throw new ServiceException(OperationCodes.InvalidFile);
+                        }
+                    }
+                    Location location = null;
+                    if (command.ValidateLocation)
+                        location = Location.Create(command.Latitude, command.Longitude);
+
+                    await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file, location);
+                })
+                .OnSuccess(async () =>
                 {
-                    Logger.Warn($"File is not an image! name:{file.Name}, contentType:{file.ContentType}, " +
-                        $"userId:{command.UserId}");
-                    return;
-                }
-            }
-
-            Location location = null;
-            if (command.ValidateLocation)
-                location = Location.Create(command.Latitude, command.Longitude);
-
-            try
-            {
-                await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file, location);
-
-                var remark = await _remarkService.GetAsync(command.RemarkId);
-
-                await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
-                    command.UserId, remark.Value.Resolver.Name,
-                    remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
-                    remark.Value.ResolvedAt.GetValueOrDefault()));
-            }
-            catch (ArgumentException ex)
-            {
-                Logger.Error(ex);
-                await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
-                    command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
-            }
-            catch (ServiceException ex)
-            {
-                Logger.Error(ex);
-                await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
-                    command.UserId, command.RemarkId, ex.Code, ex.Message));
-            }
-            catch (InvalidOperationException ex)
-            {
-                Logger.Error(ex);
-                await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
-                    command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
-            }
+                    var remark = await _remarkService.GetAsync(command.RemarkId);
+                    await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
+                        command.UserId, remark.Value.Resolver.Name,
+                        remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
+                        remark.Value.ResolvedAt.GetValueOrDefault()));
+                })
+                .OnCustomError(async ex => await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
+                    command.UserId, command.RemarkId, ex.Code, ex.Message)))
+                .OnError(async (ex, logger) =>
+                {
+                    logger.Error(ex, "Error occured while resolving a remark");
+                    await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
+                        command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
+                })
+                .ExecuteAsync();
         }
     }
 }
