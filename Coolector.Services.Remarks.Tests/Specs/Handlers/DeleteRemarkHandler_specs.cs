@@ -72,11 +72,13 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     [Subject("DeleteRemarkHandler HandleAsync")]
     public class when_invoking_delete_remark_handle_async_and_service_throws_exception : DeleteRemarkHandler_specs
     {
+        protected static string ErrorCode = "Error"; 
+
         Establish context = () =>
         {
             Initialize();
             RemarkServiceMock.Setup(x => x.DeleteAsync(Command.RemarkId, Command.UserId))
-                .Throws<ServiceException>();
+                .Throws(new ServiceException(ErrorCode));
         };
 
         Because of = () => Exception = Catch.Exception(() => DeleteRemarkHandler.HandleAsync(Command).Await());
@@ -91,6 +93,17 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkDeleted>(),
                 Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+        };
+
+        It should_publish_delete_remark_rejected_message = () =>
+        {
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<DeleteRemarkRejected>(m =>
+                    m.RequestId == Command.Request.Id
+                    && m.RemarkId == Command.RemarkId
+                    && m.UserId == Command.UserId
+                    && m.Code == ErrorCode),
+                Moq.It.IsAny<Guid>(),
+                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
         };
     }
 }

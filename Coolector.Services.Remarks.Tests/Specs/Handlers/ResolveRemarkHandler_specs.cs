@@ -165,6 +165,17 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
         };
+
+        It should_publish_resolve_remark_rejected_message = () =>
+        {
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<ResolveRemarkRejected>(m =>
+                    m.RequestId == Command.Request.Id
+                    && m.RemarkId == Command.RemarkId
+                    && m.UserId == Command.UserId
+                    && m.Code == OperationCodes.CannotConvertFile),
+                Moq.It.IsAny<Guid>(),
+                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+        };
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
@@ -205,6 +216,17 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
         };
+
+        It should_publish_resolve_remark_rejected_message = () =>
+        {
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<ResolveRemarkRejected>(m =>
+                    m.RequestId == Command.Request.Id
+                    && m.RemarkId == Command.RemarkId
+                    && m.UserId == Command.UserId
+                    && m.Code == OperationCodes.InvalidFile),
+                Moq.It.IsAny<Guid>(),
+                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+        };
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
@@ -216,13 +238,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Command.Latitude = 100;
         };
 
-        Because of = () => Exception = Catch.Exception(() => ResolveRemarkHandler.HandleAsync(Command).Await());
-
-        It should_throw_argument_exception = () =>
-        {
-            Exception.ShouldBeOfExactType<ArgumentException>();
-            Exception.Message.ShouldContain("Invalid latitude");
-        };
+        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -249,6 +265,17 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(),
                 Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+        };
+
+        It should_publish_resolve_remark_rejected_message = () =>
+        {
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<ResolveRemarkRejected>(m =>
+                    m.RequestId == Command.Request.Id
+                    && m.RemarkId == Command.RemarkId
+                    && m.UserId == Command.UserId
+                    && m.Code == OperationCodes.Error),
+                Moq.It.IsAny<Guid>(),
+                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
         };
     }
 
@@ -261,13 +288,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Command.Longitude = 200;
         };
 
-        Because of = () => Exception = Catch.Exception(() => ResolveRemarkHandler.HandleAsync(Command).Await());
-
-        It should_throw_argument_exception = () =>
-        {
-            Exception.ShouldBeOfExactType<ArgumentException>();
-            Exception.Message.ShouldContain("Invalid longitude");
-        };
+        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -295,12 +316,23 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
         };
+
+        It should_publish_resolve_remark_rejected_message = () =>
+        {
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<ResolveRemarkRejected>(m =>
+                    m.RequestId == Command.Request.Id
+                    && m.RemarkId == Command.RemarkId
+                    && m.UserId == Command.UserId
+                    && m.Code == OperationCodes.Error),
+                Moq.It.IsAny<Guid>(),
+                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+        };
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
     public class when_when_invoking_resolve_remark_handle_async_and_resolve_async_fails : ResolveRemarkHandler_specs
     {
-        protected static string ErrorMessage = "Error"; 
+        protected static string ErrorCode = "Error"; 
 
         Establish context = () =>
         {
@@ -308,21 +340,10 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             RemarkServiceMock.Setup(x => x.ResolveAsync(Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<string>(),
                 Moq.It.IsAny<File>(),
-                Moq.It.IsAny<Location>())).Throws(new ServiceException(ErrorMessage));
+                Moq.It.IsAny<Location>())).Throws(new ServiceException(ErrorCode));
         };
 
-        Because of = () => Exception = Catch.Exception(() => ResolveRemarkHandler.HandleAsync(Command).Await());
-
-        It should_publish_resolve_remark_rejected_message = () =>
-        {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<ResolveRemarkRejected>(m =>
-                    m.RemarkId == Command.RemarkId
-                    && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.Error
-                    && m.Reason == ErrorMessage), 
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
-        };
+        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -349,6 +370,17 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(),
                 Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+        };
+
+        It should_publish_resolve_remark_rejected_message = () =>
+        {
+            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<ResolveRemarkRejected>(m =>
+                    m.RequestId == Command.Request.Id
+                    && m.RemarkId == Command.RemarkId
+                    && m.UserId == Command.UserId
+                    && m.Code == ErrorCode),
+                Moq.It.IsAny<Guid>(),
+                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
         };
     }
 }
