@@ -8,6 +8,7 @@ using Amazon.S3;
 using Autofac;
 using Coolector.Common.Commands;
 using Coolector.Common.Events;
+using Coolector.Common.Exceptionless;
 using Coolector.Common.Mongo;
 using Coolector.Common.Nancy;
 using Coolector.Services.Remarks.Repositories;
@@ -31,6 +32,7 @@ namespace Coolector.Services.Remarks.Framework
     public class Bootstrapper : AutofacNancyBootstrapper
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static IExceptionHandler _exceptionHandler;
         private readonly IConfiguration _configuration;
         private static readonly string DecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
         private static readonly string InvalidDecimalSeparator = DecimalSeparator == "." ? "," : ".";
@@ -82,6 +84,8 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<ImageService>().As<IImageService>();
                 builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
+                builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
+                builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
                 builder.RegisterType<Handler>().As<IHandler>().SingleInstance();
                 var rawRabbitConfiguration = _configuration.GetSettings<RawRabbitConfiguration>();
                 builder.RegisterInstance(rawRabbitConfiguration).SingleInstance();
@@ -95,6 +99,17 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(ICommandHandler<>));
             });
             LifetimeScope = container;
+        }
+
+        protected override void RequestStartup(ILifetimeScope container, IPipelines pipelines, NancyContext context)
+        {
+            pipelines.OnError.AddItemToEndOfPipeline((ctx, ex) =>
+            {
+                _exceptionHandler.Handle(ex, ctx.ToExceptionData(),
+                    "Request details", "Coolector", "Service", "Remarks");
+
+                return ctx.Response;
+            });
         }
 
         protected override void ApplicationStartup(ILifetimeScope container, IPipelines pipelines)
@@ -121,7 +136,8 @@ namespace Coolector.Services.Remarks.Framework
                 ctx.Response.Headers.Add("Access-Control-Allow-Headers",
                     "Authorization, Origin, X-Requested-With, Content-Type, Accept");
             };
-            Logger.Info("Coolector.Services.Remarks API Started");
+            _exceptionHandler = container.Resolve<IExceptionHandler>();
+            Logger.Info("Coolector.Services.Remarks API has started.");
         }
 
         private void ConfigureStorage(ContainerBuilder builder)
