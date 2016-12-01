@@ -50,7 +50,7 @@ namespace Coolector.Services.Remarks.Handlers
                     {
                         Logger.Error($"File cannot be resolved from base64, photoName:{command.Photo.Name}, " +
                                     $"contentType:{command.Photo.ContentType}, userId:{command.UserId}");
-                        throw new ServiceException(OperationCodes.FileCannotBeResolved);
+                        throw new ServiceException(OperationCodes.CannotConvertFile);
                     }
 
                     var isImage = _fileValidator.IsImage(file.Value);
@@ -58,7 +58,7 @@ namespace Coolector.Services.Remarks.Handlers
                     {
                         Logger.Warn($"File is not an image! name:{file.Value.Name}, " +
                                     $"contentType:{file.Value.ContentType}, userId:{command.UserId}");
-                        throw new ServiceException(OperationCodes.FileInvalidType);
+                        throw new ServiceException(OperationCodes.InvalidFile);
                     }
 
                     var location = Location.Create(command.Latitude, command.Longitude, command.Address);
