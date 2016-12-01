@@ -79,13 +79,13 @@ namespace Coolector.Services.Remarks.Handlers
             {
                 Logger.Error(ex);
                 await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
-                    command.UserId, command.RemarkId, OperationCodes.InvalidUser, ex.Message));
+                    command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
             }
             catch (ServiceException ex)
             {
                 Logger.Error(ex);
                 await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
-                    command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
+                    command.UserId, command.RemarkId, ex.Code, ex.Message));
             }
             catch (InvalidOperationException ex)
             {

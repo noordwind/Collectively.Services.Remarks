@@ -80,12 +80,16 @@ namespace Coolector.Services.Remarks.Services
 
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
-                throw new ServiceException($"Remark with id: {id} does not exist!");
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: {id} does not exist!");
+            }
 
             if (location != null && remark.Value.Location.IsInRange(location, _settings.AllowedDistance) == false)
             {
-                throw new ServiceException($"The distance between user and remark: {id} is to high! " +
-                                           $"lat:{location.Latitude}, long:{location.Longitude}");
+                throw new ServiceException(OperationCodes.DistanceBetweenUserAndRemarkIsTooBig,
+                    $"The distance between user and remark: {id} is too big! " +
+                    $"lat:{location.Latitude}, long:{location.Longitude}");
             }
 
             if (photo != null)
@@ -100,7 +104,9 @@ namespace Coolector.Services.Remarks.Services
             Logger.Debug($"Update user's remarks with new userName, userid: {userId}, userName: {name}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
+            {
                 throw new ArgumentException($"User with id: {userId} has not been found.");
+            }
 
             await _remarkRepository.UpdateUserNamesAsync(userId, name);
         }
@@ -110,10 +116,15 @@ namespace Coolector.Services.Remarks.Services
             Logger.Debug($"Delete remark, id:{id}, userId: {userId}");
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
-                throw new ServiceException($"Remark with id: {id} does not exist!");
-
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: {id} does not exist!");
+            }
             if (remark.Value.Author.UserId != userId)
-                throw new ServiceException($"User: {userId} is not allowed to delete remark: {id}");
+            {
+                throw new ServiceException(OperationCodes.UserNotAllowedToDeleteRemark,
+                    $"User: {userId} is not allowed to delete remark: {id}");
+            }
 
             await _remarkRepository.DeleteAsync(remark.Value);
             foreach (var photo in remark.Value.Photos)
