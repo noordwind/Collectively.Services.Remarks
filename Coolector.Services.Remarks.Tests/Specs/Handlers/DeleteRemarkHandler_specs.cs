@@ -3,6 +3,7 @@ using Coolector.Common.Commands;
 using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
 using Coolector.Common.Events.Remarks;
+using Coolector.Common.Services;
 using It = Machine.Specifications.It;
 using RawRabbit;
 using Moq;
@@ -15,7 +16,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 {
     public abstract class DeleteRemarkHandler_specs
     {
-        protected static DeleteRemarkHandler Handler;
+        protected static DeleteRemarkHandler DeleteRemarkHandler;
+        protected static IHandler Handler;
         protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static DeleteRemark Command;
@@ -23,6 +25,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
+            Handler = new Handler();
             BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
             Command = new DeleteRemark
@@ -38,7 +41,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 UserId = "userId",
                 RemarkId = Guid.NewGuid()
             };
-            Handler = new DeleteRemarkHandler(BusClientMock.Object, RemarkServiceMock.Object);
+            DeleteRemarkHandler = new DeleteRemarkHandler(Handler, BusClientMock.Object, RemarkServiceMock.Object);
         }
     }
 
@@ -50,7 +53,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Initialize();
         };
 
-        Because of = () => Handler.HandleAsync(Command).Await();
+        Because of = () => DeleteRemarkHandler.HandleAsync(Command).Await();
 
         It should_call_delete_async_on_remark_service = () =>
         {
@@ -76,7 +79,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 .Throws<ServiceException>();
         };
 
-        Because of = () => Exception = Catch.Exception(() => Handler.HandleAsync(Command).Await());
+        Because of = () => Exception = Catch.Exception(() => DeleteRemarkHandler.HandleAsync(Command).Await());
 
         It should_call_delete_async_on_remark_service = () =>
         {
