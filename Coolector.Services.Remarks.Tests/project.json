@@ -17,6 +17,8 @@
     "dotnet-test-mspec": "*",
     "Moq": "4.6.38-alpha",
     "Coolector.Services.Remarks": "1.0.0-*",
+    "Coolector.Services.Remarks.Shared": "1.0.*",
+    "Coolector.Services.Users.Shared": "1.0.*",
     "Coolector.Common": "1.0.*"
   }
 }

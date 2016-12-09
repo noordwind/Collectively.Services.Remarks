@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Coolector.Common.Dto.General;
-using Coolector.Common.Dto.Remarks;
 using Coolector.Services.Remarks.Domain;
+using Coolector.Services.Remarks.Shared.Dto;
 
 namespace Coolector.Services.Remarks.Framework
 {

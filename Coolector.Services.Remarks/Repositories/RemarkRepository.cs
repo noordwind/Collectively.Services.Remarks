@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Coolector.Common.Extensions;
 using Coolector.Common.Types;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Queries;

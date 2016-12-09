@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Coolector.Common.Domain;
 using Coolector.Common.Events;
-using Coolector.Common.Events.Users;
 using Coolector.Services.Remarks.Services;
+using Coolector.Services.Users.Shared.Events;
 using NLog;
 
 namespace Coolector.Services.Remarks.Handlers

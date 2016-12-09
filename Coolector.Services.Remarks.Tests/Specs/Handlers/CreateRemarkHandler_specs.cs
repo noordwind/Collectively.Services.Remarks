@@ -1,6 +1,4 @@
-﻿using Coolector.Common.Commands.Remarks;
-using Coolector.Common.Commands.Remarks.Models;
-using Coolector.Services.Remarks.Domain;
+﻿using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Handlers;
 using Coolector.Services.Remarks.Services;
 using Machine.Specifications;
@@ -8,10 +6,11 @@ using Moq;
 using RawRabbit;
 using System;
 using Coolector.Common.Commands;
-using Coolector.Common.Events.Remarks;
 using Coolector.Common.Services;
 using Coolector.Common.Types;
-using Newtonsoft.Json;
+using Coolector.Services.Remarks.Shared.Commands;
+using Coolector.Services.Remarks.Shared.Commands.Models;
+using Coolector.Services.Remarks.Shared.Events;
 using It = Machine.Specifications.It;
 using RawRabbit.Configuration.Publish;
 

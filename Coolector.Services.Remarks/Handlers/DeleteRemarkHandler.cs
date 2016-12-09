@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Coolector.Common;
 using Coolector.Common.Commands;
-using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
-using Coolector.Common.Events.Remarks;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Services;
+using Coolector.Services.Remarks.Shared.Commands;
+using Coolector.Services.Remarks.Shared.Events;
 using NLog;
 using RawRabbit;
 

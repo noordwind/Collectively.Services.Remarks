@@ -1,7 +1,7 @@
-﻿using Coolector.Common.Commands.Remarks;
-using Coolector.Common.Events.Users;
-using Coolector.Common.Host;
+﻿using Coolector.Common.Host;
 using Coolector.Services.Remarks.Framework;
+using Coolector.Services.Remarks.Shared.Commands;
+using Coolector.Services.Users.Shared.Events;
 
 namespace Coolector.Services.Remarks
 {

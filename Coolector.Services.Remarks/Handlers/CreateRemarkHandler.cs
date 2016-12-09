@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common;
 using Coolector.Common.Commands;
-using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
-using Coolector.Common.Events.Remarks;
-using Coolector.Common.Events.Remarks.Models;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
+using Coolector.Services.Remarks.Shared.Commands;
+using Coolector.Services.Remarks.Shared.Events;
+using Coolector.Services.Remarks.Shared.Events.Models;
 using NLog;
 using RawRabbit;
 

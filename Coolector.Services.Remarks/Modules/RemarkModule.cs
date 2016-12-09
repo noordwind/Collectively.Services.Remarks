@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Coolector.Common.Dto.Remarks;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Queries;
 using Coolector.Services.Remarks.Services;
+using Coolector.Services.Remarks.Shared.Dto;
 
 namespace Coolector.Services.Remarks.Modules
 {

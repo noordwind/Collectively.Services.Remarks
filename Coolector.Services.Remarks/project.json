@@ -6,6 +6,8 @@
   },
   "dependencies": {
     "Coolector.Common": "1.0.*",
+    "Coolector.Services.Users.Shared": "1.0.*",
+    "Coolector.Services.Remarks.Shared": "1.0.*",
     "Autofac": "4.1.0",
     "AutoMapper": "5.2.0",
     "AWSSDK.S3": "3.3.1",

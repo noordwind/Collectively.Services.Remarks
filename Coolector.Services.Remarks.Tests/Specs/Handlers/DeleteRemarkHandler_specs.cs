@@ -1,14 +1,14 @@
 ﻿using System;
 using Coolector.Common.Commands;
-using Coolector.Common.Commands.Remarks;
 using Coolector.Common.Domain;
-using Coolector.Common.Events.Remarks;
 using Coolector.Common.Services;
 using It = Machine.Specifications.It;
 using RawRabbit;
 using Moq;
 using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Handlers;
+using Coolector.Services.Remarks.Shared.Commands;
+using Coolector.Services.Remarks.Shared.Events;
 using Machine.Specifications;
 using RawRabbit.Configuration.Publish;
 

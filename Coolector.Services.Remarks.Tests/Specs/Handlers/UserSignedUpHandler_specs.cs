@@ -1,9 +1,9 @@
 ﻿using System;
-using Coolector.Common.Events.Users;
 using It = Machine.Specifications.It;
 using Moq;
 using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Handlers;
+using Coolector.Services.Users.Shared.Events;
 using Machine.Specifications;
 
 namespace Coolector.Services.Remarks.Tests.Specs.Handlers

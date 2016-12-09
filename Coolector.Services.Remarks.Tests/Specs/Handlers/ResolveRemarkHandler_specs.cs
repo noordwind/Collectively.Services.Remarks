@@ -1,10 +1,7 @@
 ﻿using System;
 using Coolector.Common;
 using Coolector.Common.Commands;
-using Coolector.Common.Commands.Remarks;
-using Coolector.Common.Commands.Remarks.Models;
 using Coolector.Common.Domain;
-using Coolector.Common.Events.Remarks;
 using Coolector.Common.Services;
 using Coolector.Common.Types;
 using It = Machine.Specifications.It;
@@ -15,6 +12,9 @@ using Coolector.Services.Remarks.Handlers;
 using Machine.Specifications;
 using RawRabbit.Configuration.Publish;
 using Coolector.Services.Remarks.Domain;
+using Coolector.Services.Remarks.Shared.Commands;
+using Coolector.Services.Remarks.Shared.Commands.Models;
+using Coolector.Services.Remarks.Shared.Events;
 
 namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 {
