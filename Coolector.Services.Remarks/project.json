@@ -11,7 +11,7 @@
     "Autofac": "4.1.0",
     "AutoMapper": "5.2.0",
     "AWSSDK.S3": "3.3.1",
-    "Lockbox.Client": "1.0.0-beta-2",
+    "Lockbox.Client": "1.0.0",
     "Exceptionless": "4.0.1922",
     "Nancy": "2.0.0-barneyrubble",
     "NLog.Extensions.Logging": "1.0.0-*",
@@ -30,14 +30,14 @@
     "System.Runtime.Extensions": "4.3.0"
   },
   "frameworks": {
-	  "netcoreapp1.1": {
-		  "dependencies": {
-			  "Microsoft.NETCore.App": {
-				  "type": "platform",
-				  "version": "1.1.0"
-			  }
-		  }
-	  }
+    "netcoreapp1.1": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.1.0"
+        }
+      }
+    }
   },
   "publishOptions": {
     "include": [
