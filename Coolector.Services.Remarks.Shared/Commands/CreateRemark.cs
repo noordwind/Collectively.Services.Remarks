@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Coolector.Common.Commands;
 using Coolector.Services.Remarks.Shared.Commands.Models;
 
@@ -15,5 +16,6 @@ namespace Coolector.Services.Remarks.Shared.Commands
         public double Longitude { get; set; }
         public string Address { get; set; }
         public string Description { get; set; }
+        public List<SocialMedia> SocialMedia { get; set; }
     }
 }

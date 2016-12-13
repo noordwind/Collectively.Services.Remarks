@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common;
@@ -8,10 +9,14 @@ using Coolector.Common.Services;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Shared.Commands;
+using Coolector.Services.Remarks.Shared.Commands.Models;
 using Coolector.Services.Remarks.Shared.Events;
-using Coolector.Services.Remarks.Shared.Events.Models;
+using Coolector.Services.Users.Shared.Commands;
+using Lockbox.Client.Extensions;
 using NLog;
+using Polly;
 using RawRabbit;
+using RemarkFile = Coolector.Services.Remarks.Shared.Events.Models.RemarkFile;
 
 namespace Coolector.Services.Remarks.Handlers
 {
@@ -74,6 +79,7 @@ namespace Coolector.Services.Remarks.Handlers
                         new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
                         remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
                         command.Description, remark.Value.CreatedAt));
+                    await PublishOnSocialMedia(remark.Value, command.SocialMedia);
                 })
                 .OnCustomError(ex => _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
@@ -84,6 +90,28 @@ namespace Coolector.Services.Remarks.Handlers
                         command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
                 })
                 .ExecuteAsync();
+        }
+
+        private async Task PublishOnSocialMedia(Remark remark, List<SocialMedia> socialMedia)
+        {
+            if (socialMedia == null)
+                return;
+
+            foreach (var service in socialMedia.Where(x => x.Name.NotEmpty() && x.Publish))
+            {
+                switch (service.Name.ToLowerInvariant())
+                {
+                    case "facebook":
+                        await _bus.PublishAsync(new PostOnFacebookWall
+                        {
+                            Request = Request.New<PostOnFacebookWall>(),
+                            UserId = remark.Author.UserId,
+                            AccessToken = service.AccessToken,
+                            Message = $"Test remark: {remark.Category}."
+                        });
+                        break;
+                }
+            }
         }
     }
 }
