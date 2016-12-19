@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
@@ -14,30 +15,33 @@ using Lockbox.Client.Extensions;
 using NLog;
 using RawRabbit;
 using RemarkFile = Coolector.Services.Remarks.Shared.Events.Models.RemarkFile;
+using Coolector.Services.Remarks.Settings;
 
 namespace Coolector.Services.Remarks.Handlers
 {
     public class CreateRemarkHandler : ICommandHandler<CreateRemark>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
         private readonly IRemarkService _remarkService;
+        private readonly ISocialMediaService _socialMediaService;
 
         public CreateRemarkHandler(IHandler handler,
             IBusClient bus, 
             IFileResolver fileResolver, 
             IFileValidator fileValidator,
-            IRemarkService remarkService)
+            IRemarkService remarkService,
+            ISocialMediaService socialMediaService)
         {
             _handler = handler;
             _bus = bus;
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
             _remarkService = remarkService;
+            _socialMediaService = socialMediaService;
         }
 
         public async Task HandleAsync(CreateRemark command)
@@ -70,7 +74,7 @@ namespace Coolector.Services.Remarks.Handlers
                 .OnSuccess(async () =>
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    await PublishOnSocialMediaAsync(remark.Value, command.SocialMedia);
+                    await PublishOnSocialMediaAsync(command.RemarkId, command.Request.Culture, command.SocialMedia);
                     await _bus.PublishAsync(new RemarkCreated(command.Request.Id, command.RemarkId,
                         command.UserId, remark.Value.Author.Name,
                         new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
@@ -89,26 +93,17 @@ namespace Coolector.Services.Remarks.Handlers
                 .ExecuteAsync();
         }
 
-        private async Task PublishOnSocialMediaAsync(Remark remark, List<SocialMedia> socialMedia)
+        private async Task PublishOnSocialMediaAsync(Guid remarkId, string culture, List<SocialMedia> socialMedia)
         {
             if (socialMedia == null || !socialMedia.Any())
                 return;
 
-            foreach (var service in socialMedia.Where(x => x.Name.NotEmpty() && x.Publish))
-            {
-                switch (service.Name.ToLowerInvariant())
-                {
-                    case "facebook":
-                        await _bus.PublishAsync(new PostOnFacebookWall
-                        {
-                            Request = Request.New<PostOnFacebookWall>(),
-                            UserId = remark.Author.UserId,
-                            AccessToken = service.AccessToken,
-                            Message = $"I've just sent a new remark for category {remark.Category} using Coolector."
-                        });
-                        break;
-                }
-            }
+            var userSocialMedia = socialMedia
+                .Where(x => x.Name.NotEmpty() && x.Publish)
+                .Select(x => UserSocialMedia.Create(x.Name, x.AccessToken))
+                .ToArray();
+
+            await _socialMediaService.PublishRemarkCreatedAsync(remarkId, culture, userSocialMedia);
         }
     }
 }

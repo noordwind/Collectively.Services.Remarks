@@ -38,16 +38,19 @@ namespace Coolector.Services.Remarks.Services
 
         public async Task<Maybe<FileStreamInfo>> GetFileStreamInfoAsync(Guid remarkId, string size)
         {
-            return new Maybe<FileStreamInfo>();
+            return await Task.FromResult(new Maybe<FileStreamInfo>());
         }
 
         public async Task<Maybe<FileStreamInfo>> GetFileStreamInfoAsync(string fileId)
         {
-            return new Maybe<FileStreamInfo>();
+            return await Task.FromResult(new Maybe<FileStreamInfo>());
         }
 
+
+        //TODO: Implement removing files from AWS S3.
         public async Task DeleteAsync(string name)
         {
+            await Task.CompletedTask;
         }
     }
 }

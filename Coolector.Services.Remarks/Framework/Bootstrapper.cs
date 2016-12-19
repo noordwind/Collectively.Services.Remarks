@@ -77,11 +77,13 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<DatabaseSeeder>().As<IDatabaseSeeder>();
                 builder.RegisterType<RemarkRepository>().As<IRemarkRepository>();
                 builder.RegisterType<CategoryRepository>().As<ICategoryRepository>();
-                builder.RegisterType<CategoryRepository>().As<ICategoryRepository>();
+                builder.RegisterType<LocalizedResourceRepository>().As<ILocalizedResourceRepository>();
                 builder.RegisterType<UserRepository>().As<IUserRepository>();
+                builder.RegisterType<LocalizedResourceService>().As<ILocalizedResourceService>();
                 builder.RegisterType<RemarkService>().As<IRemarkService>();
                 builder.RegisterType<UserService>().As<IUserService>();
                 builder.RegisterType<ImageService>().As<IImageService>();
+                builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
                 builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();

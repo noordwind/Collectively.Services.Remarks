@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Coolector.Common.Extensions;
 using Coolector.Common.Mongo;
 using Coolector.Common.Types;
 using Coolector.Services.Remarks.Domain;

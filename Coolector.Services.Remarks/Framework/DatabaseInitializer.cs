@@ -22,13 +22,17 @@ namespace Coolector.Services.Remarks.Framework
                 var index = new IndexKeysDefinitionBuilder<Remark>().Geo2DSphere(x => x.Location);
                 await _database.Remarks().Indexes.CreateOneAsync(index);
             }
-
             if (await _database.Categories().AsQueryable().AnyAsync())
                 return;
 
             await _database.Categories().InsertOneAsync(new Category("litter"));
             await _database.Categories().InsertOneAsync(new Category("damages"));
             await _database.Categories().InsertOneAsync(new Category("accidents"));
+
+            await _database.LocalizedResources().InsertOneAsync(new LocalizedResource("facebook:new_remark", "en-gb",
+                "I've just sent a new remark using Coolector. You can see it here: {0}"));
+            await _database.LocalizedResources().InsertOneAsync(new LocalizedResource("facebook:new_remark", "pl-pl",
+                "Nowe zgłoszenie zostało przeze mnie dodane za pomocą Coolector. Możesz je zobaczyć tutaj: {0}"));
         }
     }
 }
