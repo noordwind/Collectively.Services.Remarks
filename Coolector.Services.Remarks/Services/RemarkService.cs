@@ -9,6 +9,7 @@ using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Extensions;
 using Coolector.Services.Remarks.Queries;
 using Coolector.Services.Remarks.Repositories;
+using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Settings;
 using NLog;
 using File = Coolector.Services.Remarks.Domain.File;
@@ -139,6 +140,13 @@ namespace Coolector.Services.Remarks.Services
 
         public async Task AddPhotosAsync(Guid id, params File[] photos)
         {
+            if (photos == null || !photos.Any())
+            {
+                throw new ServiceException(OperationCodes.NoFiles, 
+                    $"There are no photos to be added to the remark with id: '{id}'.");
+            }
+
+            Logger.Debug($"Adding {photos.Count()} photos to remark with id: '{id}'.");
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
             {
@@ -146,7 +154,7 @@ namespace Coolector.Services.Remarks.Services
                     $"Remark with id: {id} does not exist!");
             }
 
-            var ordinal = GetPhotoOrdinal(remark.Value);
+            var ordinal = GetNextPhotoOrdinal(remark.Value);
             var tasks = new List<Task>();
             foreach(var photo in photos)
             {
@@ -154,23 +162,30 @@ namespace Coolector.Services.Remarks.Services
                 tasks.Add(task);
                 ordinal++;
             }
-            
             await Task.WhenAll(tasks);
+            await _remarkRepository.UpdateAsync(remark.Value);
+            Logger.Debug($"Added {photos.Count()} photos to remark with id: '{id}'.");
         }
 
-        private static int GetPhotoOrdinal(Remark remark)
+        private static int GetNextPhotoOrdinal(Remark remark)
         {
             if(!remark.Photos.Any())
             {
                 return 1;
             }
 
-            return remark.Photos
+            var photosOrdinals = remark.Photos
                     .Select(x => x.Name)
                     .Select(x => x.Split('_').LastOrDefault())
                     .Where(x => x.NotEmpty() && NumberRegex.IsMatch(x))
-                    .Select(x => int.Parse(x))
-                    .Max() + 1;
+                    .Select(x => int.Parse(x));
+
+            if(!photosOrdinals.Any())
+            {
+                return 1;
+            }
+
+            return photosOrdinals.Max() + 1;
         }
 
         private async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, 

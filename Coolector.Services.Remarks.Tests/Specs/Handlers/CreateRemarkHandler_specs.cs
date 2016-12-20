@@ -8,6 +8,7 @@ using System;
 using Coolector.Common.Commands;
 using Coolector.Common.Services;
 using Coolector.Common.Types;
+using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Shared.Commands;
 using Coolector.Services.Remarks.Shared.Commands.Models;
 using Coolector.Services.Remarks.Shared.Events;
