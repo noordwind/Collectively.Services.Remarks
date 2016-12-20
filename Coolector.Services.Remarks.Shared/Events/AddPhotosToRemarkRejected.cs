@@ -3,7 +3,7 @@ using Coolector.Common.Events;
 
 namespace Coolector.Services.Remarks.Shared.Events
 {
-    public class AddPhotosToRemark : IRejectedEvent
+    public class AddPhotosToRemarkRejected : IRejectedEvent
     {
         public Guid RequestId { get; }
         public Guid RemarkId { get; }
@@ -11,7 +11,7 @@ namespace Coolector.Services.Remarks.Shared.Events
         public string Code { get; }
         public string Reason { get; }
 
-        public AddPhotosToRemark(Guid requestId, 
+        public AddPhotosToRemarkRejected(Guid requestId, 
             Guid remarkId, string userId, 
             string code, string reason)
         {
