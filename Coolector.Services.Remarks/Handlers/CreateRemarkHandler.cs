@@ -96,8 +96,13 @@ namespace Coolector.Services.Remarks.Handlers
         private async Task PublishOnSocialMediaAsync(Guid remarkId, string culture, List<SocialMedia> socialMedia)
         {
             if (socialMedia == null || !socialMedia.Any())
-                return;
+            {
+                Logger.Debug($"Remark with id: '{remarkId}' will not be published on social media.");
 
+                return;
+            }
+
+            Logger.Debug($"Remark with id: '{remarkId}' will be published on social media.");
             var userSocialMedia = socialMedia
                 .Where(x => x.Name.NotEmpty() && x.Publish)
                 .Select(x => UserSocialMedia.Create(x.Name, x.AccessToken))
