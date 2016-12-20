@@ -12,13 +12,14 @@ using Coolector.Services.Remarks.Repositories;
 using Coolector.Services.Remarks.Settings;
 using NLog;
 using File = Coolector.Services.Remarks.Domain.File;
+using System.Text.RegularExpressions;
 
 namespace Coolector.Services.Remarks.Services
 {
     public class RemarkService : IRemarkService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+        private static readonly Regex NumberRegex = new Regex(@"^\d+$", RegexOptions.Compiled);
         private readonly IFileHandler _fileHandler;
         private readonly IRemarkRepository _remarkRepository;
         private readonly ICategoryRepository _categoryRepository;
@@ -136,7 +137,44 @@ namespace Coolector.Services.Remarks.Services
             }
         }
 
-        private async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, string metadata = null)
+        public async Task AddPhotosAsync(Guid id, params File[] photos)
+        {
+            var remark = await _remarkRepository.GetByIdAsync(id);
+            if (remark.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: {id} does not exist!");
+            }
+
+            var ordinal = GetPhotoOrdinal(remark.Value);
+            var tasks = new List<Task>();
+            foreach(var photo in photos)
+            {
+                var task = UploadImagesWithDifferentSizesAsync(remark.Value, photo, ordinal: ordinal);
+                tasks.Add(task);
+                ordinal++;
+            }
+            
+            await Task.WhenAll(tasks);
+        }
+
+        private static int GetPhotoOrdinal(Remark remark)
+        {
+            if(!remark.Photos.Any())
+            {
+                return 1;
+            }
+
+            return remark.Photos
+                    .Select(x => x.Name)
+                    .Select(x => x.Split('_').LastOrDefault())
+                    .Where(x => x.NotEmpty() && NumberRegex.IsMatch(x))
+                    .Select(x => int.Parse(x))
+                    .Max() + 1;
+        }
+
+        private async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, 
+            string metadata = null, int ordinal = 1)
         {
             var extension = originalPhoto.Name.Split('.').Last();
             var photos = _imageService.ProcessImage(originalPhoto);
@@ -145,8 +183,8 @@ namespace Coolector.Services.Remarks.Services
             {
                 var size = photo.Key;
                 var fileName = metadata == null 
-                    ? $"{remark.Id:N}_{size}.{extension}"
-                    : $"{remark.Id:N}_{size}_{metadata}.{extension}";
+                    ? $"{remark.Id:N}_{size}_{ordinal}.{extension}"
+                    : $"{remark.Id:N}_{size}_{metadata}_{ordinal}.{extension}";
                 var task = _fileHandler.UploadAsync(photo.Value, fileName, url =>
                 {
                     remark.AddPhoto(RemarkPhoto.Create(fileName, size, url, metadata));
