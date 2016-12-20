@@ -24,6 +24,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<ISocialMediaService> SocialMediaServiceMock;
         protected static CreateRemark Command;
         protected static Exception Exception;
 
@@ -34,6 +35,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            SocialMediaServiceMock = new Mock<ISocialMediaService>();
             Command = new CreateRemark
             {
                 RemarkId = Guid.NewGuid(),
@@ -59,7 +61,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 }
             };
             CreateRemarkHandler = new CreateRemarkHandler(Handler, BusClientMock.Object, FileResolverMock.Object,
-                FileValidatorMock.Object, RemarkServiceMock.Object);
+                FileValidatorMock.Object, RemarkServiceMock.Object, SocialMediaServiceMock.Object);
         }
     }
 
