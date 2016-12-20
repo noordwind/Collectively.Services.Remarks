@@ -93,7 +93,7 @@ namespace Coolector.Services.Remarks.Handlers
                 .ExecuteAsync();
         }
 
-        private async Task PublishOnSocialMediaAsync(Guid remarkId, string culture, List<SocialMedia> socialMedia)
+        private async Task PublishOnSocialMediaAsync(Guid remarkId, string culture, IList<SocialMedia> socialMedia)
         {
             if (socialMedia == null || !socialMedia.Any())
             {
