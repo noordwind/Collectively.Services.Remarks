@@ -54,6 +54,7 @@ namespace Coolector.Services.Remarks.Handlers
                         {
                             throw new ServiceException(OperationCodes.InvalidFile);
                         }
+                        photos.Add(photo);
                     }
                     await _remarkService.AddPhotosAsync(command.RemarkId, photos.ToArray());
                 })
