@@ -6,6 +6,7 @@ using Coolector.Common.Domain;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
+using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Shared.Commands;
 using Coolector.Services.Remarks.Shared.Events;
 using RawRabbit;
@@ -53,6 +54,7 @@ namespace Coolector.Services.Remarks.Handlers
                         {
                             throw new ServiceException(OperationCodes.InvalidFile);
                         }
+                        photos.Add(photo);
                     }
                     await _remarkService.AddPhotosAsync(command.RemarkId, photos.ToArray());
                 })

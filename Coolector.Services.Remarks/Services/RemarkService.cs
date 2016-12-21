@@ -9,6 +9,7 @@ using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Extensions;
 using Coolector.Services.Remarks.Queries;
 using Coolector.Services.Remarks.Repositories;
+using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Settings;
 using NLog;
 using File = Coolector.Services.Remarks.Domain.File;
@@ -19,12 +20,12 @@ namespace Coolector.Services.Remarks.Services
     public class RemarkService : IRemarkService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly Regex NumberRegex = new Regex(@"^\d+$", RegexOptions.Compiled);
         private readonly IFileHandler _fileHandler;
         private readonly IRemarkRepository _remarkRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IImageService _imageService;
         private readonly IUserRepository _userRepository;
+        private readonly IUniqueNumberGenerator _uniqueNumberGenerator;
         private readonly GeneralSettings _settings;
 
         public RemarkService(IFileHandler fileHandler, 
@@ -32,6 +33,7 @@ namespace Coolector.Services.Remarks.Services
             IUserRepository userRepository,
             ICategoryRepository categoryRepository,
             IImageService imageService,
+            IUniqueNumberGenerator uniqueNumberGenerator,
             GeneralSettings settings)
         {
             _fileHandler = fileHandler;
@@ -39,6 +41,7 @@ namespace Coolector.Services.Remarks.Services
             _categoryRepository = categoryRepository;
             _imageService = imageService;
             _userRepository = userRepository;
+            _uniqueNumberGenerator = uniqueNumberGenerator;
             _settings = settings;
         }
 
@@ -139,6 +142,13 @@ namespace Coolector.Services.Remarks.Services
 
         public async Task AddPhotosAsync(Guid id, params File[] photos)
         {
+            if (photos == null || !photos.Any())
+            {
+                throw new ServiceException(OperationCodes.NoFiles, 
+                    $"There are no photos to be added to the remark with id: '{id}'.");
+            }
+
+            Logger.Debug($"Adding {photos.Count()} photos to remark with id: '{id}'.");
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
             {
@@ -146,45 +156,29 @@ namespace Coolector.Services.Remarks.Services
                     $"Remark with id: {id} does not exist!");
             }
 
-            var ordinal = GetPhotoOrdinal(remark.Value);
             var tasks = new List<Task>();
             foreach(var photo in photos)
             {
-                var task = UploadImagesWithDifferentSizesAsync(remark.Value, photo, ordinal: ordinal);
+                var task = UploadImagesWithDifferentSizesAsync(remark.Value, photo);
                 tasks.Add(task);
-                ordinal++;
             }
-            
             await Task.WhenAll(tasks);
+            await _remarkRepository.UpdateAsync(remark.Value);
+            Logger.Debug($"Added {photos.Count()} photos to remark with id: '{id}'.");
         }
 
-        private static int GetPhotoOrdinal(Remark remark)
-        {
-            if(!remark.Photos.Any())
-            {
-                return 1;
-            }
-
-            return remark.Photos
-                    .Select(x => x.Name)
-                    .Select(x => x.Split('_').LastOrDefault())
-                    .Where(x => x.NotEmpty() && NumberRegex.IsMatch(x))
-                    .Select(x => int.Parse(x))
-                    .Max() + 1;
-        }
-
-        private async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, 
-            string metadata = null, int ordinal = 1)
+        private async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, string metadata = null)
         {
             var extension = originalPhoto.Name.Split('.').Last();
             var photos = _imageService.ProcessImage(originalPhoto);
+            var uniqueNumber = _uniqueNumberGenerator.Generate();
             var tasks = new List<Task>();
             foreach (var photo in photos)
             {
                 var size = photo.Key;
                 var fileName = metadata == null 
-                    ? $"{remark.Id:N}_{size}_{ordinal}.{extension}"
-                    : $"{remark.Id:N}_{size}_{metadata}_{ordinal}.{extension}";
+                    ? $"{remark.Id:N}_{size}_{uniqueNumber}.{extension}"
+                    : $"{remark.Id:N}_{size}_{metadata}_{uniqueNumber}.{extension}";
                 var task = _fileHandler.UploadAsync(photo.Value, fileName, url =>
                 {
                     remark.AddPhoto(RemarkPhoto.Create(fileName, size, url, metadata));

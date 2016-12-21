@@ -20,8 +20,8 @@ namespace Coolector.Services.Remarks.Tests.Specs
         protected static Mock<IUserRepository> UserRepositoryMock;
         protected static Mock<ICategoryRepository> CategoryRepositoryMock;
         protected static Mock<IImageService> ImageServiceMock;
+        protected static Mock<IUniqueNumberGenerator> UniqueNumberGeneratorMock;
         protected static GeneralSettings GeneralSettings;
-
         protected static string UserId = "userId";
         protected static User User = new User(UserId, "TestUser");
         protected static File File = File.Create("image.png", "image/png", new byte[] { 1, 2, 3, 4 });
@@ -38,6 +38,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
             UserRepositoryMock = new Mock<IUserRepository>();
             CategoryRepositoryMock = new Mock<ICategoryRepository>();
             ImageServiceMock = new Mock<IImageService>();
+            UniqueNumberGeneratorMock = new Mock<IUniqueNumberGenerator>();
             GeneralSettings = new GeneralSettings
             {
                 AllowedDistance = 15.0
@@ -48,6 +49,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
                 UserRepositoryMock.Object,
                 CategoryRepositoryMock.Object,
                 ImageServiceMock.Object,
+                UniqueNumberGeneratorMock.Object,
                 GeneralSettings);
 
             var user = new User(UserId, "name");
