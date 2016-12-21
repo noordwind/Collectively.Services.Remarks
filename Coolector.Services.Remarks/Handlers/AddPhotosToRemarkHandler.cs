@@ -6,6 +6,7 @@ using Coolector.Common.Domain;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
+using Coolector.Services.Remarks.Settings;
 using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Shared.Commands;
 using Coolector.Services.Remarks.Shared.Events;
@@ -21,18 +22,21 @@ namespace Coolector.Services.Remarks.Handlers
         private readonly IRemarkService _remarkService;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
+        private readonly GeneralSettings _generalSettings;
 
         public AddPhotosToRemarkHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
             IFileResolver fileResolver,
-            IFileValidator fileValidator)
+            IFileValidator fileValidator,
+            GeneralSettings generalSettings)
         {
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
+            _generalSettings = generalSettings;
         }
 
         public async Task HandleAsync(AddPhotosToRemark command)
@@ -40,6 +44,16 @@ namespace Coolector.Services.Remarks.Handlers
             await _handler
                 .Run(async () =>
                 {
+                    if (command.Photos == null || !command.Photos.Any())
+                    {
+                        throw new ServiceException(OperationCodes.NoFiles, 
+                            $"There are no photos to be added to the remark with id: '{command.RemarkId}'.");
+                    }
+                    if(command.Photos.Count() > _generalSettings.PhotosLimit) 
+                    {
+                        throw new ServiceException(OperationCodes.TooManyFiles);
+                    }
+
                     var photos = new List<File>();
                     foreach(var file in command.Photos)
                     {

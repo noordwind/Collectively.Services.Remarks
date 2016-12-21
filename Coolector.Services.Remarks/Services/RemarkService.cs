@@ -155,6 +155,11 @@ namespace Coolector.Services.Remarks.Services
                 throw new ServiceException(OperationCodes.RemarkNotFound,
                     $"Remark with id: {id} does not exist!");
             }
+            if(remark.Value.Photos.Count() + photos.Count() > _settings.PhotosLimit) 
+            {
+                throw new ServiceException(OperationCodes.TooManyFiles,
+                    $"There are too many photos ({photos.Count()}) to be added to the remark with id: '{id}'.");
+            }
 
             var tasks = new List<Task>();
             foreach(var photo in photos)

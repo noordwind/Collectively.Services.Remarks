@@ -9,6 +9,7 @@ namespace Coolector.Services.Remarks.Shared
         public static string NoFiles => "no_files";
         public static string InvalidFile => "invalid_file";
         public static string CannotConvertFile => "cannot_convert_file";
+        public static string TooManyFiles => "too_many_files";
         public static string Error => "error";
     }
 }

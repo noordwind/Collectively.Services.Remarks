@@ -4,5 +4,6 @@
     {
         public double AllowedDistance { get; set; }
         public string RemarkDetailsUrl { get; set; }
+        public int PhotosLimit { get; set;}
     }
 }
