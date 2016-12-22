@@ -88,17 +88,6 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         Because of = () => CreateRemarkHandler.HandleAsync(Command).Await();
 
-        It should_call_from_base_64_on_file_resolver = () =>
-        {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name,
-                Command.Photo.ContentType), Times.Once);
-        };
-
-        It should_call_is_image_on_file_validator = () =>
-        {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
-        };
-
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
@@ -142,17 +131,6 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         Because of = () => CreateRemarkHandler.HandleAsync(Command).Await();
 
-        It should_call_from_base_64_on_file_resolver = () =>
-        {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name,
-                Command.Photo.ContentType), Times.Once);
-        };
-
-        It should_call_is_image_on_file_validator = () =>
-        {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
-        };
-
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
@@ -173,88 +151,6 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.Error),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
-        };
-    }
-
-    [Subject("CreateRemarkHandler HandleAsync")]
-    public class when_invoking_create_remark_handle_async_without_file : CreateRemarkHandler_specs
-    {
-        Establish context = () =>
-        {
-            Initialize();
-            FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
-                Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(Maybe<File>.Empty);
-        };
-
-        Because of = () => CreateRemarkHandler.HandleAsync(Command).Await();
-
-        It should_call_from_base_64_on_file_resolver = () =>
-        {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name,
-                Command.Photo.ContentType), Times.Once);
-        };
-
-
-        It should_not_call_is_image_on_file_validator = () =>
-        {
-            FileValidatorMock.Verify(x => x.IsImage(Moq.It.IsAny<File>()), Times.Never);
-        };
-
-        It should_publish_create_remark_rejected_message = () =>
-        {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<CreateRemarkRejected>(m =>
-                    m.RequestId == Command.Request.Id
-                    && m.RemarkId == Command.RemarkId
-                    && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.CannotConvertFile),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
-        };
-    }
-
-    [Subject("CreateRemarkHandler HandleAsync")]
-    public class when_invoking_create_remark_handle_async_with_invalid_file : CreateRemarkHandler_specs
-    {
-        static File File;
-
-        Establish context = () =>
-        {
-            Initialize();
-            File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
-            FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
-                Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);
-            FileValidatorMock.Setup(x => x.IsImage(Moq.It.IsAny<File>())).Returns(false);
-
-        };
-
-        Because of = () => CreateRemarkHandler.HandleAsync(Command).Await();
-
-        It should_call_from_base_64_on_file_resolver = () =>
-        {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name,
-                Command.Photo.ContentType), Times.Once);
-        };
-
-        It should_call_is_image_on_file_validator = () =>
-        {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
-        };
-
-        It should_not_call_create_async_on_remark_service = () =>
-        {
-            RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Moq.It.IsAny<Location>(), Command.Description), Times.Never);
-        };
-
-        It should_publish_create_remark_rejected_message = () =>
-        {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<CreateRemarkRejected>(m =>
-                    m.RequestId == Command.Request.Id
-                    && m.RemarkId == Command.RemarkId
-                    && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.InvalidFile),
                 Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
         };
