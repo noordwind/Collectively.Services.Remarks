@@ -57,11 +57,11 @@ namespace Coolector.Services.Remarks.Services
         public async Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size)
             => await _fileHandler.GetFileStreamInfoAsync(id, size);
 
-        public async Task CreateAsync(Guid id, string userId, string category, File photo,
+        public async Task CreateAsync(Guid id, string userId, string category, 
             Location location, string description = null)
         {
-            Logger.Debug($"Create remark, id:{id}, userId:{userId}, category: {category}, " +
-                         $"photo: {photo.Name}, lat: {location.Latitude}, lng: {location.Longitude}");
+            Logger.Debug($"Create remark, id:{id}, userId: {userId}, category: {category}, " +
+                         $"latitude: {location.Latitude}, longitude: {location.Longitude}.");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
                 throw new ArgumentException($"User with id: {userId} has not been found.");
@@ -71,7 +71,6 @@ namespace Coolector.Services.Remarks.Services
                 throw new ArgumentException($"Category {category} has not been found.");
 
             var remark = new Remark(id, user.Value, remarkCategory.Value, location, description);
-            await UploadImagesWithDifferentSizesAsync(remark, photo);
             await _remarkRepository.AddAsync(remark);
         }
 

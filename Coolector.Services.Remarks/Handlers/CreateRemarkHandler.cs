@@ -11,12 +11,9 @@ using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Shared.Commands;
 using Coolector.Services.Remarks.Shared.Commands.Models;
 using Coolector.Services.Remarks.Shared.Events;
-using Coolector.Services.Users.Shared.Commands;
 using Lockbox.Client.Extensions;
 using NLog;
 using RawRabbit;
-using RemarkFile = Coolector.Services.Remarks.Shared.Events.Models.RemarkFile;
-using Coolector.Services.Remarks.Settings;
 
 namespace Coolector.Services.Remarks.Handlers
 {
@@ -51,26 +48,12 @@ namespace Coolector.Services.Remarks.Handlers
                 .Run(async () =>
                 {
                     Logger.Debug($"Handle {nameof(CreateRemark)} command, userId: {command.UserId}, " +
-                                 $"category: {command.Category}, lat/lng: {command.Latitude} {command.Longitude}");
-                    var file = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
-                    if (file.HasNoValue)
-                    {
-                        Logger.Error($"File cannot be resolved from base64, photoName:{command.Photo.Name}, " +
-                                    $"contentType:{command.Photo.ContentType}, userId:{command.UserId}");
-                        throw new ServiceException(OperationCodes.CannotConvertFile);
-                    }
-
-                    var isImage = _fileValidator.IsImage(file.Value);
-                    if (!isImage)
-                    {
-                        Logger.Warn($"File is not an image! name:{file.Value.Name}, " +
-                                    $"contentType:{file.Value.ContentType}, userId:{command.UserId}");
-                        throw new ServiceException(OperationCodes.InvalidFile);
-                    }
+                                 $"category: {command.Category}, latitude: {command.Latitude}, " +
+                                 $"longitude:  {command.Longitude}.");
 
                     var location = Location.Create(command.Latitude, command.Longitude, command.Address);
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
-                        file.Value, location, command.Description);
+                            location, command.Description);
                 })
                 .OnSuccess(async () =>
                 {
@@ -80,7 +63,6 @@ namespace Coolector.Services.Remarks.Handlers
                         command.UserId, remark.Value.Author.Name,
                         new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
                         new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
-                        remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
                         command.Description, remark.Value.CreatedAt));
                 })
                 .OnCustomError(ex => _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
@@ -91,7 +73,27 @@ namespace Coolector.Services.Remarks.Handlers
                     await _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
                         command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
                 })
-                .ExecuteAsync();
+                .Next()
+                .Run(async () =>
+                {
+                    if(command.Photo == null)
+                    {
+                        return;
+                    }
+
+                    await _bus.PublishAsync(new AddPhotosToRemark
+                    {
+                        RemarkId = command.RemarkId,
+                        Request = Request.New<AddPhotosToRemark>(),
+                        UserId = command.UserId,
+                        Photos = new List<RemarkFile>
+                        {
+                            command.Photo
+                        }
+                    });
+                })
+                .Next()
+                .ExecuteAllAsync();
         }
 
         private async Task PublishOnSocialMediaAsync(Guid remarkId, string culture, IList<SocialMedia> socialMedia)
