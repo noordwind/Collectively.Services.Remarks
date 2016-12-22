@@ -102,7 +102,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, File, Location, Command.Description), Times.Once);
+                Command.Category, Location, Command.Description), Times.Once);
         };
 
         It should_call_get_async_on_remark_service = () =>
@@ -136,8 +136,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);
             FileValidatorMock.Setup(x => x.IsImage(Moq.It.IsAny<File>())).Returns(true);
             RemarkServiceMock.Setup(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Moq.It.IsAny<string>(),
-                    Moq.It.IsAny<string>(), Moq.It.IsAny<File>(), 
-                    Moq.It.IsAny<Location>(), Moq.It.IsAny<string>()))
+                    Moq.It.IsAny<string>(), Moq.It.IsAny<Location>(), Moq.It.IsAny<string>()))
                 .Throws<Exception>();
         };
 
@@ -157,7 +156,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, File, Location, Command.Description), Times.Once);
+                Command.Category, Location, Command.Description), Times.Once);
         };
 
         It should_not_publish_remark_created_event = () =>
@@ -246,7 +245,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         It should_not_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, File, Moq.It.IsAny<Location>(), Command.Description), Times.Never);
+                Command.Category, Moq.It.IsAny<Location>(), Command.Description), Times.Never);
         };
 
         It should_publish_create_remark_rejected_message = () =>
