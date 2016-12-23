@@ -17,6 +17,7 @@ namespace Coolector.Services.Remarks
                 .SubscribeToCommand<DeleteRemark>()
                 .SubscribeToCommand<ResolveRemark>()
                 .SubscribeToCommand<AddPhotosToRemark>()
+                .SubscribeToCommand<RemovePhotosFromRemark>()
                 .SubscribeToEvent<UserSignedUp>()
                 .SubscribeToEvent<UserNameChanged>()
                 .Build()

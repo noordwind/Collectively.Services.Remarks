@@ -46,11 +46,12 @@ namespace Coolector.Services.Remarks.Services
             return await Task.FromResult(new Maybe<FileStreamInfo>());
         }
 
-
-        //TODO: Implement removing files from AWS S3.
         public async Task DeleteAsync(string name)
         {
-            await Task.CompletedTask;
+            Logger.Debug($"Deleting file {name} from AWS S3 bucket: {_settings.Bucket}.");
+            var url = $"https://s3.{_settings.Region}.amazonaws.com/{_settings.Bucket}/";
+            await _client.DeleteObjectAsync(_settings.Bucket, name);
+            Logger.Debug($"Completed deleting file {name} from AWS S3 bucket: {_settings.Bucket}.");
         }
     }
 }

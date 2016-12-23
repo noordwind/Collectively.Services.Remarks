@@ -13,7 +13,6 @@ using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Settings;
 using NLog;
 using File = Coolector.Services.Remarks.Domain.File;
-using System.Text.RegularExpressions;
 
 namespace Coolector.Services.Remarks.Services
 {
@@ -190,6 +189,38 @@ namespace Coolector.Services.Remarks.Services
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
+        }
+
+        public async Task RemovePhotosAsync(Guid id, params string[] photos)
+        {
+            if (photos == null || !photos.Any())
+            {
+                throw new ServiceException(OperationCodes.NoFiles, 
+                    $"There are no photos to be removed from the remark with id: '{id}'.");
+            }
+
+            Logger.Debug($"Removing {photos.Count()} photos from the remark with id: '{id}'.");
+            var remark = await _remarkRepository.GetByIdAsync(id);
+            if (remark.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: {id} does not exist!");
+            }
+
+            var tasks = new List<Task>();
+            foreach (var photo in photos)
+            {
+                var task = _fileHandler.DeleteAsync(photo);
+                tasks.Add(task);
+            }
+            await Task.WhenAll(tasks);
+
+            foreach (var photo in photos)
+            {
+                remark.Value.RemovePhoto(photo);
+            }
+            await _remarkRepository.UpdateAsync(remark.Value);
+            Logger.Debug($"Removed {photos.Count()} photos from the remark with id: '{id}'.");
         }
     }
 }

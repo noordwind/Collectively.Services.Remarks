@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Coolector.Common.Domain;
 using Coolector.Common.Extensions;
 
@@ -8,7 +9,6 @@ namespace Coolector.Services.Remarks.Domain
     public class Remark : IdentifiableEntity, ITimestampable
     {
         private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
-
         public RemarkAuthor Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
@@ -72,6 +72,21 @@ namespace Coolector.Services.Remarks.Domain
                 return;
             }
             _photos.Add(photo);
+        }
+
+        public void RemovePhoto(string name)
+        {
+            if(name.Empty())
+            {
+                return;
+            }
+
+            var photo = Photos.FirstOrDefault(x => x.Name == name);
+            if(photo == null)
+            {
+                return;
+            }
+            _photos.Remove(photo);
         }
 
         public void Resolve(User resolver)

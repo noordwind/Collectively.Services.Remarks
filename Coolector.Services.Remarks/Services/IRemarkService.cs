@@ -20,7 +20,7 @@ namespace Coolector.Services.Remarks.Services
         Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null);
         Task UpdateUserNamesAsync(string userId, string name);
         Task AddPhotosAsync(Guid id, params File[] photos);
-
+        Task RemovePhotosAsync(Guid id, params string[] photos);
         Task DeleteAsync(Guid id, string userId);
     }
 }

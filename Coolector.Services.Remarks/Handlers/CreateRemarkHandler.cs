@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
-using Coolector.Common.Domain;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
