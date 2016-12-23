@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Coolector.Common.Events;
 
 namespace Coolector.Services.Remarks.Shared.Events
 {
-    public class AddPhotosToRemarkRejected : IRejectedEvent
+    public class RemovePhotosFromRemarkRejected : IRejectedEvent
     {
         public Guid RequestId { get; }
         public Guid RemarkId { get; }
@@ -11,11 +11,11 @@ namespace Coolector.Services.Remarks.Shared.Events
         public string Code { get; }
         public string Reason { get; }
 
-        protected AddPhotosToRemarkRejected()
+        protected RemovePhotosFromRemarkRejected()
         {
         }
 
-        public AddPhotosToRemarkRejected(Guid requestId, 
+        public RemovePhotosFromRemarkRejected(Guid requestId, 
             Guid remarkId, string userId, 
             string code, string reason)
         {

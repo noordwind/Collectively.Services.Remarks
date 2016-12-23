@@ -11,6 +11,10 @@ namespace Coolector.Services.Remarks.Shared.Events
         public string Code { get; }
         public string Reason { get; }
 
+        protected DeleteRemarkRejected()
+        {
+        }
+
         public DeleteRemarkRejected(Guid requestId, 
             Guid remarkId, string userId, 
             string code, string reason)
