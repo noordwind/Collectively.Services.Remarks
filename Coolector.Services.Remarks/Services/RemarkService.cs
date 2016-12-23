@@ -206,6 +206,16 @@ namespace Coolector.Services.Remarks.Services
                 throw new ServiceException(OperationCodes.RemarkNotFound,
                     $"Remark with id: {id} does not exist!");
             }
+            foreach (var photo in photos)
+            {
+                if(remark.Value.GetPhoto(photo).HasNoValue)
+                {
+                    throw new ServiceException(OperationCodes.FileNotFound,
+                        $"Remark photo with name: '{photo}' was not found in the remark with id: '{id}'.");
+                }
+                remark.Value.RemovePhoto(photo);
+            }
+            await _remarkRepository.UpdateAsync(remark.Value);
 
             var tasks = new List<Task>();
             foreach (var photo in photos)
@@ -214,12 +224,6 @@ namespace Coolector.Services.Remarks.Services
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
-
-            foreach (var photo in photos)
-            {
-                remark.Value.RemovePhoto(photo);
-            }
-            await _remarkRepository.UpdateAsync(remark.Value);
             Logger.Debug($"Removed {photos.Count()} photos from the remark with id: '{id}'.");
         }
     }

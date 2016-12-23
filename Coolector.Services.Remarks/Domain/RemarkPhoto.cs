@@ -44,8 +44,8 @@ namespace Coolector.Services.Remarks.Domain
         public static RemarkPhoto Create(string name, string size, string url, string metadata = null)
             => new RemarkPhoto(name, size, url, metadata);
 
-        protected override bool EqualsCore(RemarkPhoto other) => Url.Equals(other.Url);
+        protected override bool EqualsCore(RemarkPhoto other) => Name.Equals(other.Name);
 
-        protected override int GetHashCodeCore() => Url.GetHashCode();
+        protected override int GetHashCodeCore() => Name.GetHashCode();
     }
 }

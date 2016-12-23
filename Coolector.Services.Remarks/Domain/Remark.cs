@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Coolector.Common.Domain;
 using Coolector.Common.Extensions;
+using Coolector.Common.Types;
 
 namespace Coolector.Services.Remarks.Domain
 {
@@ -73,20 +74,17 @@ namespace Coolector.Services.Remarks.Domain
             }
             _photos.Add(photo);
         }
+        
+        public Maybe<RemarkPhoto> GetPhoto(string name) => Photos.FirstOrDefault(x => x.Name == name);
 
         public void RemovePhoto(string name)
         {
-            if(name.Empty())
+            var photo = GetPhoto(name);
+            if(photo.HasNoValue)
             {
                 return;
             }
-
-            var photo = Photos.FirstOrDefault(x => x.Name == name);
-            if(photo == null)
-            {
-                return;
-            }
-            _photos.Remove(photo);
+            _photos.Remove(photo.Value);
         }
 
         public void Resolve(User resolver)
