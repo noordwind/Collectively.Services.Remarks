@@ -49,14 +49,14 @@ namespace Coolector.Services.Remarks.Handlers
                         throw new ServiceException(OperationCodes.NoFiles, 
                             $"There are no photos to be added to the remark with id: '{command.RemarkId}'.");
                     }
-                    if(command.Photos.Count() > _generalSettings.PhotosLimit) 
+                    if (command.Photos.Count() > _generalSettings.PhotosLimit) 
                     {
                         throw new ServiceException(OperationCodes.TooManyFiles);
                     }
 
                     var photos = new List<File>();
                     foreach(var file in command.Photos)
-                    {
+                    {                        
                         var resolvedFile = _fileResolver.FromBase64(file.Base64, file.Name, file.ContentType);
                         if (resolvedFile.HasNoValue)
                         {
@@ -66,6 +66,7 @@ namespace Coolector.Services.Remarks.Handlers
                         var isImage = _fileValidator.IsImage(photo);
                         if (!isImage)
                         {
+                            
                             throw new ServiceException(OperationCodes.InvalidFile);
                         }
                         photos.Add(photo);
@@ -83,7 +84,7 @@ namespace Coolector.Services.Remarks.Handlers
                 .OnError(async (ex, logger) =>
                 {
                     logger.Error(ex, "Error occured while adding photos to remark.");
-                    await _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
+                    await _bus.PublishAsync(new AddPhotosToRemarkRejected(command.Request.Id,
                         command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
                 })
                 .ExecuteAsync();
