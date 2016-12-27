@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
+using Coolector.Common.Extensions;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Shared;
@@ -34,8 +35,16 @@ namespace Coolector.Services.Remarks.Handlers
                 .Run(async () =>
                 {   
 
-                    var groupIds = command.Photos?.Select(x => x.GroupId).ToArray() ?? new Guid[]{};
-                    var names = command.Photos?.Select(x => x.Name).ToArray() ?? new string[]{};
+                    var groupIds = command.Photos?
+                                .Where(x => x.GroupId != Guid.Empty)
+                                .Select(x => x.GroupId)
+                                .ToArray() ?? new Guid[]{};
+
+                    var names = command.Photos?
+                                .Where(x => x.Name.NotEmpty())
+                                .Select(x => x.Name)
+                                .ToArray() ?? new string[]{};
+
                     var namesForGroups =  await _remarkService.GetPhotosForGroupsAsync(command.RemarkId, groupIds);
                     removedPhotos = names
                                     .Union(namesForGroups.HasValue ? namesForGroups.Value : Enumerable.Empty<string>())
