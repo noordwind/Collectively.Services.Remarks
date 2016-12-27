@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Coolector.Common.Dto.General;
 
 namespace Coolector.Services.Remarks.Shared.Dto
 {

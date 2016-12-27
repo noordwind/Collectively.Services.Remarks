@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Coolector.Common.Dto.General;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Shared.Dto;
 
