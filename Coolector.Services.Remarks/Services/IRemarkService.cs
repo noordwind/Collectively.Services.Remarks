@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Coolector.Common.Types;
 using Coolector.Services.Remarks.Domain;
@@ -20,7 +21,8 @@ namespace Coolector.Services.Remarks.Services
         Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null);
         Task UpdateUserNamesAsync(string userId, string name);
         Task AddPhotosAsync(Guid id, params File[] photos);
-        Task RemovePhotosAsync(Guid id, params string[] photos);
+        Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid id, params Guid[] groupIds);
+        Task RemovePhotosAsync(Guid id, params string[] names);
         Task DeleteAsync(Guid id, string userId);
     }
 }

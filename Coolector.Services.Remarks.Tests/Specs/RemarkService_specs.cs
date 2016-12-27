@@ -55,7 +55,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
             var user = new User(UserId, "name");
             var category = new Category("category");
             Remark = new Remark(RemarkId, user, category, Location);
-            Remark.AddPhoto(RemarkPhoto.Small("test.jpg", "http://my-test-image.com"));
+            Remark.AddPhoto(RemarkPhoto.Small(Guid.NewGuid(), "test.jpg", "http://my-test-image.com"));
 
             RemarkRepositoryMock.Setup(x => x.GetByIdAsync(Moq.It.IsAny<Guid>()))
                 .ReturnsAsync(Remark);

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
@@ -27,13 +29,23 @@ namespace Coolector.Services.Remarks.Handlers
 
         public async Task HandleAsync(RemovePhotosFromRemark command)
         {
+            var removedPhotos = new string[]{};
             await _handler
                 .Run(async () =>
-                {
-                    await _remarkService.RemovePhotosAsync(command.RemarkId, command.Photos?.ToArray() ?? new string[]{});
+                {   
+
+                    var groupIds = command.Photos?.Select(x => x.GroupId).ToArray() ?? new Guid[]{};
+                    var names = command.Photos?.Select(x => x.Name).ToArray() ?? new string[]{};
+                    var namesForGroups =  await _remarkService.GetPhotosForGroupsAsync(command.RemarkId, groupIds);
+                    removedPhotos = names
+                                    .Union(namesForGroups.HasValue ? namesForGroups.Value : Enumerable.Empty<string>())
+                                    .Distinct()
+                                    .ToArray();
+
+                    await _remarkService.RemovePhotosAsync(command.RemarkId, removedPhotos);
                 })
                 .OnSuccess(async () => await _bus.PublishAsync(new PhotosFromRemarkRemoved(command.Request.Id, 
-                    command.RemarkId, command.UserId, command.Photos)))
+                    command.RemarkId, command.UserId, removedPhotos)))
                 .OnCustomError(ex => _bus.PublishAsync(new RemovePhotosFromRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>

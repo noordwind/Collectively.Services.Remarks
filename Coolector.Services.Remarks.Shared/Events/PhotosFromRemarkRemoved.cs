@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Coolector.Common.Events;
+using Coolector.Services.Remarks.Shared.Events.Models;
 
 namespace Coolector.Services.Remarks.Shared.Events
 {

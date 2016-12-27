@@ -77,7 +77,7 @@ namespace Coolector.Services.Remarks.Handlers
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
                     await _bus.PublishAsync(new PhotosToRemarkAdded(command.Request.Id, command.RemarkId, command.UserId, 
-                        remark.Value.Photos.Select(x => new RemarkFile(x.Name, x.Size, x.Url, x.Metadata)).ToArray()));
+                        remark.Value.Photos.Select(x => new RemarkFile(x.GroupId, x.Name, x.Size, x.Url, x.Metadata)).ToArray()));
                 })
                 .OnCustomError(ex => _bus.PublishAsync(new AddPhotosToRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))

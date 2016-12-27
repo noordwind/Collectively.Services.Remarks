@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Coolector.Common.Commands;
+using Coolector.Services.Remarks.Shared.Commands.Models;
 
 namespace Coolector.Services.Remarks.Shared.Commands
 {
@@ -9,6 +10,6 @@ namespace Coolector.Services.Remarks.Shared.Commands
         public Guid RemarkId { get; set; }
         public Request Request { get; set; }
         public string UserId { get; set; }
-        public IList<string> Photos { get; set; }
+        public IList<GroupedFile> Photos { get; set; }
     }
 }

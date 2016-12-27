@@ -175,6 +175,7 @@ namespace Coolector.Services.Remarks.Services
             var extension = originalPhoto.Name.Split('.').Last();
             var photos = _imageService.ProcessImage(originalPhoto);
             var uniqueNumber = _uniqueNumberGenerator.Generate();
+            var groupId = Guid.NewGuid();
             var tasks = new List<Task>();
             foreach (var photo in photos)
             {
@@ -184,47 +185,68 @@ namespace Coolector.Services.Remarks.Services
                     : $"{remark.Id:N}_{size}_{metadata}_{uniqueNumber}.{extension}";
                 var task = _fileHandler.UploadAsync(photo.Value, fileName, url =>
                 {
-                    remark.AddPhoto(RemarkPhoto.Create(fileName, size, url, metadata));
+                    remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, size, url, metadata));
                 });
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
         }
 
-        public async Task RemovePhotosAsync(Guid id, params string[] photos)
+
+        public async Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid id, params Guid[] groupIds)
         {
-            if (photos == null || !photos.Any())
+            if (groupIds == null || !groupIds.Any())
+            {
+                return null;
+            }
+
+            var remark = await _remarkRepository.GetByIdAsync(id);
+            if (remark.HasNoValue)
+            {
+                return null;
+            }
+
+            return remark.Value.Photos
+                            .Where(x => groupIds.Contains(x.GroupId))
+                            .Select(x => x.Name)
+                            .ToList();
+        }
+
+        public async Task RemovePhotosAsync(Guid id, params string[] names)
+        {
+            if (names == null || !names.Any())
             {
                 throw new ServiceException(OperationCodes.NoFiles, 
                     $"There are no photos to be removed from the remark with id: '{id}'.");
             }
 
-            Logger.Debug($"Removing {photos.Count()} photos from the remark with id: '{id}'.");
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
             {
                 throw new ServiceException(OperationCodes.RemarkNotFound,
                     $"Remark with id: {id} does not exist!");
             }
-            foreach (var photo in photos)
+
+            Logger.Debug($"Removing {names.Count()} photos from the remark with id: '{id}'.");
+            foreach (var name in names)
             {
-                if(remark.Value.GetPhoto(photo).HasNoValue)
+                if(remark.Value.GetPhoto(name).HasNoValue)
                 {
                     throw new ServiceException(OperationCodes.FileNotFound,
-                        $"Remark photo with name: '{photo}' was not found in the remark with id: '{id}'.");
+                        $"Remark photo with name: '{name}' was not found in the remark with id: '{id}'.");
                 }
-                remark.Value.RemovePhoto(photo);
+                remark.Value.RemovePhoto(name);
             }
             await _remarkRepository.UpdateAsync(remark.Value);
 
             var tasks = new List<Task>();
-            foreach (var photo in photos)
+            foreach (var photo in names)
             {
                 var task = _fileHandler.DeleteAsync(photo);
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
-            Logger.Debug($"Removed {photos.Count()} photos from the remark with id: '{id}'.");
+            Logger.Debug($"Removed {names.Count()} photos from the remark with id: '{id}'.");
         }
     }
 }
