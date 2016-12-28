@@ -23,7 +23,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
         protected static Mock<IUniqueNumberGenerator> UniqueNumberGeneratorMock;
         protected static GeneralSettings GeneralSettings;
         protected static string UserId = "userId";
-        protected static User User = new User(UserId, "TestUser");
+        protected static User User = new User(UserId, "TestUser", "user");
         protected static File File = File.Create("image.png", "image/png", new byte[] { 1, 2, 3, 4 });
         protected static Guid RemarkId = Guid.NewGuid();
         protected static Location Location = Location.Zero;
@@ -52,7 +52,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
                 UniqueNumberGeneratorMock.Object,
                 GeneralSettings);
 
-            var user = new User(UserId, "name");
+            var user = new User(UserId, "name", "user");
             var category = new Category("category");
             Remark = new Remark(RemarkId, user, category, Location);
             Remark.AddPhoto(RemarkPhoto.Small(Guid.NewGuid(), "test.jpg", "http://my-test-image.com"));
@@ -76,7 +76,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
     {
         Establish context = () => Initialize();
 
-        Because of = () => RemarkService.DeleteAsync(RemarkId, UserId).Await();
+        Because of = () => RemarkService.DeleteAsync(RemarkId).Await();
 
         It should_call_delete_async_on_file_handler = () =>
         {
@@ -99,34 +99,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
                 .ReturnsAsync(null);
         };
 
-        Because of = () => Exception = Catch.Exception(() => RemarkService.DeleteAsync(RemarkId, UserId).Await());
-
-        It should_throw_service_exception = () =>
-        {
-            Exception.ShouldBeOfExactType<ServiceException>();
-        };
-
-        It should_not_call_delete_async_on_file_handler = () =>
-        {
-            FileHandlerMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<string>()), Times.Never);
-        };
-
-        It should_not_call_delete_async_on_remark_repository = () =>
-        {
-            RemarkRepositoryMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<Remark>()), Times.Never);
-        };
-    }
-
-
-    [Subject("RemarkService DeleteAsync")]
-    public class when_delete_async_is_invoked_but_user_is_not_author : RemarkService_specs
-    {
-        Establish context = () =>
-        {
-            Initialize();
-        };
-
-        Because of = () => Exception = Catch.Exception(() => RemarkService.DeleteAsync(RemarkId, "not_author").Await());
+        Because of = () => Exception = Catch.Exception(() => RemarkService.DeleteAsync(RemarkId).Await());
 
         It should_throw_service_exception = () =>
         {

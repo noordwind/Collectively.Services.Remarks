@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Coolector.Common.Domain;
 using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Repositories;
 using NLog;
@@ -18,14 +17,14 @@ namespace Coolector.Services.Remarks.Services
             _userRepository = userRepository;
         }
 
-        public async Task CreateIfNotFoundAsync(string userId, string name)
+        public async Task CreateIfNotFoundAsync(string userId, string name, string role)
         {
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasValue)
                 return;
 
-            Logger.Debug($"User not found, creating new one. userId:{userId}, name:{name}");
-            user = new User(userId, name);
+            Logger.Debug($"User not found, creating new one. userId: {userId}, name: {name}, role: {role}.");
+            user = new User(userId, name, role);
             await _userRepository.AddAsync(user.Value);
         }
 

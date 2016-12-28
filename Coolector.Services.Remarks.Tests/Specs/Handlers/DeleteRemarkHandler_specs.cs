@@ -57,7 +57,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_delete_async_on_remark_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId, Command.UserId), Times.Once);
+            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once);
         };
 
         It should_publish_remark_deleted_event = () =>
@@ -77,7 +77,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         Establish context = () =>
         {
             Initialize();
-            RemarkServiceMock.Setup(x => x.DeleteAsync(Command.RemarkId, Command.UserId))
+            RemarkServiceMock.Setup(x => x.DeleteAsync(Command.RemarkId))
                 .Throws(new ServiceException(ErrorCode));
         };
 
@@ -85,7 +85,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_delete_async_on_remark_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId, Command.UserId), Times.Once);
+            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once);
         };
 
         It should_not_publish_remark_deleted_event = () =>

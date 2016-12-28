@@ -44,6 +44,7 @@ namespace Coolector.Services.Remarks.Handlers
             await _handler
                 .Run(async () =>
                 {
+                    await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId);
                     if (command.Photos == null || !command.Photos.Any())
                     {
                         throw new ServiceException(OperationCodes.NoFiles, 

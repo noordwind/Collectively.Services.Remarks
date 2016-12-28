@@ -56,6 +56,33 @@ namespace Coolector.Services.Remarks.Services
         public async Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size)
             => await _fileHandler.GetFileStreamInfoAsync(id, size);
 
+        public async Task ValidateEditorAccessOrFailAsync(Guid remarkId, string userId)
+        {
+            var remark = await _remarkRepository.GetByIdAsync(remarkId);
+            if (remark.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: '{remarkId}' does not exist!");
+            }
+
+            var user = await _userRepository.GetByUserIdAsync(userId);
+            if (user.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.UserNotFound,
+                    $"User with id: '{userId}' does not exist!");
+            }
+            if (user.Value.Role == "moderator" || user.Value.Role == "administrator")
+            {
+                return;
+            }
+            if (remark.Value.Author.UserId != user.Value.UserId)
+            {
+                throw new ServiceException(OperationCodes.UserNotAllowedToModifyRemark,
+                    $"User with id: '{userId}' is not allowed" +
+                    $"to modify the remark with id: '{remarkId}'.!");
+            }
+        }
+
         public async Task CreateAsync(Guid id, string userId, string category, 
             Location location, string description = null)
         {
@@ -113,19 +140,14 @@ namespace Coolector.Services.Remarks.Services
             await _remarkRepository.UpdateUserNamesAsync(userId, name);
         }
 
-        public async Task DeleteAsync(Guid id, string userId)
+        public async Task DeleteAsync(Guid id)
         {
-            Logger.Debug($"Delete remark, id:{id}, userId: {userId}");
+            Logger.Debug($"Deleting remark with id: '{id}'.");
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
             {
                 throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: {id} does not exist!");
-            }
-            if (remark.Value.Author.UserId != userId)
-            {
-                throw new ServiceException(OperationCodes.UserNotAllowedToDeleteRemark,
-                    $"User: {userId} is not allowed to delete remark: {id}");
+                    $"Remark with id: '{id}' does not exist!");
             }
 
             await _remarkRepository.DeleteAsync(remark.Value);
@@ -136,6 +158,7 @@ namespace Coolector.Services.Remarks.Services
 
                 await _fileHandler.DeleteAsync(photo.Name);
             }
+            Logger.Debug($"Remark with id: '{id}' was deleted.");
         }
 
         public async Task AddPhotosAsync(Guid id, params File[] photos)

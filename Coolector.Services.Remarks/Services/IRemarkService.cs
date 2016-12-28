@@ -14,6 +14,7 @@ namespace Coolector.Services.Remarks.Services
         Task<Maybe<PagedResult<Remark>>> BrowseAsync(BrowseRemarks query);
         Task<Maybe<PagedResult<Category>>> BrowseCategoriesAsync(BrowseCategories query);
         Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size);
+        Task ValidateEditorAccessOrFailAsync(Guid remarkId, string userId);
 
         Task CreateAsync(Guid id, string userId, string category,
             Location location, string description = null);
@@ -23,6 +24,6 @@ namespace Coolector.Services.Remarks.Services
         Task AddPhotosAsync(Guid id, params File[] photos);
         Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid id, params Guid[] groupIds);
         Task RemovePhotosAsync(Guid id, params string[] names);
-        Task DeleteAsync(Guid id, string userId);
+        Task DeleteAsync(Guid id);
     }
 }

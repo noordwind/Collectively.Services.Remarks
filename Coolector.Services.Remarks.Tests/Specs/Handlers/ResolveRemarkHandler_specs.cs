@@ -77,7 +77,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             };
 
             File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
-            User = new User(UserId, "user");
+            User = new User(UserId, "user", "user");
             Category = new Category("test");
             Location = Location.Create(Command.Latitude, Command.Longitude, "address");
             Remark = new Remark(RemarkId, User, Category, Location, "description");

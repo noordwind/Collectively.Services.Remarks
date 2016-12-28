@@ -34,6 +34,7 @@ namespace Coolector.Services.Remarks.Handlers
             await _handler
                 .Run(async () =>
                 {   
+                    await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId);
                     var groupIds = command.Photos?
                                 .Where(x => x.GroupId != Guid.Empty)
                                 .Select(x => x.GroupId)

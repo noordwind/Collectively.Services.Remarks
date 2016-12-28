@@ -8,12 +8,18 @@ namespace Coolector.Services.Remarks.Domain
     {
         public string UserId { get; protected set; }
         public string Name { get; protected set; }
+        public string Role { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
 
-        public User(string userId, string name)
+        protected User()
+        {
+        }
+
+        public User(string userId, string name, string role)
         {
             UserId = userId;
             Name = name;
+            Role = role;
             CreatedAt = DateTime.UtcNow;
         }
 

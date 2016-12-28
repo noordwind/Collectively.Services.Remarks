@@ -36,7 +36,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_create_if_not_found_async_on_user_service = () =>
         {
-            UserServiceMock.Verify(x => x.CreateIfNotFoundAsync(Event.UserId, Event.Name), Times.Once);
+            UserServiceMock.Verify(x => x.CreateIfNotFoundAsync(Event.UserId, Event.Name, Event.Role), Times.Once);
         };
     }
 }

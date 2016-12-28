@@ -32,9 +32,10 @@ namespace Coolector.Services.Remarks.Handlers
             await _handler
                 .Run(async () =>
                 {
+                    await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId);
                     Logger.Debug($"Handle {nameof(DeleteRemark)} command, remarkId:{command.RemarkId}, " +
                                  $"userId:{command.UserId}");
-                    await _remarkService.DeleteAsync(command.RemarkId, command.UserId);
+                    await _remarkService.DeleteAsync(command.RemarkId);
                 })
                 .OnSuccess(async () 
                     => await _bus.PublishAsync(new RemarkDeleted(command.Request.Id, command.RemarkId, command.UserId)))

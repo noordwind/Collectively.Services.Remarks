@@ -20,7 +20,7 @@ namespace Coolector.Services.Remarks.Handlers
         public async Task HandleAsync(UserSignedUp @event)
         {
             Logger.Debug($"Handle {nameof(UserSignedUp)} command, userId:{@event.UserId}, userName:{@event.Name}");
-            await _userService.CreateIfNotFoundAsync(@event.UserId, @event.Name);
+            await _userService.CreateIfNotFoundAsync(@event.UserId, @event.Name, @event.Role);
         }
     }
 }
