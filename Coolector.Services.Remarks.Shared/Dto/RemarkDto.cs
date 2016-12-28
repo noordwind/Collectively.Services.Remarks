@@ -9,7 +9,8 @@ namespace Coolector.Services.Remarks.Shared.Dto
         public RemarkAuthorDto Author { get; set; }
         public RemarkCategoryDto Category { get; set; }
         public LocationDto Location { get; set; }
-        public List<FileDto> Photos { get; set; }
+        public IList<FileDto> Photos { get; set; }
+        public IList<string> Tags { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
         public RemarkAuthorDto Resolver { get; set; }

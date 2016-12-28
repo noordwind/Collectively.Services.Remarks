@@ -13,11 +13,12 @@ namespace Coolector.Services.Remarks.Services
         Task<Maybe<Remark>> GetAsync(Guid id);
         Task<Maybe<PagedResult<Remark>>> BrowseAsync(BrowseRemarks query);
         Task<Maybe<PagedResult<Category>>> BrowseCategoriesAsync(BrowseCategories query);
+        Task<Maybe<PagedResult<Tag>>> BrowseTagsAsync(BrowseTags query);
         Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size);
         Task ValidateEditorAccessOrFailAsync(Guid remarkId, string userId);
 
         Task CreateAsync(Guid id, string userId, string category,
-            Location location, string description = null);
+            Location location, string description = null, IEnumerable<string> tags = null);
 
         Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null);
         Task UpdateUserNamesAsync(string userId, string name);

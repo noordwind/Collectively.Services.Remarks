@@ -78,6 +78,7 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterType<RemarkRepository>().As<IRemarkRepository>();
                 builder.RegisterType<CategoryRepository>().As<ICategoryRepository>();
                 builder.RegisterType<LocalizedResourceRepository>().As<ILocalizedResourceRepository>();
+                builder.RegisterType<TagRepository>().As<ITagRepository>();
                 builder.RegisterType<UserRepository>().As<IUserRepository>();
                 builder.RegisterType<LocalizedResourceService>().As<ILocalizedResourceService>();
                 builder.RegisterType<RemarkService>().As<IRemarkService>();

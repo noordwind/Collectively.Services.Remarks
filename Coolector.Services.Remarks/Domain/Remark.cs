@@ -10,6 +10,7 @@ namespace Coolector.Services.Remarks.Domain
     public class Remark : IdentifiableEntity, ITimestampable
     {
         private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
+        private ISet<string> _tags = new HashSet<string>();
         public RemarkAuthor Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
@@ -18,6 +19,12 @@ namespace Coolector.Services.Remarks.Domain
         {
             get { return _photos; }
             protected set { _photos = new HashSet<RemarkPhoto>(value); }
+        }
+
+        public IEnumerable<string> Tags
+        {
+            get { return _tags; }
+            protected set { _tags = new HashSet<string>(value); }
         }
 
         public string Description { get; protected set; }
@@ -85,6 +92,16 @@ namespace Coolector.Services.Remarks.Domain
                 return;
             }
             _photos.Remove(photo.Value);
+        }
+
+        public void AddTag(string tag)
+        {
+            _tags.Add(tag);
+        }
+
+        public void RemoveTag(string tag)
+        {
+            _tags.Remove(tag);
         }
 
         public void Resolve(User resolver)

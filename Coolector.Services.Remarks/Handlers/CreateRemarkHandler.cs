@@ -52,7 +52,7 @@ namespace Coolector.Services.Remarks.Handlers
 
                     var location = Location.Create(command.Latitude, command.Longitude, command.Address);
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
-                            location, command.Description);
+                            location, command.Description, command.Tags);
                 })
                 .OnSuccess(async () =>
                 {
@@ -62,7 +62,7 @@ namespace Coolector.Services.Remarks.Handlers
                         command.UserId, remark.Value.Author.Name,
                         new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
                         new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
-                        command.Description, remark.Value.CreatedAt));
+                        command.Description, remark.Value.Tags, remark.Value.CreatedAt));
                 })
                 .OnCustomError(ex => _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))

@@ -16,6 +16,7 @@ namespace Coolector.Services.Remarks.Shared.Commands
         public double Longitude { get; set; }
         public string Address { get; set; }
         public string Description { get; set; }
+        public IList<string> Tags { get; set; }
         public IList<SocialMedia> SocialMedia { get; set; }
     }
 }

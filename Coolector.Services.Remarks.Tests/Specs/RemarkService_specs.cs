@@ -17,6 +17,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
         protected static Mock<IFileHandler> FileHandlerMock;
         protected static Mock<ICategoryRepository> RemarkCategoryRepositoryMock;
         protected static Mock<IRemarkRepository> RemarkRepositoryMock;
+        protected static Mock<ITagRepository> TagRepositoryMock;
         protected static Mock<IUserRepository> UserRepositoryMock;
         protected static Mock<ICategoryRepository> CategoryRepositoryMock;
         protected static Mock<IImageService> ImageServiceMock;
@@ -35,6 +36,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
             FileHandlerMock = new Mock<IFileHandler>();
             RemarkRepositoryMock = new Mock<IRemarkRepository>();
             RemarkCategoryRepositoryMock = new Mock<ICategoryRepository>();
+            TagRepositoryMock = new Mock<ITagRepository>();
             UserRepositoryMock = new Mock<IUserRepository>();
             CategoryRepositoryMock = new Mock<ICategoryRepository>();
             ImageServiceMock = new Mock<IImageService>();
@@ -48,6 +50,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
                 RemarkRepositoryMock.Object, 
                 UserRepositoryMock.Object,
                 CategoryRepositoryMock.Object,
+                TagRepositoryMock.Object,
                 ImageServiceMock.Object,
                 UniqueNumberGeneratorMock.Object,
                 GeneralSettings);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Coolector.Common.Events;
 
 namespace Coolector.Services.Remarks.Shared.Events
@@ -12,6 +13,7 @@ namespace Coolector.Services.Remarks.Shared.Events
         public RemarkCategory Category { get; }
         public RemarkLocation Location { get; }
         public string Description { get; }
+        public IEnumerable<string> Tags { get; set; }
         public DateTime CreatedAt { get; }
 
         protected RemarkCreated()
@@ -21,7 +23,7 @@ namespace Coolector.Services.Remarks.Shared.Events
         public RemarkCreated(Guid requestId, Guid remarkId, 
             string userId, string username,
             RemarkCategory category, RemarkLocation location,
-            string description, DateTime createdAt)
+            string description, IEnumerable<string> tags, DateTime createdAt)
         {
             RequestId = requestId;
             RemarkId = remarkId;
@@ -30,6 +32,7 @@ namespace Coolector.Services.Remarks.Shared.Events
             Category = category;
             Location = location;
             Description = description;
+            Tags = tags;
             CreatedAt = createdAt;
         }
 

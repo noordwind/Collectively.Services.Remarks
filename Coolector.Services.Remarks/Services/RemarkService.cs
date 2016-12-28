@@ -22,6 +22,7 @@ namespace Coolector.Services.Remarks.Services
         private readonly IFileHandler _fileHandler;
         private readonly IRemarkRepository _remarkRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ITagRepository _tagRepository;
         private readonly IImageService _imageService;
         private readonly IUserRepository _userRepository;
         private readonly IUniqueNumberGenerator _uniqueNumberGenerator;
@@ -31,6 +32,7 @@ namespace Coolector.Services.Remarks.Services
             IRemarkRepository remarkRepository, 
             IUserRepository userRepository,
             ICategoryRepository categoryRepository,
+            ITagRepository tagRepository,
             IImageService imageService,
             IUniqueNumberGenerator uniqueNumberGenerator,
             GeneralSettings settings)
@@ -38,6 +40,7 @@ namespace Coolector.Services.Remarks.Services
             _fileHandler = fileHandler;
             _remarkRepository = remarkRepository;
             _categoryRepository = categoryRepository;
+            _tagRepository = tagRepository;
             _imageService = imageService;
             _userRepository = userRepository;
             _uniqueNumberGenerator = uniqueNumberGenerator;
@@ -52,6 +55,9 @@ namespace Coolector.Services.Remarks.Services
 
         public async Task<Maybe<PagedResult<Category>>> BrowseCategoriesAsync(BrowseCategories query)
             => await _categoryRepository.BrowseAsync(query);
+
+        public async Task<Maybe<PagedResult<Tag>>> BrowseTagsAsync(BrowseTags query)
+            => await _tagRepository.BrowseAsync(query);
 
         public async Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size)
             => await _fileHandler.GetFileStreamInfoAsync(id, size);
@@ -84,7 +90,7 @@ namespace Coolector.Services.Remarks.Services
         }
 
         public async Task CreateAsync(Guid id, string userId, string category, 
-            Location location, string description = null)
+            Location location, string description = null, IEnumerable<string> tags = null)
         {
             Logger.Debug($"Create remark, id:{id}, userId: {userId}, category: {category}, " +
                          $"latitude: {location.Latitude}, longitude: {location.Longitude}.");
@@ -97,6 +103,27 @@ namespace Coolector.Services.Remarks.Services
                 throw new ArgumentException($"Category {category} has not been found.");
 
             var remark = new Remark(id, user.Value, remarkCategory.Value, location, description);
+            if (tags == null || !tags.Any())
+            {
+                await _remarkRepository.AddAsync(remark);
+                return;
+            }
+
+            var availableTags = await _tagRepository.BrowseAsync(new BrowseTags
+            {
+                Results = 1000
+            });
+            if(availableTags.HasValue)
+            {
+                var selectedTags = availableTags.Value.Items
+                                    .Select(x => x.Name)
+                                    .Intersect(tags);
+
+                foreach (var tag in selectedTags)
+                {
+                    remark.AddTag(tag);
+                }
+            }
             await _remarkRepository.AddAsync(remark);
         }
 

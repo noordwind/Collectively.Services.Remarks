@@ -20,6 +20,11 @@ namespace Coolector.Services.Remarks.Modules
                 .MapTo<RemarkCategoryDto>()
                 .HandleAsync());
 
+            Get("tags", async args => await FetchCollection<BrowseTags, Tag>
+                (async x => await remarkService.BrowseTagsAsync(x))
+                .MapTo<string>()
+                .HandleAsync());
+
             Get("{id}", async args => await Fetch<GetRemark, Remark>
                 (async x => await remarkService.GetAsync(x.Id))
                 .MapTo<RemarkDto>()

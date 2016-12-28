@@ -1,12 +1,10 @@
-﻿using Nancy;
-
-namespace Coolector.Services.Remarks.Modules
+﻿namespace Coolector.Services.Remarks.Modules
 {
     public class HomeModule : ModuleBase
     {
         public HomeModule()
         {
-            Get("", args => Response.AsJson(new { name = "Coolector.Services.Remarks" }));
+            Get("", args => "Welcome to the Coolector.Services.Remarks API!");
         }
     }
 }
