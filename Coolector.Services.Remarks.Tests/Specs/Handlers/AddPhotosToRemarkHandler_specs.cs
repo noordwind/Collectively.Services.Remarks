@@ -48,7 +48,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
                 RemarkId = Guid.NewGuid(),
                 Request = new Request
                 {
-                    Name = "create_remark",
+                    Name = "add_photos_to_remark",
                     Id = Guid.NewGuid(),
                     CreatedAt = DateTime.Now,
                     Origin = "test",
