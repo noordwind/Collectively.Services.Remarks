@@ -34,7 +34,6 @@ namespace Coolector.Services.Remarks.Handlers
             await _handler
                 .Run(async () =>
                 {   
-
                     var groupIds = command.Photos?
                                 .Where(x => x.GroupId != Guid.Empty)
                                 .Select(x => x.GroupId)
