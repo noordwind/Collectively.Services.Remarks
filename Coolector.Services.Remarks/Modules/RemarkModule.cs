@@ -22,7 +22,7 @@ namespace Coolector.Services.Remarks.Modules
 
             Get("tags", async args => await FetchCollection<BrowseTags, Tag>
                 (async x => await remarkService.BrowseTagsAsync(x))
-                .MapTo<string>()
+                .MapTo<TagDto>()
                 .HandleAsync());
 
             Get("{id}", async args => await Fetch<GetRemark, Remark>

@@ -16,7 +16,7 @@ namespace Coolector.Services.Remarks.Framework
                 cfg.CreateMap<Location, LocationDto>();
                 cfg.CreateMap<RemarkPhoto, FileDto>();
                 cfg.CreateMap<Category, RemarkCategoryDto>();
-                cfg.CreateMap<Tag, string>().ConstructUsing(x => x.Name);
+                cfg.CreateMap<Tag, TagDto>();
             });
 
             return config.CreateMapper();
