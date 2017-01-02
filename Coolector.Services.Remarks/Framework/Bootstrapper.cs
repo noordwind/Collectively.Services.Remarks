@@ -11,15 +11,16 @@ using Coolector.Common.Events;
 using Coolector.Common.Exceptionless;
 using Coolector.Common.Mongo;
 using Coolector.Common.Nancy;
+using Coolector.Common.Nancy.Serialization;
+using Coolector.Common.RabbitMq;
 using Coolector.Services.Remarks.Repositories;
 using Coolector.Services.Remarks.Services;
 using Microsoft.Extensions.Configuration;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Configuration;
+using Newtonsoft.Json;
 using NLog;
-using RawRabbit;
-using RawRabbit.vNext;
 using RawRabbit.Configuration;
 using Coolector.Common.Extensions;
 using Coolector.Common.Services;
@@ -55,19 +56,9 @@ namespace Coolector.Services.Remarks.Framework
         {
             base.ConfigureApplicationContainer(container);
 
-            var rmqRetryPolicy = Policy
-                .Handle<ConnectFailureException>()
-                .Or<BrokerUnreachableException>()
-                .Or<IOException>()
-                .WaitAndRetry(5, retryAttempt =>
-                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, retryCount, context) => {
-                        Logger.Error(exception, $"Cannot connect to RabbitMQ. retryCount:{retryCount}, duration:{timeSpan}");
-                    }
-                );
-
             container.Update(builder =>
             {
+                builder.RegisterType<CustomJsonSerializer>().As<JsonSerializer>().SingleInstance();
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
                 builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
                 builder.RegisterInstance(generalSettings).SingleInstance();
@@ -91,12 +82,7 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
                 builder.RegisterType<Handler>().As<IHandler>();
-                var rawRabbitConfiguration = _configuration.GetSettings<RawRabbitConfiguration>();
-                builder.RegisterInstance(rawRabbitConfiguration).SingleInstance();
-                rmqRetryPolicy.Execute(() => builder
-                        .RegisterInstance(BusClientFactory.CreateDefault(rawRabbitConfiguration))
-                        .As<IBusClient>()
-                );
+                RabbitMqContainer.Register(builder, _configuration.GetSettings<RawRabbitConfiguration>());
                 ConfigureStorage(builder);
                 var coreAssembly = typeof(Startup).GetTypeInfo().Assembly;
                 builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(IEventHandler<>));
