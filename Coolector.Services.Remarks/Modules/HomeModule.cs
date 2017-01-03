@@ -2,7 +2,7 @@
 {
     public class HomeModule : ModuleBase
     {
-        public HomeModule()
+        public HomeModule() : base(requireAuthentication: false)
         {
             Get("", args => "Welcome to the Coolector.Services.Remarks API!");
         }

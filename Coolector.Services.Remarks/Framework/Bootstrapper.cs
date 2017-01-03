@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using Amazon;
 using Amazon.S3;
 using Autofac;
@@ -13,6 +12,7 @@ using Coolector.Common.Mongo;
 using Coolector.Common.Nancy;
 using Coolector.Common.Nancy.Serialization;
 using Coolector.Common.RabbitMq;
+using Coolector.Common.Security;
 using Coolector.Services.Remarks.Repositories;
 using Coolector.Services.Remarks.Services;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +25,6 @@ using RawRabbit.Configuration;
 using Coolector.Common.Extensions;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Settings;
-using Polly;
-using RabbitMQ.Client.Exceptions;
 
 namespace Coolector.Services.Remarks.Framework
 {
@@ -82,11 +80,14 @@ namespace Coolector.Services.Remarks.Framework
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
                 builder.RegisterType<Handler>().As<IHandler>();
-                RabbitMqContainer.Register(builder, _configuration.GetSettings<RawRabbitConfiguration>());
+
+                var assembly = typeof(Startup).GetTypeInfo().Assembly;
+                builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(IEventHandler<>));
+                builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(ICommandHandler<>));
+
                 ConfigureStorage(builder);
-                var coreAssembly = typeof(Startup).GetTypeInfo().Assembly;
-                builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(IEventHandler<>));
-                builder.RegisterAssemblyTypes(coreAssembly).AsClosedTypesOf(typeof(ICommandHandler<>));
+                SecurityContainer.Register(builder, _configuration);
+                RabbitMqContainer.Register(builder, _configuration.GetSettings<RawRabbitConfiguration>());
             });
             LifetimeScope = container;
         }
@@ -126,6 +127,7 @@ namespace Coolector.Services.Remarks.Framework
                 ctx.Response.Headers.Add("Access-Control-Allow-Headers",
                     "Authorization, Origin, X-Requested-With, Content-Type, Accept");
             };
+            pipelines.SetupTokenAuthentication(container);
             _exceptionHandler = container.Resolve<IExceptionHandler>();
             Logger.Info("Coolector.Services.Remarks API has started.");
         }
