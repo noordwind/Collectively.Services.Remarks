@@ -13,6 +13,9 @@ namespace Coolector.Services.Remarks.Shared
         public static string InvalidFile => "invalid_file";
         public static string CannotConvertFile => "cannot_convert_file";
         public static string TooManyFiles => "too_many_files";
+        public static string CannotSubmitVote => "cannot_submit_vote";
+        public static string CannotDeleteVote => "cannot_delete_vote";
+        public static string VoteAlreadySubmitted => "vote_already_submitted";
         public static string Error => "error";
     }
 }

@@ -17,6 +17,7 @@ namespace Coolector.Services.Remarks.Framework
                 cfg.CreateMap<RemarkPhoto, FileDto>();
                 cfg.CreateMap<Category, RemarkCategoryDto>();
                 cfg.CreateMap<Tag, TagDto>();
+                cfg.CreateMap<Vote, VoteDto>();
             });
 
             return config.CreateMapper();

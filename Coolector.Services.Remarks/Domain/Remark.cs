@@ -11,6 +11,7 @@ namespace Coolector.Services.Remarks.Domain
     {
         private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
         private ISet<string> _tags = new HashSet<string>();
+        private ISet<Vote> _votes = new HashSet<Vote>();
         public RemarkAuthor Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
@@ -25,6 +26,12 @@ namespace Coolector.Services.Remarks.Domain
         {
             get { return _tags; }
             protected set { _tags = new HashSet<string>(value); }
+        }
+
+        public IEnumerable<Vote> Votes
+        {
+            get { return _votes; }
+            protected set { _votes = new HashSet<Vote>(value); }
         }
 
         public string Description { get; protected set; }
@@ -129,6 +136,43 @@ namespace Coolector.Services.Remarks.Domain
                 return;
 
             Description = description;
+        }
+
+        public void VotePositive(string userId)
+        {
+            if(Votes.Any(x => x.UserId == userId && x.Positive))
+            {
+                throw new InvalidOperationException($"User with id: '{userId}' has already " + 
+                    $"submitted a positive vote for remark with id: '{Id}'.");
+            }
+
+            _votes.Add(Vote.GetPositive(userId));
+        }
+
+        public void VoteNegative(string userId)
+        {
+            if(Votes.Any(x => x.UserId == userId && !x.Positive))
+            {
+                throw new InvalidOperationException($"User with id: '{userId}' has already " + 
+                    $"submitted a negative vote for remark with id: '{Id}'.");
+            }
+
+            _votes.Add(Vote.GetNegative(userId));
+        }
+
+        public void DeleteVote(string userId)
+        {
+            var votes = Votes.Where(x => x.UserId == userId).ToList();
+            if (!votes.Any())
+            {
+                  throw new InvalidOperationException($"User with id: '{userId}' has not " + 
+                    $"submitted any vote for remark with id: '{Id}'.");              
+            }
+
+            foreach (var vote in votes)
+            {
+                _votes.Remove(vote);
+            }
         }
     }
 }
