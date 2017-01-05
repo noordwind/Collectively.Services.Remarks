@@ -16,6 +16,7 @@ namespace Coolector.Services.Remarks.Domain
         public RemarkAuthor Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
+        public int Rating { get; protected set; }
 
         public IEnumerable<RemarkPhoto> Photos
         {
@@ -157,6 +158,7 @@ namespace Coolector.Services.Remarks.Domain
             }
 
             _votes.Add(Vote.GetPositive(userId, createdAt));
+            Rating++;
         }
 
         public void VoteNegative(string userId, DateTime createdAt)
@@ -169,6 +171,7 @@ namespace Coolector.Services.Remarks.Domain
             }
 
             _votes.Add(Vote.GetNegative(userId, createdAt));
+            Rating--;
         }
 
         public void DeleteVote(string userId)
@@ -183,6 +186,14 @@ namespace Coolector.Services.Remarks.Domain
 
             foreach (var vote in votes)
             {
+                if (vote.Positive)
+                {
+                    Rating--;
+                }
+                else
+                {
+                    Rating++;
+                }
                 _votes.Remove(vote);
             }
         }

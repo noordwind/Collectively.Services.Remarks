@@ -14,6 +14,7 @@ namespace Coolector.Services.Remarks.Shared.Dto
         public RemarkAuthorDto Resolver { get; set; }
         public DateTime? ResolvedAt { get; set; }
         public bool Resolved { get; set; }
+        public int Rating { get; set; }
         public IList<FileDto> Photos { get; set; }
         public IList<string> Tags { get; set; }
         public IList<VoteDto> Votes { get; set; }
