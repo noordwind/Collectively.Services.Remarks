@@ -27,7 +27,7 @@ namespace Coolector.Services.Remarks.Services
         Task RemovePhotosAsync(Guid id, params string[] names);
         Task DeleteAsync(Guid id);
 
-        Task SubmitVoteAsync(Guid remarkId, string userId, bool positive);
+        Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt);
         Task DeleteVoteAsync(Guid remarkId, string userId);
     }
 }

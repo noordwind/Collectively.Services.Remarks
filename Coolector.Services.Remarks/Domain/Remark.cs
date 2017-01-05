@@ -147,7 +147,7 @@ namespace Coolector.Services.Remarks.Domain
             Description = description;
         }
 
-        public void VotePositive(string userId)
+        public void VotePositive(string userId, DateTime createdAt)
         {
             if(Votes.Any(x => x.UserId == userId && x.Positive))
             {
@@ -156,10 +156,10 @@ namespace Coolector.Services.Remarks.Domain
                     $"submitted a positive vote for remark with id: '{Id}'.");
             }
 
-            _votes.Add(Vote.GetPositive(userId));
+            _votes.Add(Vote.GetPositive(userId, createdAt));
         }
 
-        public void VoteNegative(string userId)
+        public void VoteNegative(string userId, DateTime createdAt)
         {
             if(Votes.Any(x => x.UserId == userId && !x.Positive))
             {
@@ -168,7 +168,7 @@ namespace Coolector.Services.Remarks.Domain
                     $"submitted a negative vote for remark with id: '{Id}'.");
             }
 
-            _votes.Add(Vote.GetNegative(userId));
+            _votes.Add(Vote.GetNegative(userId, createdAt));
         }
 
         public void DeleteVote(string userId)

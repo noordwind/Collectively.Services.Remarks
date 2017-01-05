@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Coolector.Common;
 using Coolector.Common.Commands;
 using Coolector.Common.Domain;
 using Coolector.Common.Services;

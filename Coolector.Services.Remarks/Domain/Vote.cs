@@ -14,7 +14,7 @@ namespace Coolector.Services.Remarks.Domain
         {
         }
 
-        protected Vote(string userId, bool positive)
+        protected Vote(string userId, bool positive, DateTime createdAt)
         {
             if (userId.Empty())
             {
@@ -23,11 +23,14 @@ namespace Coolector.Services.Remarks.Domain
 
             UserId = userId;
             Positive = positive;
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = createdAt;
         }
 
-        public static Vote GetNegative(string userId) => new Vote(userId, false);
-        public static Vote GetPositive(string userId) => new Vote(userId, true);
+        public static Vote GetNegative(string userId, DateTime createdAt) 
+            => new Vote(userId, false, createdAt);
+
+        public static Vote GetPositive(string userId, DateTime createdAt) 
+            => new Vote(userId, true, createdAt);
 
         protected override bool EqualsCore(Vote other) 
             => UserId.Equals(other.UserId) && Positive.Equals(other.Positive);

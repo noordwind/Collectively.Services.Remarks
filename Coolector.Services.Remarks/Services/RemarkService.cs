@@ -299,7 +299,7 @@ namespace Coolector.Services.Remarks.Services
             Logger.Debug($"Removed {names.Count()} photos from the remark with id: '{id}'.");
         }
 
-        public async Task SubmitVoteAsync(Guid remarkId, string userId, bool positive)
+        public async Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt)
         {
             var remark = await _remarkRepository.GetByIdAsync(remarkId);
             if (remark.HasNoValue)
@@ -310,11 +310,11 @@ namespace Coolector.Services.Remarks.Services
 
             if (positive)
             {
-                remark.Value.VotePositive(userId);
+                remark.Value.VotePositive(userId, createdAt);
             } 
             else
             {
-                remark.Value.VoteNegative(userId);
+                remark.Value.VoteNegative(userId, createdAt);
             }
 
             await _remarkRepository.UpdateAsync(remark.Value);

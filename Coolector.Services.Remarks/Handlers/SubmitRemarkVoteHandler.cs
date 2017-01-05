@@ -26,9 +26,9 @@ namespace Coolector.Services.Remarks.Handlers
         {
             await _handler
                 .Run(async () => await _remarkService.SubmitVoteAsync(command.RemarkId, 
-                    command.UserId, command.Positive))
+                    command.UserId, command.Positive, command.CreatedAt))
                 .OnSuccess(async () => await _bus.PublishAsync(new RemarkVoteSubmitted(command.Request.Id, 
-                        command.UserId, command.RemarkId, command.Positive)))
+                        command.UserId, command.RemarkId, command.Positive, command.CreatedAt)))
                 .OnCustomError(ex => _bus.PublishAsync(new SubmitRemarkVoteRejected(command.Request.Id,
                     command.UserId, command.RemarkId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>
