@@ -298,5 +298,39 @@ namespace Coolector.Services.Remarks.Services
             await Task.WhenAll(tasks);
             Logger.Debug($"Removed {names.Count()} photos from the remark with id: '{id}'.");
         }
+
+        public async Task SubmitVoteAsync(Guid remarkId, string userId, bool positive)
+        {
+            var remark = await _remarkRepository.GetByIdAsync(remarkId);
+            if (remark.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: '{remarkId}' does not exist!");
+            }
+
+            if (positive)
+            {
+                remark.Value.VotePositive(userId);
+            } 
+            else
+            {
+                remark.Value.VoteNegative(userId);
+            }
+
+            await _remarkRepository.UpdateAsync(remark.Value);
+        }
+
+        public async Task DeleteVoteAsync(Guid remarkId, string userId)
+        {
+            var remark = await _remarkRepository.GetByIdAsync(remarkId);
+            if (remark.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: '{remarkId}' does not exist!");
+            }
+
+            remark.Value.DeleteVote(userId);
+            await _remarkRepository.UpdateAsync(remark.Value);
+        }
     }
 }

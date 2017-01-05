@@ -26,5 +26,8 @@ namespace Coolector.Services.Remarks.Services
         Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid id, params Guid[] groupIds);
         Task RemovePhotosAsync(Guid id, params string[] names);
         Task DeleteAsync(Guid id);
+
+        Task SubmitVoteAsync(Guid remarkId, string userId, bool positive);
+        Task DeleteVoteAsync(Guid remarkId, string userId);
     }
 }

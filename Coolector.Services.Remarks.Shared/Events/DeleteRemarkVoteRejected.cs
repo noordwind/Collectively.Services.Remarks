@@ -16,12 +16,12 @@ namespace Coolector.Services.Remarks.Shared.Events
         }
 
         public DeleteRemarkVoteRejected(Guid requestId, 
-            Guid remarkId, string userId, 
+            string userId, Guid remarkId,
             string code, string reason)
         {
             RequestId = requestId;
-            RemarkId = remarkId;
             UserId = userId;
+            RemarkId = remarkId;
             Code = code;
             Reason = reason;
         }

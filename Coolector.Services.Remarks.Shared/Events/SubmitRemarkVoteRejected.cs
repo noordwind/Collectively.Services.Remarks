@@ -6,8 +6,8 @@ namespace Coolector.Services.Remarks.Shared.Events
     public class SubmitRemarkVoteRejected : IRejectedEvent
     {
         public Guid RequestId { get; }
-        public Guid RemarkId { get; }
         public string UserId { get; }
+        public Guid RemarkId { get; }
         public string Code { get; }
         public string Reason { get; }
 
@@ -16,12 +16,12 @@ namespace Coolector.Services.Remarks.Shared.Events
         }
 
         public SubmitRemarkVoteRejected(Guid requestId, 
-            Guid remarkId, string userId, 
+            string userId, Guid remarkId,
             string code, string reason)
         {
             RequestId = requestId;
-            RemarkId = remarkId;
             UserId = userId;
+            RemarkId = remarkId;
             Code = code;
             Reason = reason;
         }

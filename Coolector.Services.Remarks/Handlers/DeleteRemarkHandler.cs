@@ -1,21 +1,16 @@
 ﻿using System.Threading.Tasks;
-using Coolector.Common;
 using Coolector.Common.Commands;
-using Coolector.Common.Domain;
 using Coolector.Common.Services;
 using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Shared.Commands;
 using Coolector.Services.Remarks.Shared.Events;
-using NLog;
 using RawRabbit;
 
 namespace Coolector.Services.Remarks.Handlers
 {
     public class DeleteRemarkHandler : ICommandHandler<DeleteRemark>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
@@ -33,8 +28,6 @@ namespace Coolector.Services.Remarks.Handlers
                 .Run(async () =>
                 {
                     await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId);
-                    Logger.Debug($"Handle {nameof(DeleteRemark)} command, remarkId:{command.RemarkId}, " +
-                                 $"userId:{command.UserId}");
                     await _remarkService.DeleteAsync(command.RemarkId);
                 })
                 .OnSuccess(async () 

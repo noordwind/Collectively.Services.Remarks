@@ -4,6 +4,7 @@ using System.Linq;
 using Coolector.Common.Domain;
 using Coolector.Common.Extensions;
 using Coolector.Common.Types;
+using Coolector.Services.Remarks.Shared;
 
 namespace Coolector.Services.Remarks.Domain
 {
@@ -40,7 +41,6 @@ namespace Coolector.Services.Remarks.Domain
         public DateTime? ResolvedAt { get; protected set; }
         public bool Resolved => Resolver != null;
 
-
         protected Remark()
         {
         }
@@ -59,7 +59,10 @@ namespace Coolector.Services.Remarks.Domain
         public void SetAuthor(User author)
         {
             if (author == null)
-                throw new ArgumentNullException(nameof(author), "Remark author can not be null.");
+            {
+                throw new ArgumentNullException(nameof(author), 
+                    "Remark author can not be null.");
+            }
 
             Author = RemarkAuthor.Create(author);
         }
@@ -67,7 +70,10 @@ namespace Coolector.Services.Remarks.Domain
         public void SetCategory(Category category)
         {
             if (category == null)
-                throw new ArgumentNullException(nameof(category), "Remark category can not be null.");
+            {
+                throw new ArgumentNullException(nameof(category), 
+                    "Remark category can not be null.");
+            }
 
             Category = RemarkCategory.Create(category);
         }
@@ -75,7 +81,10 @@ namespace Coolector.Services.Remarks.Domain
         public void SetLocation(Location location)
         {
             if (location == null)
-                throw new ArgumentNullException(nameof(location), "Remark location can not be null.");
+            {
+                throw new ArgumentNullException(nameof(location), 
+                    "Remark location can not be null.");
+            }
 
             Location = location;
         }
@@ -142,7 +151,8 @@ namespace Coolector.Services.Remarks.Domain
         {
             if(Votes.Any(x => x.UserId == userId && x.Positive))
             {
-                throw new InvalidOperationException($"User with id: '{userId}' has already " + 
+                throw new DomainException(OperationCodes.CannotSubmitVote,
+                    $"User with id: '{userId}' has already " + 
                     $"submitted a positive vote for remark with id: '{Id}'.");
             }
 
@@ -153,7 +163,8 @@ namespace Coolector.Services.Remarks.Domain
         {
             if(Votes.Any(x => x.UserId == userId && !x.Positive))
             {
-                throw new InvalidOperationException($"User with id: '{userId}' has already " + 
+                throw new DomainException(OperationCodes.CannotSubmitVote,
+                    $"User with id: '{userId}' has already " + 
                     $"submitted a negative vote for remark with id: '{Id}'.");
             }
 
@@ -165,7 +176,8 @@ namespace Coolector.Services.Remarks.Domain
             var votes = Votes.Where(x => x.UserId == userId).ToList();
             if (!votes.Any())
             {
-                  throw new InvalidOperationException($"User with id: '{userId}' has not " + 
+                  throw new DomainException(OperationCodes.CannotDeleteVote, 
+                    $"User with id: '{userId}' has not " + 
                     $"submitted any vote for remark with id: '{Id}'.");              
             }
 
