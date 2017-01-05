@@ -156,6 +156,12 @@ namespace Coolector.Services.Remarks.Domain
                     $"User with id: '{userId}' has already " + 
                     $"submitted a positive vote for remark with id: '{Id}'.");
             }
+            var negativeVote = Votes.SingleOrDefault(x => x.UserId == userId && !x.Positive);
+            if (negativeVote != null)
+            {
+                _votes.Remove(negativeVote);
+                Rating++;
+            }
 
             _votes.Add(Vote.GetPositive(userId, createdAt));
             Rating++;
@@ -169,6 +175,12 @@ namespace Coolector.Services.Remarks.Domain
                     $"User with id: '{userId}' has already " + 
                     $"submitted a negative vote for remark with id: '{Id}'.");
             }
+            var positiveVote = Votes.SingleOrDefault(x => x.UserId == userId && x.Positive);
+            if (positiveVote != null)
+            {
+                _votes.Remove(positiveVote);
+                Rating--;
+            }
 
             _votes.Add(Vote.GetNegative(userId, createdAt));
             Rating--;
@@ -176,26 +188,22 @@ namespace Coolector.Services.Remarks.Domain
 
         public void DeleteVote(string userId)
         {
-            var votes = Votes.Where(x => x.UserId == userId).ToList();
-            if (!votes.Any())
+            var vote = Votes.SingleOrDefault(x => x.UserId == userId);
+            if (vote == null)
             {
-                  throw new DomainException(OperationCodes.CannotDeleteVote, 
+                throw new DomainException(OperationCodes.CannotDeleteVote, 
                     $"User with id: '{userId}' has not " + 
                     $"submitted any vote for remark with id: '{Id}'.");              
             }
-
-            foreach (var vote in votes)
+            if (vote.Positive)
             {
-                if (vote.Positive)
-                {
-                    Rating--;
-                }
-                else
-                {
-                    Rating++;
-                }
-                _votes.Remove(vote);
+                Rating--;
             }
+            else
+            {
+                Rating++;
+            }
+            _votes.Remove(vote);
         }
     }
 }

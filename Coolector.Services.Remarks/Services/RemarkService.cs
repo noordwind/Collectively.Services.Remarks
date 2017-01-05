@@ -307,7 +307,6 @@ namespace Coolector.Services.Remarks.Services
                 throw new ServiceException(OperationCodes.RemarkNotFound,
                     $"Remark with id: '{remarkId}' does not exist!");
             }
-
             if (positive)
             {
                 remark.Value.VotePositive(userId, createdAt);
@@ -316,7 +315,6 @@ namespace Coolector.Services.Remarks.Services
             {
                 remark.Value.VoteNegative(userId, createdAt);
             }
-
             await _remarkRepository.UpdateAsync(remark.Value);
         }
 
