@@ -7,22 +7,22 @@ using NLog;
 
 namespace Coolector.Services.Remarks.Handlers
 {
-    public class UserNameChangedHandler : IEventHandler<UserNameChanged>
+    public class UsernameChangedHandler : IEventHandler<UsernameChanged>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IUserService _userService;
         private readonly IRemarkService _remarkService;
 
-        public UserNameChangedHandler(IUserService userService, IRemarkService remarkService)
+        public UsernameChangedHandler(IUserService userService, IRemarkService remarkService)
         {
             _userService = userService;
             _remarkService = remarkService;
         }
 
-        public async Task HandleAsync(UserNameChanged @event)
+        public async Task HandleAsync(UsernameChanged @event)
         {
-            Logger.Debug($"Handle {nameof(UserNameChanged)} event, userId: {@event.UserId}, newName: {@event.NewName}");
+            Logger.Debug($"Handle {nameof(UsernameChanged)} event, userId: {@event.UserId}, newName: {@event.NewName}");
             try
             {
                 await _userService.UpdateNameAsync(@event.UserId, @event.NewName);

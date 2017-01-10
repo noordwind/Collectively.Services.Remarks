@@ -21,7 +21,7 @@ namespace Coolector.Services.Remarks
                 .SubscribeToCommand<SubmitRemarkVote>()
                 .SubscribeToCommand<DeleteRemarkVote>()
                 .SubscribeToEvent<SignedUp>()
-                .SubscribeToEvent<UserNameChanged>()
+                .SubscribeToEvent<UsernameChanged>()
                 .Build()
                 .Run();
         }
