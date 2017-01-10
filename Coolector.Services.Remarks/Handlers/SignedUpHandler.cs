@@ -6,20 +6,20 @@ using NLog;
 
 namespace Coolector.Services.Remarks.Handlers
 {
-    public class UserSignedUpHandler : IEventHandler<UserSignedUp>
+    public class SignedUpHandler : IEventHandler<SignedUp>
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IUserService _userService;
 
-        public UserSignedUpHandler(IUserService userService)
+        public SignedUpHandler(IUserService userService)
         {
             _userService = userService;
         }
 
-        public async Task HandleAsync(UserSignedUp @event)
+        public async Task HandleAsync(SignedUp @event)
         {
-            Logger.Debug($"Handle {nameof(UserSignedUp)} command, userId:{@event.UserId}, userName:{@event.Name}");
+            Logger.Debug($"Handle {nameof(SignedUp)} command, userId:{@event.UserId}, userName:{@event.Name}");
             await _userService.CreateIfNotFoundAsync(@event.UserId, @event.Name, @event.Role);
         }
     }

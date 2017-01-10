@@ -8,24 +8,24 @@ using Machine.Specifications;
 
 namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 {
-    public abstract class UserSignedUpHandler_specs
+    public abstract class SignedUpHandler_specs
     {
-        protected static UserSignedUpHandler Handler;
+        protected static SignedUpHandler Handler;
         protected static Mock<IUserService> UserServiceMock;
-        protected static UserSignedUp Event;
+        protected static SignedUp Event;
         protected static Exception Exception;
 
         protected static void Initialize()
         {
             UserServiceMock = new Mock<IUserService>();
-            Event = new UserSignedUp(Guid.NewGuid(), "user", "user@email.com", "name",
+            Event = new SignedUp(Guid.NewGuid(), "user", "user@email.com", "name",
                 "picture", "user", "active", "coolector", string.Empty, DateTime.UtcNow);
-            Handler = new UserSignedUpHandler(UserServiceMock.Object);
+            Handler = new SignedUpHandler(UserServiceMock.Object);
         }
     }
 
     [Subject("UserSignedUpHandler HandleAsync")]
-    public class when_invoking_user_signed_up_handle_async : UserSignedUpHandler_specs
+    public class when_invoking_user_signed_up_handle_async : SignedUpHandler_specs
     {
         Establish context = () =>
         {

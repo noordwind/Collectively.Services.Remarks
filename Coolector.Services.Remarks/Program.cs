@@ -20,7 +20,7 @@ namespace Coolector.Services.Remarks
                 .SubscribeToCommand<RemovePhotosFromRemark>()
                 .SubscribeToCommand<SubmitRemarkVote>()
                 .SubscribeToCommand<DeleteRemarkVote>()
-                .SubscribeToEvent<UserSignedUp>()
+                .SubscribeToEvent<SignedUp>()
                 .SubscribeToEvent<UserNameChanged>()
                 .Build()
                 .Run();
