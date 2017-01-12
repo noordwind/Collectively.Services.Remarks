@@ -20,7 +20,7 @@ namespace Coolector.Services.Remarks.Services
         Task CreateAsync(Guid id, string userId, string category,
             Location location, string description = null, IEnumerable<string> tags = null);
 
-        Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null);
+        Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null, bool validateLocation = false);
         Task UpdateUserNamesAsync(string userId, string name);
         Task AddPhotosAsync(Guid id, params File[] photos);
         Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid id, params Guid[] groupIds);

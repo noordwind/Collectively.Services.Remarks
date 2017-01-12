@@ -67,15 +67,20 @@ namespace Coolector.Services.Remarks.Handlers
                     }
                     Location location = null;
                     if (command.ValidateLocation)
-                        location = Location.Create(command.Latitude, command.Longitude);
+                    {
+                        location = Location.Create(command.Latitude, command.Longitude, command.Address);
+                    }
 
-                    await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file, location);
+                    await _remarkService.ResolveAsync(command.RemarkId, command.UserId, file, location, command.ValidateLocation);
                 })
                 .OnSuccess(async () =>
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
+                    var location = remark.Value.ResolvedAtLocation == null ? 
+                                    null : 
+                                    new RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude);
                     await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
-                        command.UserId, remark.Value.Resolver.Name,
+                        command.UserId, remark.Value.Resolver.Name, location,
                         remark.Value.Photos.Select(x => new RemarkFile(x.GroupId, x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
                         remark.Value.ResolvedAt.GetValueOrDefault()));
                 })

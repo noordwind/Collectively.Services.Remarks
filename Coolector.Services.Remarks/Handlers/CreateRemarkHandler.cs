@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coolector.Common.Commands;
 using Coolector.Common.Services;
-using Coolector.Services.Remarks.Domain;
 using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Shared;
 using Coolector.Services.Remarks.Shared.Commands;
 using Coolector.Services.Remarks.Shared.Commands.Models;
 using Coolector.Services.Remarks.Shared.Events;
+using Coolector.Services.Remarks.Shared.Events.Models;
 using Lockbox.Client.Extensions;
 using NLog;
 using RawRabbit;
@@ -50,7 +50,7 @@ namespace Coolector.Services.Remarks.Handlers
                                  $"category: {command.Category}, latitude: {command.Latitude}, " +
                                  $"longitude:  {command.Longitude}.");
 
-                    var location = Location.Create(command.Latitude, command.Longitude, command.Address);
+                    var location = Domain.Location.Create(command.Latitude, command.Longitude, command.Address);
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
                             location, command.Description, command.Tags);
                 })
@@ -60,8 +60,8 @@ namespace Coolector.Services.Remarks.Handlers
                     await PublishOnSocialMediaAsync(command.RemarkId, command.Request.Culture, command.SocialMedia);
                     await _bus.PublishAsync(new RemarkCreated(command.Request.Id, command.RemarkId,
                         command.UserId, remark.Value.Author.Name,
-                        new RemarkCreated.RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
-                        new RemarkCreated.RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
+                        new RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
+                        new RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
                         command.Description, remark.Value.Tags, remark.Value.CreatedAt));
                 })
                 .OnCustomError(ex => _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
@@ -85,7 +85,7 @@ namespace Coolector.Services.Remarks.Handlers
                         RemarkId = command.RemarkId,
                         Request = Request.New<AddPhotosToRemark>(),
                         UserId = command.UserId,
-                        Photos = new List<RemarkFile>
+                        Photos = new List<Coolector.Services.Remarks.Shared.Commands.Models.RemarkFile>
                         {
                             command.Photo
                         }
@@ -107,7 +107,7 @@ namespace Coolector.Services.Remarks.Handlers
             Logger.Debug($"Remark with id: '{remarkId}' will be published on social media.");
             var userSocialMedia = socialMedia
                 .Where(x => x.Name.NotEmpty() && x.Publish)
-                .Select(x => UserSocialMedia.Create(x.Name, x.AccessToken))
+                .Select(x => Domain.UserSocialMedia.Create(x.Name, x.AccessToken))
                 .ToArray();
 
             await _socialMediaService.PublishRemarkCreatedAsync(remarkId, culture, userSocialMedia);

@@ -127,7 +127,7 @@ namespace Coolector.Services.Remarks.Services
             await _remarkRepository.AddAsync(remark);
         }
 
-        public async Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null)
+        public async Task ResolveAsync(Guid id, string userId, File photo = null, Location location = null, bool validateLocation = false)
         {
             Logger.Debug($"Resolve remark, id:{id}, userId:{userId}, photo:{photo?.Name ?? "none"}");
             var user = await _userRepository.GetByUserIdAsync(userId);
@@ -141,7 +141,7 @@ namespace Coolector.Services.Remarks.Services
                     $"Remark with id: {id} does not exist!");
             }
 
-            if (location != null && remark.Value.Location.IsInRange(location, _settings.AllowedDistance) == false)
+            if (location != null && validateLocation && remark.Value.Location.IsInRange(location, _settings.AllowedDistance) == false)
             {
                 throw new ServiceException(OperationCodes.DistanceBetweenUserAndRemarkIsTooBig,
                     $"The distance between user and remark: {id} is too big! " +

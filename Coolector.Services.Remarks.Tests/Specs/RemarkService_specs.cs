@@ -213,7 +213,7 @@ namespace Coolector.Services.Remarks.Tests.Specs
         };
 
         Because of = () =>
-            Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location).Await());
+            Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location, true).Await());
 
         It should_throw_argument_exception = () =>
         {

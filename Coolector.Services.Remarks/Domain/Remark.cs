@@ -16,6 +16,7 @@ namespace Coolector.Services.Remarks.Domain
         public RemarkAuthor Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
+        public Location ResolvedAtLocation { get; protected set; }
         public int Rating { get; protected set; }
 
         public IEnumerable<RemarkPhoto> Photos
@@ -121,12 +122,16 @@ namespace Coolector.Services.Remarks.Domain
             _tags.Remove(tag);
         }
 
-        public void Resolve(User resolver)
+        public void Resolve(User resolver, Location location = null)
         {
             if (Resolved)
             {
                 throw new InvalidOperationException($"Remark {Id} has been already resolved " +
                                                     $"by {Resolver.Name} at {ResolvedAt}.");
+            }
+            if (location != null) 
+            {
+                ResolvedAtLocation = location;
             }
             Resolver = RemarkAuthor.Create(resolver);
             ResolvedAt = DateTime.UtcNow;

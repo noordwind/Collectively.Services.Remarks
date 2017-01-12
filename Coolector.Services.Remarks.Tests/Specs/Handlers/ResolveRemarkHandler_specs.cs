@@ -91,7 +91,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
-    public class when_when_invoking_resolve_remark_handle_async : ResolveRemarkHandler_specs
+    public class when_invoking_resolve_remark_handle_async : ResolveRemarkHandler_specs
     {
         Establish context = () => Initialize();
 
@@ -109,7 +109,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location), Times.Once);
+            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Once);
         };
 
         It should_fetch_resolved_remark = () =>
@@ -152,7 +152,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location), Times.Never);
+            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, false), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -180,7 +180,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
-    public class when_when_invoking_resolve_remark_handle_async_and_file_is_not_an_image : ResolveRemarkHandler_specs
+    public class when_invoking_resolve_remark_handle_async_and_file_is_not_an_image : ResolveRemarkHandler_specs
     {
         Establish context = () =>
         {
@@ -203,7 +203,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location), Times.Never);
+            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -231,7 +231,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
-    public class when_when_invoking_resolve_remark_handle_async_and_latitude_is_corrupt : ResolveRemarkHandler_specs
+    public class when_invoking_resolve_remark_handle_async_and_latitude_is_corrupt : ResolveRemarkHandler_specs
     {
         Establish context = () =>
         {
@@ -253,7 +253,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location), Times.Never);
+            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -281,7 +281,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
-    public class when_when_invoking_resolve_remark_handle_async_and_longitude_is_corrupt : ResolveRemarkHandler_specs
+    public class when_invoking_resolve_remark_handle_async_and_longitude_is_corrupt : ResolveRemarkHandler_specs
     {
         Establish context = () =>
         {
@@ -303,7 +303,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location), Times.Never);
+            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -331,7 +331,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
     }
 
     [Subject("ResolveRemarkHandler HandleAsync")]
-    public class when_when_invoking_resolve_remark_handle_async_and_resolve_async_fails : ResolveRemarkHandler_specs
+    public class when_invoking_resolve_remark_handle_async_and_resolve_async_fails : ResolveRemarkHandler_specs
     {
         protected static string ErrorCode = "Error"; 
 
@@ -341,7 +341,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             RemarkServiceMock.Setup(x => x.ResolveAsync(Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<string>(),
                 Moq.It.IsAny<File>(),
-                Moq.It.IsAny<Location>())).Throws(new ServiceException(ErrorCode));
+                Moq.It.IsAny<Location>(),
+                Moq.It.IsAny<bool>())).Throws(new ServiceException(ErrorCode));
         };
 
         Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
@@ -358,7 +359,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location), Times.Once);
+            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Once);
         };
 
         It should_not_fetch_resolved_remark = () =>
