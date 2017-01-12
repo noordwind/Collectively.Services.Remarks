@@ -151,7 +151,7 @@ namespace Coolector.Services.Remarks.Services
             if (photo != null)
                 await UploadImagesWithDifferentSizesAsync(remark.Value, photo, "resolved");
 
-            remark.Value.Resolve(user.Value);
+            remark.Value.Resolve(user.Value, location);
             await _remarkRepository.UpdateAsync(remark.Value);
         }
 
