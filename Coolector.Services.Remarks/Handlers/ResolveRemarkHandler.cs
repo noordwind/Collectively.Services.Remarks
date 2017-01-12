@@ -66,7 +66,7 @@ namespace Coolector.Services.Remarks.Handlers
                         }
                     }
                     Location location = null;
-                    if (command.ValidateLocation)
+                    if (command.Latitude != 0 && command.Longitude != 0)
                     {
                         location = Location.Create(command.Latitude, command.Longitude, command.Address);
                     }
