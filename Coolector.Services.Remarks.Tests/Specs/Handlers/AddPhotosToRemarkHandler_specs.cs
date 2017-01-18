@@ -27,6 +27,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static AddPhotosToRemark Command;
         protected static GeneralSettings GeneralSettings;
         protected static File File;
@@ -34,7 +35,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
-            Handler = new Handler();
+            ExceptionHandlerMock = new Mock<IExceptionHandler>();
+            Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();

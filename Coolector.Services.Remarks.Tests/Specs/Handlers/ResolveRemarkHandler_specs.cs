@@ -27,6 +27,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
+        protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static ResolveRemark Command;
         protected static string UserId = "UserId";
         protected static Guid RemarkId = Guid.NewGuid();
@@ -40,7 +41,8 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
-            Handler = new Handler();
+            ExceptionHandlerMock = new Mock<IExceptionHandler>();
+            Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
             FileResolverMock = new Mock<IFileResolver>();

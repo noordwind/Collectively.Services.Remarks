@@ -26,12 +26,14 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<ISocialMediaService> SocialMediaServiceMock;
+        protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static CreateRemark Command;
         protected static Exception Exception;
 
         protected static void Initialize()
         {
-            Handler = new Handler();
+            ExceptionHandlerMock = new Mock<IExceptionHandler>();
+            Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
