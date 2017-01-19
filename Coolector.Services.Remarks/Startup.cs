@@ -11,6 +11,7 @@ using Lockbox.Client.Extensions;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Coolector.Services.Remarks.Framework;
+using NLog.Web;
 
 namespace Coolector.Services.Remarks
 {
@@ -49,6 +50,7 @@ namespace Coolector.Services.Remarks
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddNLog();
+            app.AddNLogWeb();
             env.ConfigureNLog("nlog.config");
             app.UseCors(builder => builder.AllowAnyHeader()
 	            .AllowAnyMethod()
