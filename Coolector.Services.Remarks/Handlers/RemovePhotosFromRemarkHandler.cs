@@ -29,12 +29,13 @@ namespace Coolector.Services.Remarks.Handlers
 
         public async Task HandleAsync(RemovePhotosFromRemark command)
         {
+            var groupIds = new Guid[] {};
             var removedPhotos = new string[]{};
             await _handler
                 .Validate(async () => await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId))
                 .Run(async () =>
                 {   
-                    var groupIds = command.Photos?
+                    groupIds = command.Photos?
                                 .Where(x => x.GroupId != Guid.Empty)
                                 .Select(x => x.GroupId)
                                 .ToArray() ?? new Guid[]{};
@@ -53,7 +54,7 @@ namespace Coolector.Services.Remarks.Handlers
                     await _remarkService.RemovePhotosAsync(command.RemarkId, removedPhotos);
                 })
                 .OnSuccess(async () => await _bus.PublishAsync(new PhotosFromRemarkRemoved(command.Request.Id, 
-                    command.RemarkId, command.UserId, removedPhotos)))
+                    command.RemarkId, command.UserId, groupIds, removedPhotos)))
                 .OnCustomError(ex => _bus.PublishAsync(new RemovePhotosFromRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>

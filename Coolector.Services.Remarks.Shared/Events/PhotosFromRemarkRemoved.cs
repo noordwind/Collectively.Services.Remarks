@@ -10,6 +10,7 @@ namespace Coolector.Services.Remarks.Shared.Events
         public Guid RequestId { get; }
         public Guid RemarkId { get; }
         public string UserId { get; }
+        public IEnumerable<Guid> GroupIds { get; }
         public IEnumerable<string> Photos { get; }
 
         protected PhotosFromRemarkRemoved()
@@ -17,11 +18,12 @@ namespace Coolector.Services.Remarks.Shared.Events
         }
 
         public PhotosFromRemarkRemoved(Guid requestId, Guid remarkId, 
-            string userId, IEnumerable<string> photos)
+            string userId, IEnumerable<Guid> groupIds, IEnumerable<string> photos)
         {
             RequestId = requestId;
             RemarkId = remarkId;
             UserId = userId;
+            GroupIds = groupIds;
             Photos = photos;
         }
     }
