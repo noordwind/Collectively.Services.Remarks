@@ -5,22 +5,27 @@ using Coolector.Services.Remarks.Services;
 using Coolector.Services.Remarks.Handlers;
 using Coolector.Services.Users.Shared.Events;
 using Machine.Specifications;
+using Coolector.Common.Services;
 
 namespace Coolector.Services.Remarks.Tests.Specs.Handlers
 {
     public abstract class SignedUpHandler_specs
     {
-        protected static SignedUpHandler Handler;
+        protected static IHandler Handler;
+        protected static SignedUpHandler SignedUpHandler;
         protected static Mock<IUserService> UserServiceMock;
+        protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static SignedUp Event;
         protected static Exception Exception;
 
         protected static void Initialize()
         {
+            ExceptionHandlerMock = new Mock<IExceptionHandler>();
+            Handler = new Handler(ExceptionHandlerMock.Object);
             UserServiceMock = new Mock<IUserService>();
             Event = new SignedUp(Guid.NewGuid(), "user", "user@email.com", "name",
                 "picture", "user", "active", "coolector", string.Empty, DateTime.UtcNow);
-            Handler = new SignedUpHandler(UserServiceMock.Object);
+            SignedUpHandler = new SignedUpHandler(Handler, UserServiceMock.Object);
         }
     }
 
@@ -32,7 +37,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Initialize();
         };
 
-        Because of = () => Handler.HandleAsync(Event).Await();
+        Because of = () => SignedUpHandler.HandleAsync(Event).Await();
 
         It should_call_create_if_not_found_async_on_user_service = () =>
         {

@@ -39,13 +39,14 @@ namespace Coolector.Services.Remarks.Handlers
 
         public async Task HandleAsync(ResolveRemark command)
         {
+            File file = null;
+            
             await _handler
-                .Run(async () =>
+                .Validate(() => 
                 {
                     Logger.Debug($"Handle {nameof(ResolveRemark)} command, remarkId:{command.RemarkId}, " +
                         $"userId:{command.UserId}, lat-long:{command.Latitude}-{command.Longitude}");
 
-                    File file = null;
                     if (command.ValidatePhoto)
                     {
                         var resolvedFile = _fileResolver.FromBase64(command.Photo.Base64, command.Photo.Name, command.Photo.ContentType);
@@ -65,6 +66,9 @@ namespace Coolector.Services.Remarks.Handlers
                             throw new ServiceException(OperationCodes.InvalidFile);
                         }
                     }
+                })
+                .Run(async () =>
+                {
                     Location location = null;
                     if (command.Latitude != 0 && command.Longitude != 0)
                     {

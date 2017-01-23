@@ -161,7 +161,8 @@ namespace Coolector.Services.Remarks.Services
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
             {
-                throw new ArgumentException($"User with id: {userId} has not been found.");
+                throw new ServiceException(OperationCodes.UserNotFound,
+                     $"User with id: {userId} has not been found.");
             }
 
             await _remarkRepository.UpdateUserNamesAsync(userId, name);

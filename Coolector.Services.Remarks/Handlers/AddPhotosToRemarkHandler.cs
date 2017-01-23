@@ -42,7 +42,7 @@ namespace Coolector.Services.Remarks.Handlers
         public async Task HandleAsync(AddPhotosToRemark command)
         {
             await _handler
-                .Run(async () =>
+                .Validate(async () => 
                 {
                     await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId);
                     if (command.Photos == null || !command.Photos.Any())
@@ -54,7 +54,9 @@ namespace Coolector.Services.Remarks.Handlers
                     {
                         throw new ServiceException(OperationCodes.TooManyFiles);
                     }
-
+                })
+                .Run(async () =>
+                {
                     var photos = new List<File>();
                     foreach(var file in command.Photos)
                     {                        

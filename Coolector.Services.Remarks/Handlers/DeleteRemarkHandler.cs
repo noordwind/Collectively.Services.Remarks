@@ -25,9 +25,9 @@ namespace Coolector.Services.Remarks.Handlers
         public async Task HandleAsync(DeleteRemark command)
         {
             await _handler
+                .Validate(async () => await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId))
                 .Run(async () =>
                 {
-                    await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId);
                     await _remarkService.DeleteAsync(command.RemarkId);
                 })
                 .OnSuccess(async () 
