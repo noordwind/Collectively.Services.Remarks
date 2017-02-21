@@ -5,8 +5,8 @@ namespace Coolector.Services.Remarks.Shared.Dto
     public class BasicRemarkDto
     {
         public Guid Id { get; set; }
-        public string Author { get; set; }
-        public string Category { get; set; }
+        public RemarkAuthorDto Author { get; set; }
+        public RemarkCategoryDto Category { get; set; }
         public LocationDto Location { get; set; }
         public string SmallPhotoUrl { get; set; }
         public string Description { get; set; }
