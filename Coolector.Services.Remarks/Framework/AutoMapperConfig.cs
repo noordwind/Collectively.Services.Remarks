@@ -11,7 +11,8 @@ namespace Coolector.Services.Remarks.Framework
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Remark, RemarkDto>();
-                cfg.CreateMap<RemarkAuthor, RemarkAuthorDto>();
+                cfg.CreateMap<RemarkState, RemarkStateDto>();
+                cfg.CreateMap<RemarkUser, RemarkUserDto>();
                 cfg.CreateMap<RemarkCategory, RemarkCategoryDto>();
                 cfg.CreateMap<Location, LocationDto>();
                 cfg.CreateMap<RemarkPhoto, FileDto>();
