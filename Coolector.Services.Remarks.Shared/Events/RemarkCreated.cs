@@ -14,6 +14,7 @@ namespace Coolector.Services.Remarks.Shared.Events
         public RemarkCategory Category { get; }
         public RemarkLocation Location { get; }
         public string Description { get; }
+        public RemarkState State { get; }
         public IEnumerable<string> Tags { get; set; }
         public DateTime CreatedAt { get; }
 
@@ -35,6 +36,15 @@ namespace Coolector.Services.Remarks.Shared.Events
             Description = description;
             Tags = tags;
             CreatedAt = createdAt;
+            State = new RemarkState
+            {
+                State = "new",
+                UserId = userId,
+                Username = username,
+                Description = description,
+                Location = location,
+                CreatedAt = createdAt
+            };
         }
     }
 }

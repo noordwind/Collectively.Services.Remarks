@@ -9,11 +9,7 @@ namespace Coolector.Services.Remarks.Shared.Events
         public Guid RequestId { get; }
         public Guid RemarkId { get; }
         public string UserId { get; }
-        public string Username { get; }
-        public string State { get; }
-        public string Description { get; }
-        public DateTime CreatedAt { get; }
-        public RemarkLocation Location { get; }
+        public RemarkState State { get; }
 
         protected RemarkStateChangedBase()
         {
@@ -27,11 +23,15 @@ namespace Coolector.Services.Remarks.Shared.Events
             RequestId = requestId;
             RemarkId = remarkId;
             UserId = userId;
-            Username = username;
-            State = state;
-            Description = description;
-            Location = location;
-            CreatedAt = createdAt;
+            State = new RemarkState
+            {
+                State = state,
+                UserId = userId,
+                Username = username,
+                Description = description,
+                Location = location,
+                CreatedAt = createdAt
+            };
         }
     }
 }

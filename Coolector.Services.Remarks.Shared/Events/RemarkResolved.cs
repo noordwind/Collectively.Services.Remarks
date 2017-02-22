@@ -4,7 +4,7 @@ using Coolector.Services.Remarks.Shared.Events.Models;
 
 namespace Coolector.Services.Remarks.Shared.Events
 {
-    public class RemarkResolved : RemarkStateChanged
+    public class RemarkResolved : RemarkStateChangedBase
     {
         public IEnumerable<RemarkFile> Photos { get; }
 
@@ -17,7 +17,7 @@ namespace Coolector.Services.Remarks.Shared.Events
             RemarkLocation location, DateTime createdAt, 
             IEnumerable<RemarkFile> photos) 
             : base(requestId, remarkId, userId, username, 
-                "resolved",description, location, createdAt)
+                "resolved", description, location, createdAt)
         {
             Photos = photos;
         }
