@@ -11,18 +11,26 @@ namespace Coolector.Services.Remarks.Domain
     public class Remark : IdentifiableEntity, ITimestampable
     {
         private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
+        private ISet<RemarkState> _states = new HashSet<RemarkState>();
         private ISet<string> _tags = new HashSet<string>();
         private ISet<Vote> _votes = new HashSet<Vote>();
-        public RemarkAuthor Author { get; protected set; }
+        public RemarkUser Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
         public Location ResolvedAtLocation { get; protected set; }
         public int Rating { get; protected set; }
+        public RemarkState State { get; protected set; }
 
         public IEnumerable<RemarkPhoto> Photos
         {
             get { return _photos; }
             protected set { _photos = new HashSet<RemarkPhoto>(value); }
+        }
+
+        public IEnumerable<RemarkState> States
+        {
+            get { return _states; }
+            protected set { _states = new HashSet<RemarkState>(value); }
         }
 
         public IEnumerable<string> Tags
@@ -39,7 +47,7 @@ namespace Coolector.Services.Remarks.Domain
 
         public string Description { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
-        public RemarkAuthor Resolver { get; protected set; }
+        public RemarkUser Resolver { get; protected set; }
         public DateTime? ResolvedAt { get; protected set; }
         public bool Resolved => Resolver != null;
 
@@ -55,6 +63,7 @@ namespace Coolector.Services.Remarks.Domain
             SetCategory(category);
             SetLocation(location);
             SetDescription(description);
+            SetState(RemarkState.New(Author));
             CreatedAt = DateTime.UtcNow;
         }
 
@@ -66,7 +75,7 @@ namespace Coolector.Services.Remarks.Domain
                     "Remark author can not be null.");
             }
 
-            Author = RemarkAuthor.Create(author);
+            Author = RemarkUser.Create(author);
         }
 
         public void SetCategory(Category category)
@@ -133,7 +142,7 @@ namespace Coolector.Services.Remarks.Domain
             {
                 ResolvedAtLocation = location;
             }
-            Resolver = RemarkAuthor.Create(resolver);
+            Resolver = RemarkUser.Create(resolver);
             ResolvedAt = DateTime.UtcNow;
         }
 
@@ -209,6 +218,44 @@ namespace Coolector.Services.Remarks.Domain
                 Rating++;
             }
             _votes.Remove(vote);
+        }
+
+        public void SetProcessingState(User user, string description = null)
+            => SetState(RemarkState.Processing(RemarkUser.Create(user), description));
+
+        public void SetResolvedState(User user, Location location, string description = null)
+            => SetState(RemarkState.Resolved(RemarkUser.Create(user), location, description));
+
+        public void SetRenewedState(User user, string description = null)
+            => SetState(RemarkState.Renewed(RemarkUser.Create(user), description));
+
+        public void SetCanceledState(User user, string description = null)
+            => SetState(RemarkState.Canceled(RemarkUser.Create(user), description));
+
+        private void SetState(RemarkState state) 
+        {
+            if(state == null)
+            {
+                throw new ArgumentNullException(nameof(state), "State can not be null.");
+            }
+
+            var latestState = _states.LastOrDefault();
+            if(latestState == null)
+            {
+                _states.Add(state);
+                State = state;
+
+                return;
+            }
+            if(latestState.State == state.State)
+            {
+                throw new DomainException(OperationCodes.CannotSetState,
+                    $"Can not set state to '{state}' for remark with id: '{Id}'" +
+                     "as it's the same as the previous one.");
+            }
+
+            _states.Add(state);
+            State = state;
         }
     }
 }

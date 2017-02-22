@@ -16,6 +16,7 @@ namespace Coolector.Services.Remarks.Shared
         public static string CannotSubmitVote => "cannot_submit_vote";
         public static string CannotDeleteVote => "cannot_delete_vote";
         public static string VoteAlreadySubmitted => "vote_already_submitted";
+        public static string CannotSetState => "cannot_set_state";
         public static string Error => "error";
     }
 }
