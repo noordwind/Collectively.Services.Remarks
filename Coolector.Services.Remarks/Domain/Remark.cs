@@ -63,7 +63,7 @@ namespace Coolector.Services.Remarks.Domain
             SetCategory(category);
             SetLocation(location);
             SetDescription(description);
-            SetState(RemarkState.New(Author));
+            SetState(RemarkState.New(Author, description));
             CreatedAt = DateTime.UtcNow;
         }
 

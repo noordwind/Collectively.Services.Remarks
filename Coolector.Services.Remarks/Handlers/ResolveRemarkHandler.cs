@@ -84,9 +84,8 @@ namespace Coolector.Services.Remarks.Handlers
                                     null : 
                                     new RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude);
                     await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
-                        command.UserId, remark.Value.Resolver.Name, location,
-                        remark.Value.Photos.Select(x => new RemarkFile(x.GroupId, x.Name, x.Size, x.Url, x.Metadata)).ToArray(),
-                        remark.Value.ResolvedAt.GetValueOrDefault()));
+                        command.UserId, remark.Value.Resolver.Name, string.Empty, location, remark.Value.ResolvedAt.GetValueOrDefault(),
+                        remark.Value.Photos.Select(x => new RemarkFile(x.GroupId, x.Name, x.Size, x.Url, x.Metadata)).ToArray()));
                 })
                 .OnCustomError(async ex => await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
                     command.UserId, command.RemarkId, ex.Code, ex.Message)))
