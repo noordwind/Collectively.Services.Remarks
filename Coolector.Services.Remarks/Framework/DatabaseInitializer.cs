@@ -27,9 +27,10 @@ namespace Coolector.Services.Remarks.Framework
             if (await _database.Categories().AsQueryable().AnyAsync())
                 return;
 
-            await _database.Categories().InsertOneAsync(new Category("litter"));
-            await _database.Categories().InsertOneAsync(new Category("damages"));
-            await _database.Categories().InsertOneAsync(new Category("accidents"));
+            await _database.Categories().InsertOneAsync(new Category("defect"));
+            await _database.Categories().InsertOneAsync(new Category("issue"));
+            await _database.Categories().InsertOneAsync(new Category("suggestion"));
+            await _database.Categories().InsertOneAsync(new Category("praise"));
 
             await _database.LocalizedResources().InsertOneAsync(new LocalizedResource("facebook:new_remark", "en-gb",
                 "I've just sent a new remark using Coolector. You can see it here: {0}"));
