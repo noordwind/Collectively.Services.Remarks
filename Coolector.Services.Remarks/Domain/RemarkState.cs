@@ -44,6 +44,7 @@ namespace Coolector.Services.Remarks.Domain
             State = state;
             User = user;
             Description = description?.Trim() ?? string.Empty;
+            Location = location;
             CreatedAt = DateTime.UtcNow;
         }
 
