@@ -17,9 +17,11 @@ namespace Coolector.Services.Remarks.Domain
         public RemarkUser Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
-        public Location ResolvedAtLocation { get; protected set; }
         public int Rating { get; protected set; }
         public RemarkState State { get; protected set; }
+        public string Description { get; protected set; }
+        public DateTime CreatedAt { get; protected set; }
+        public bool Resolved => State?.State == "resolved";
 
         public IEnumerable<RemarkPhoto> Photos
         {
@@ -45,12 +47,6 @@ namespace Coolector.Services.Remarks.Domain
             protected set { _votes = new HashSet<Vote>(value); }
         }
 
-        public string Description { get; protected set; }
-        public DateTime CreatedAt { get; protected set; }
-        public RemarkUser Resolver { get; protected set; }
-        public DateTime? ResolvedAt { get; protected set; }
-        public bool Resolved => Resolver != null;
-
         protected Remark()
         {
         }
@@ -63,7 +59,7 @@ namespace Coolector.Services.Remarks.Domain
             SetCategory(category);
             SetLocation(location);
             SetDescription(description);
-            SetState(RemarkState.New(Author, description));
+            SetState(RemarkState.New(Author, location, description));
             CreatedAt = DateTime.UtcNow;
         }
 
@@ -129,21 +125,6 @@ namespace Coolector.Services.Remarks.Domain
         public void RemoveTag(string tag)
         {
             _tags.Remove(tag);
-        }
-
-        public void Resolve(User resolver, Location location = null)
-        {
-            if (Resolved)
-            {
-                throw new InvalidOperationException($"Remark {Id} has been already resolved " +
-                                                    $"by {Resolver.Name} at {ResolvedAt}.");
-            }
-            if (location != null) 
-            {
-                ResolvedAtLocation = location;
-            }
-            Resolver = RemarkUser.Create(resolver);
-            ResolvedAt = DateTime.UtcNow;
         }
 
         public void SetDescription(string description)
@@ -231,6 +212,9 @@ namespace Coolector.Services.Remarks.Domain
 
         public void SetCanceledState(User user, string description = null)
             => SetState(RemarkState.Canceled(RemarkUser.Create(user), description));
+
+        public Maybe<RemarkState> GetLatestStateOf(string state) 
+            => States.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.State == state); 
 
         private void SetState(RemarkState state) 
         {
