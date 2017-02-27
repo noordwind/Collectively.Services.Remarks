@@ -34,8 +34,8 @@ namespace Coolector.Services.Remarks.Repositories
             var updateAuthor = Builders<Remark>.Update.Set("author.name", name);
             await _database.Remarks().UpdateManyAsync(x => x.Author.UserId == userId, updateAuthor);
 
-            var updateResolver = Builders<Remark>.Update.Set("resolver.name", name);
-            await _database.Remarks().UpdateManyAsync(x => x.Resolver.UserId == userId, updateResolver);
+            var updateUsers = Builders<Remark>.Update.Set("resolver.name", name);
+            await _database.Remarks().UpdateManyAsync(x => x.State.User.UserId == userId, updateUsers);
         }
 
         public async Task DeleteAsync(Remark remark)

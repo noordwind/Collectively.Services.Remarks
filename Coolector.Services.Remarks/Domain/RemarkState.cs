@@ -12,6 +12,15 @@ namespace Coolector.Services.Remarks.Domain
         public Location Location { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
 
+        public static class Names
+        {
+            public static string New => "new";
+            public static string Processing => "processing";
+            public static string Resolved => "resolved";
+            public static string Renewed => "renewed";
+            public static string Canceled => "canceled";
+        }
+
         protected RemarkState()
         {
         }
@@ -38,20 +47,20 @@ namespace Coolector.Services.Remarks.Domain
             CreatedAt = DateTime.UtcNow;
         }
 
-        public static RemarkState New(RemarkUser user, string description = null) 
-            => new RemarkState("new", user, description);
+        public static RemarkState New(RemarkUser user, Location location, string description = null) 
+            => new RemarkState(Names.New, user, description, location);
 
         public static RemarkState Processing(RemarkUser user, string description = null) 
-            => new RemarkState("processing", user, description);
+            => new RemarkState(Names.Processing, user, description);
 
         public static RemarkState Resolved(RemarkUser user, Location location, string description = null) 
-            => new RemarkState("resolved", user, description, location);
+            => new RemarkState(Names.Resolved, user, description, location);
 
         public static RemarkState Renewed(RemarkUser user, string description = null) 
-            => new RemarkState("renewed", user, description);
+            => new RemarkState(Names.Renewed, user, description);
 
         public static RemarkState Canceled(RemarkUser user, string description = null) 
-            => new RemarkState("canceled", user, description);
+            => new RemarkState(Names.Canceled, user, description);
 
         protected override bool EqualsCore(RemarkState other) 
             => State.Equals(other.State) 

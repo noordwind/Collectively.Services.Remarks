@@ -83,7 +83,7 @@ namespace Coolector.Services.Remarks.Tests.Specs.Handlers
             Category = new Category("test");
             Location = Location.Create(Command.Latitude, Command.Longitude, "address");
             Remark = new Remark(RemarkId, User, Category, Location, "description");
-            Remark.Resolve(User);
+            Remark.SetResolvedState(User, Location);
 
             FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);

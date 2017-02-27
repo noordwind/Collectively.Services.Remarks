@@ -11,6 +11,7 @@ using Coolector.Services.Remarks.Shared.Events;
 using Coolector.Services.Remarks.Shared.Events.Models;
 using NLog;
 using RawRabbit;
+using RemarkState = Coolector.Services.Remarks.Domain.RemarkState;
 
 namespace Coolector.Services.Remarks.Handlers
 {
@@ -80,11 +81,12 @@ namespace Coolector.Services.Remarks.Handlers
                 .OnSuccess(async () =>
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    var location = remark.Value.ResolvedAtLocation == null ? 
+                    var state = remark.Value.GetLatestStateOf(RemarkState.Names.Resolved).Value;
+                    var location =  state.Location == null ? 
                                     null : 
-                                    new RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude);
+                                    new RemarkLocation(state.Location.Address, state.Location.Latitude, state.Location.Longitude);
                     await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
-                        command.UserId, remark.Value.Resolver.Name, string.Empty, location, remark.Value.ResolvedAt.GetValueOrDefault(),
+                        command.UserId, state.User.Name, string.Empty, location, state.CreatedAt,
                         remark.Value.Photos.Select(x => new RemarkFile(x.GroupId, x.Name, x.Size, x.Url, x.Metadata)).ToArray()));
                 })
                 .OnCustomError(async ex => await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
