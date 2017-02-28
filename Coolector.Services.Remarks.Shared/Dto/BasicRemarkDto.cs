@@ -13,5 +13,6 @@ namespace Coolector.Services.Remarks.Shared.Dto
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
         public int Rating { get; set; }
+        public bool Resolved { get; set; }
     }
 }
