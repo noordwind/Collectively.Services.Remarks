@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-dotnet test ./Coolector.Services.Remarks.Tests.EndToEnd
+dotnet test ./Collectively.Services.Remarks.Tests.EndToEnd
