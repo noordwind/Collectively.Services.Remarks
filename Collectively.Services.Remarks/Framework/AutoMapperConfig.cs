@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Collectively.Services.Remarks.Domain;
-
+using Collectively.Services.Remarks.Dto;
 
 namespace Collectively.Services.Remarks.Framework
 {

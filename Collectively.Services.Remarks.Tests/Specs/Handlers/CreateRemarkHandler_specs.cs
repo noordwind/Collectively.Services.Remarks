@@ -5,7 +5,7 @@ using Machine.Specifications;
 using Moq;
 using RawRabbit;
 using System;
-using Collectively.Common.Commands;
+using Collectively.Messages.Commands;
 using Collectively.Common.Services;
 
 using Collectively.Messages.Commands.Remarks;

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using  Collectively.Common.Commands;
+using  Collectively.Messages.Commands;
 using  Collectively.Common.Extensions;
 using  Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;

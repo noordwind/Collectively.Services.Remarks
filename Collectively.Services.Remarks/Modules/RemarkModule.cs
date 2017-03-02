@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Collectively.Services.Remarks.Domain;
+using Collectively.Services.Remarks.Dto;
 using Collectively.Services.Remarks.Queries;
 using Collectively.Services.Remarks.Services;
-
 
 namespace Collectively.Services.Remarks.Modules
 {
