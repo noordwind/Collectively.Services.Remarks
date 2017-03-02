@@ -7,7 +7,6 @@ using RawRabbit;
 using System;
 using Collectively.Messages.Commands;
 using Collectively.Common.Services;
-
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;

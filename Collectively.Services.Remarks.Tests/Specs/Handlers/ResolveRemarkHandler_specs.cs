@@ -12,7 +12,6 @@ using Collectively.Services.Remarks.Handlers;
 using Machine.Specifications;
 using RawRabbit.Configuration.Publish;
 using Collectively.Services.Remarks.Domain;
-
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;

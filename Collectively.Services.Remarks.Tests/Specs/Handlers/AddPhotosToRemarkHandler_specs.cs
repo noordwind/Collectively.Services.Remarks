@@ -8,7 +8,6 @@ using System;
 using Collectively.Messages.Commands;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Settings;
-
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
