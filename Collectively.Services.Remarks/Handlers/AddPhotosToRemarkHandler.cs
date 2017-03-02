@@ -7,7 +7,6 @@ using  Collectively.Common.Services;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Services;
 using Collectively.Services.Remarks.Settings;
-
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using RawRabbit;

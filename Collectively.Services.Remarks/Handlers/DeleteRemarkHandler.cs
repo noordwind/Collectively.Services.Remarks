@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using  Collectively.Messages.Commands;
-using  Collectively.Common.Services;
+using Collectively.Messages.Commands;
+using Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;
-
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using RawRabbit;

@@ -1,11 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using  Collectively.Messages.Commands;
-using  Collectively.Common.Domain;
-using  Collectively.Common.Services;
+using Collectively.Messages.Commands;
+using Collectively.Common.Domain;
+using Collectively.Common.Services;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Services;
-
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using Collectively.Messages.Events.Remarks.Models;

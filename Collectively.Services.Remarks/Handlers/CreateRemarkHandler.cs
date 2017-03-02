@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using  Collectively.Messages.Commands;
-using  Collectively.Common.Services;
+using Collectively.Messages.Commands;
+using Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;
-
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;

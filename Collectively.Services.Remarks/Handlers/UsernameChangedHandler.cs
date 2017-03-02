@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using  Collectively.Messages.Events;
-using  Collectively.Common.Services;
+using Collectively.Messages.Events;
+using Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;
-using  Collectively.Messages.Events.Users;
+using Collectively.Messages.Events.Users;
 using NLog;
 
 namespace Collectively.Services.Remarks.Handlers
