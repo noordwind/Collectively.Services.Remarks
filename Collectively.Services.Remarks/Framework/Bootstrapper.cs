@@ -10,7 +10,6 @@ using Collectively.Messages.Events;
 using Collectively.Common.Exceptionless;
 using Collectively.Common.Mongo;
 using Collectively.Common.Nancy;
-using Nancy.Serialization.JsonNet;
 using Collectively.Common.RabbitMq;
 using Collectively.Common.Security;
 using Collectively.Services.Remarks.Repositories;
@@ -57,7 +56,7 @@ namespace Collectively.Services.Remarks.Framework
 
             container.Update(builder =>
             {
-                builder.RegisterType<JsonNetSerializer>().As<JsonSerializer>().SingleInstance();
+                builder.RegisterType<CustomJsonSerializer>().As<JsonSerializer>().SingleInstance();
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
                 builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
                 builder.RegisterInstance(generalSettings).SingleInstance();
