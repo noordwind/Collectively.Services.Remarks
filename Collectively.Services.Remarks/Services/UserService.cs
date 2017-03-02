@@ -2,7 +2,6 @@
 using  Collectively.Common.Domain;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Repositories;
-using  Collectively.Services.Users.Shared;
 using NLog;
 
 namespace Collectively.Services.Remarks.Services

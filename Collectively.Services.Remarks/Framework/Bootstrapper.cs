@@ -57,7 +57,7 @@ namespace Collectively.Services.Remarks.Framework
 
             container.Update(builder =>
             {
-                builder.RegisterType<CustomJsonSerializer>().As<JsonSerializer>().SingleInstance();
+                builder.RegisterType<JsonNetSerializer>().As<JsonSerializer>().SingleInstance();
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
                 builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
                 builder.RegisterInstance(generalSettings).SingleInstance();
