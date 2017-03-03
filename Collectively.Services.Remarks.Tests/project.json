@@ -17,7 +17,7 @@
     "dotnet-test-mspec": "*",
     "Moq": "4.6.38-alpha",
     "Collectively.Services.Remarks": "1.0.0-*",
-    Collectively.Messages": "1.0.*",
+    "Collectively.Messages": "1.0.*",
     "Collectively.Common": "1.0.*"
   }
 }
