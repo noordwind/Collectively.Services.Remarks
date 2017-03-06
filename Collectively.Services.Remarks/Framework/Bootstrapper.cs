@@ -12,6 +12,9 @@ using Collectively.Common.Mongo;
 using Collectively.Common.Nancy;
 using Collectively.Common.RabbitMq;
 using Collectively.Common.Security;
+using Collectively.Common.Services;
+using Collectively.Common.ServiceClients;
+using Collectively.Services.Remarks.Settings;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Services;
 using Microsoft.Extensions.Configuration;
@@ -23,8 +26,8 @@ using Newtonsoft.Json;
 using NLog;
 using RawRabbit.Configuration;
 using Collectively.Common.Extensions;
-using Collectively.Common.Services;
-using Collectively.Services.Remarks.Settings;
+using Collectively.Messages.Events.Remarks;
+
 
 namespace Collectively.Services.Remarks.Framework
 {
@@ -80,6 +83,8 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
                 builder.RegisterType<Handler>().As<IHandler>();
+                builder.RegisterModule<ServiceClientModule>();
+                RegisterResourceFactory(builder);
 
                 var assembly = typeof(Startup).GetTypeInfo().Assembly;
                 builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(IEventHandler<>));
@@ -166,6 +171,19 @@ namespace Collectively.Services.Remarks.Framework
             {
                 ctx.Request.Query[fixedNumber.Key] = fixedNumber.Value;
             }
+        }
+
+        private void RegisterResourceFactory(ContainerBuilder builder)
+        {
+            var remarkEndpoint = "remarks/{0}";
+            var resources = new Dictionary<Type, string>
+            {
+                [typeof(RemarkCreated)] = remarkEndpoint,
+                [typeof(RemarkResolved)] = remarkEndpoint,
+                [typeof(PhotosToRemarkAdded)] = remarkEndpoint,
+                [typeof(PhotosFromRemarkRemoved)] = remarkEndpoint
+            };
+            builder.RegisterModule(new ResourceFactory.Module(resources));
         }
     }
 }

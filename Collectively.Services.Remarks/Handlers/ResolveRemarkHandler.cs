@@ -7,7 +7,6 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
-using Collectively.Messages.Events.Remarks.Models;
 using NLog;
 using RawRabbit;
 using RemarkState = Collectively.Services.Remarks.Domain.RemarkState;
@@ -23,18 +22,21 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IRemarkService _remarkService;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
+        private readonly IResourceFactory _resourceFactory;
 
         public ResolveRemarkHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
             IFileResolver fileResolver,
-            IFileValidator fileValidator)
+            IFileValidator fileValidator,
+            IResourceFactory resourceFactory)
         {
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
+            _resourceFactory = resourceFactory;
         }
 
         public async Task HandleAsync(ResolveRemark command)
@@ -81,12 +83,9 @@ namespace Collectively.Services.Remarks.Handlers
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
                     var state = remark.Value.GetLatestStateOf(RemarkState.Names.Resolved).Value;
-                    var location =  state.Location == null ? 
-                                    null : 
-                                    new RemarkLocation(state.Location.Address, state.Location.Latitude, state.Location.Longitude);
-                    await _bus.PublishAsync(new RemarkResolved(command.Request.Id, command.RemarkId,
-                        command.UserId, state.User.Name, string.Empty, location, state.CreatedAt,
-                        remark.Value.Photos.Select(x => new RemarkFile(x.GroupId, x.Name, x.Size, x.Url, x.Metadata)).ToArray()));
+                    var resource = _resourceFactory.Resolve<RemarkResolved>(command.RemarkId);
+                    await _bus.PublishAsync(new RemarkResolved(command.Request.Id, resource, 
+                        command.UserId, command.RemarkId));
                 })
                 .OnCustomError(async ex => await _bus.PublishAsync(new ResolveRemarkRejected(command.Request.Id,
                     command.UserId, command.RemarkId, ex.Code, ex.Message)))

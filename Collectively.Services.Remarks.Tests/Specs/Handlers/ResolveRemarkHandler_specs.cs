@@ -27,6 +27,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
+        protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static ResolveRemark Command;
         protected static string UserId = "UserId";
         protected static Guid RemarkId = Guid.NewGuid();
@@ -46,12 +47,14 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             RemarkServiceMock = new Mock<IRemarkService>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
+            ResourceFactoryMock = new Mock<IResourceFactory>();
 
             ResolveRemarkHandler = new ResolveRemarkHandler(Handler,
                 BusClientMock.Object, 
                 RemarkServiceMock.Object,
                 FileResolverMock.Object,
-                FileValidatorMock.Object);
+                FileValidatorMock.Object,
+                ResourceFactoryMock.Object);
 
             Command = new ResolveRemark
             {

@@ -6,6 +6,12 @@ using Collectively.Services.Remarks.Handlers;
 using Collectively.Messages.Events.Users;
 using Machine.Specifications;
 using Collectively.Common.Services;
+using Collectively.Common.ServiceClients.Users;
+using Collectively.Messages.Events;
+using Collectively.Common.Types;
+using System.Threading.Tasks;
+using System.Dynamic;
+using Collectively.Services.Remarks.Dto;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
@@ -17,15 +23,23 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static SignedUp Event;
         protected static Exception Exception;
-
+        protected static Mock<IUserServiceClient> UserServiceClient;
+        protected static UserDto User;
         protected static void Initialize()
         {
             ExceptionHandlerMock = new Mock<IExceptionHandler>();
             Handler = new Handler(ExceptionHandlerMock.Object);
             UserServiceMock = new Mock<IUserService>();
-            Event = new SignedUp(Guid.NewGuid(), "user", "user@email.com", "name",
-                "picture", "user", "active", "collectively", string.Empty, DateTime.UtcNow);
-            SignedUpHandler = new SignedUpHandler(Handler, UserServiceMock.Object);
+            User = new UserDto
+            {
+                Name = "user",
+                Role = "user"
+            };
+            UserServiceClient = new Mock<IUserServiceClient>();
+            Event = new SignedUp(Guid.NewGuid(), Resource.Create("test", "test"), Guid.NewGuid().ToString("N"), "test");
+            UserServiceClient.Setup(x => x.GetAsync<UserDto>(Event.UserId))
+                .ReturnsAsync(User);
+            SignedUpHandler = new SignedUpHandler(Handler, UserServiceMock.Object, UserServiceClient.Object);
         }
     }
 
@@ -41,7 +55,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_create_if_not_found_async_on_user_service = () =>
         {
-            UserServiceMock.Verify(x => x.CreateIfNotFoundAsync(Event.UserId, Event.Name, Event.Role), Times.Once);
+            UserServiceMock.Verify(x => x.CreateIfNotFoundAsync(Event.UserId, 
+                User.Name, User.Role), Times.Once);
         };
     }
 }

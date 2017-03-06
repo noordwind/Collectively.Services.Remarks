@@ -26,6 +26,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<ISocialMediaService> SocialMediaServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
+        protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static CreateRemark Command;
         protected static Exception Exception;
 
@@ -38,6 +39,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             FileValidatorMock = new Mock<IFileValidator>();
             RemarkServiceMock = new Mock<IRemarkService>();
             SocialMediaServiceMock = new Mock<ISocialMediaService>();
+            ResourceFactoryMock = new Mock<IResourceFactory>();
             Command = new CreateRemark
             {
                 RemarkId = Guid.NewGuid(),
@@ -63,7 +65,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 }
             };
             CreateRemarkHandler = new CreateRemarkHandler(Handler, BusClientMock.Object, FileResolverMock.Object,
-                FileValidatorMock.Object, RemarkServiceMock.Object, SocialMediaServiceMock.Object);
+                FileValidatorMock.Object, RemarkServiceMock.Object, SocialMediaServiceMock.Object, ResourceFactoryMock.Object);
         }
     }
 

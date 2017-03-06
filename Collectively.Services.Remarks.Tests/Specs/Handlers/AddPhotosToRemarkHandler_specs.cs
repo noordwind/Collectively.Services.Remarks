@@ -27,6 +27,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
+        protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static AddPhotosToRemark Command;
         protected static GeneralSettings GeneralSettings;
         protected static File File;
@@ -40,6 +41,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            ResourceFactoryMock = new Mock<IResourceFactory>();
             GeneralSettings = new GeneralSettings
             {
                 PhotosLimit = 2
@@ -60,7 +62,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             };
             AddPhotosToRemarkHandler = new AddPhotosToRemarkHandler(Handler, BusClientMock.Object, 
                 RemarkServiceMock.Object, FileResolverMock.Object,  
-                FileValidatorMock.Object, GeneralSettings);
+                FileValidatorMock.Object, GeneralSettings, ResourceFactoryMock.Object);
         }
     }
 

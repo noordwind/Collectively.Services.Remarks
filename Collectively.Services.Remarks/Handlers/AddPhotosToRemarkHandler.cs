@@ -10,7 +10,6 @@ using Collectively.Services.Remarks.Settings;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using RawRabbit;
-using RemarkFile = Collectively.Messages.Events.Remarks.Models.RemarkFile;
 
 namespace Collectively.Services.Remarks.Handlers
 {
@@ -22,13 +21,15 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
         private readonly GeneralSettings _generalSettings;
+        private readonly IResourceFactory _resourceFactory;
 
         public AddPhotosToRemarkHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
             IFileResolver fileResolver,
             IFileValidator fileValidator,
-            GeneralSettings generalSettings)
+            GeneralSettings generalSettings,
+            IResourceFactory resourceFactory)
         {
             _handler = handler;
             _bus = bus;
@@ -36,6 +37,7 @@ namespace Collectively.Services.Remarks.Handlers
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
             _generalSettings = generalSettings;
+            _resourceFactory = resourceFactory;
         }
 
         public async Task HandleAsync(AddPhotosToRemark command)
@@ -78,8 +80,9 @@ namespace Collectively.Services.Remarks.Handlers
                 .OnSuccess(async () =>
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    await _bus.PublishAsync(new PhotosToRemarkAdded(command.Request.Id, command.RemarkId, command.UserId, 
-                        remark.Value.Photos.Select(x => new RemarkFile(x.GroupId, x.Name, x.Size, x.Url, x.Metadata)).ToArray()));
+                    var resource = _resourceFactory.Resolve<PhotosToRemarkAdded>(command.RemarkId);
+                    await _bus.PublishAsync(new PhotosToRemarkAdded(command.Request.Id, resource, 
+                        command.UserId, command.RemarkId));
                 })
                 .OnCustomError(ex => _bus.PublishAsync(new AddPhotosToRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))

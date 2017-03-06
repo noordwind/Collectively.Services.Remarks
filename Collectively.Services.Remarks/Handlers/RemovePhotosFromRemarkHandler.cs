@@ -16,14 +16,17 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
+        private readonly IResourceFactory _resourceFactory;
 
         public RemovePhotosFromRemarkHandler(IHandler handler,
             IBusClient bus,
-            IRemarkService remarkService)
+            IRemarkService remarkService,
+            IResourceFactory resourceFactory)
         {
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
+            _resourceFactory = resourceFactory;
         }
 
         public async Task HandleAsync(RemovePhotosFromRemark command)
@@ -52,8 +55,12 @@ namespace Collectively.Services.Remarks.Handlers
 
                     await _remarkService.RemovePhotosAsync(command.RemarkId, removedPhotos);
                 })
-                .OnSuccess(async () => await _bus.PublishAsync(new PhotosFromRemarkRemoved(command.Request.Id, 
-                    command.RemarkId, command.UserId, groupIds, removedPhotos)))
+                .OnSuccess(async () => 
+                {
+                    var resource = _resourceFactory.Resolve<PhotosFromRemarkRemoved>(command.RemarkId);
+                    await _bus.PublishAsync(new PhotosFromRemarkRemoved(command.Request.Id, resource, 
+                        command.UserId, command.RemarkId));
+                })
                 .OnCustomError(ex => _bus.PublishAsync(new RemovePhotosFromRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>

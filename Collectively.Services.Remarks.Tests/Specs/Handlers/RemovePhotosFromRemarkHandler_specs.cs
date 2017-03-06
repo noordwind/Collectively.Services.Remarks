@@ -26,6 +26,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
+        protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static RemovePhotosFromRemark Command;
         protected static Exception Exception;
 
@@ -35,6 +36,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            ResourceFactoryMock = new Mock<IResourceFactory>();
             Command = new RemovePhotosFromRemark
             {
                 RemarkId = Guid.NewGuid(),
@@ -50,7 +52,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Photos = new List<GroupedFile>()
             };
             RemovePhotosFromRemarkHandler = new RemovePhotosFromRemarkHandler(Handler, 
-                BusClientMock.Object, RemarkServiceMock.Object);
+                BusClientMock.Object, RemarkServiceMock.Object, ResourceFactoryMock.Object);
         }       
     }
 

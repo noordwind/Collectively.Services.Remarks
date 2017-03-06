@@ -8,7 +8,6 @@ using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
-using Collectively.Messages.Events.Remarks.Models;
 using Lockbox.Client.Extensions;
 using NLog;
 using RawRabbit;
@@ -24,13 +23,15 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IFileValidator _fileValidator;
         private readonly IRemarkService _remarkService;
         private readonly ISocialMediaService _socialMediaService;
+        private readonly IResourceFactory _resourceFactory;
 
         public CreateRemarkHandler(IHandler handler,
             IBusClient bus, 
             IFileResolver fileResolver, 
             IFileValidator fileValidator,
             IRemarkService remarkService,
-            ISocialMediaService socialMediaService)
+            ISocialMediaService socialMediaService,
+            IResourceFactory resourceFactory)
         {
             _handler = handler;
             _bus = bus;
@@ -38,6 +39,7 @@ namespace Collectively.Services.Remarks.Handlers
             _fileValidator = fileValidator;
             _remarkService = remarkService;
             _socialMediaService = socialMediaService;
+            _resourceFactory = resourceFactory;
         }
 
         public async Task HandleAsync(CreateRemark command)
@@ -57,11 +59,9 @@ namespace Collectively.Services.Remarks.Handlers
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
                     await PublishOnSocialMediaAsync(command.RemarkId, command.Request.Culture, command.SocialMedia);
-                    await _bus.PublishAsync(new RemarkCreated(command.Request.Id, command.RemarkId,
-                        command.UserId, remark.Value.Author.Name,
-                        new RemarkCategory(remark.Value.Category.Id, remark.Value.Category.Name),
-                        new RemarkLocation(remark.Value.Location.Address, command.Latitude, command.Longitude),
-                        command.Description, remark.Value.Tags, remark.Value.CreatedAt));
+                    var resource = _resourceFactory.Resolve<RemarkCreated>(command.RemarkId);
+                    await _bus.PublishAsync(new RemarkCreated(command.Request.Id, resource, 
+                        command.UserId, command.RemarkId));
                 })
                 .OnCustomError(ex => _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
