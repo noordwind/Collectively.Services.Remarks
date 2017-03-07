@@ -24,9 +24,12 @@ namespace Collectively.Services.Remarks.Handlers
 
         public async Task HandleAsync(SignedUp @event)
         {
-            var user = await _serviceClient.GetAsync<UserDto>(@event.Resource);
             await _handler
-                .Run(async () => await _userService.CreateIfNotFoundAsync(@event.UserId, user.Value.Name, user.Value.Role))
+                .Run(async () => 
+                {
+                    var user = await _serviceClient.GetAsync<UserDto>(@event.Resource);
+                    await _userService.CreateIfNotFoundAsync(@event.UserId, user.Value.Name, user.Value.Role);
+                })
                 .ExecuteAsync();
         }
     }
