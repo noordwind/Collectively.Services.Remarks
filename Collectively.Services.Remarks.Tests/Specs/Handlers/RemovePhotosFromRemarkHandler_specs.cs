@@ -1,4 +1,3 @@
-using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Handlers;
 using Collectively.Services.Remarks.Services;
 using Machine.Specifications;
@@ -7,14 +6,12 @@ using RawRabbit;
 using System;
 using Collectively.Messages.Commands;
 using Collectively.Common.Services;
-using Collectively.Services.Remarks.Settings;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
 using It = Machine.Specifications.It;
 using RawRabbit.Configuration.Publish;
 using System.Collections.Generic;
-using Collectively.Common.Types;
 using Collectively.Common.Domain;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers

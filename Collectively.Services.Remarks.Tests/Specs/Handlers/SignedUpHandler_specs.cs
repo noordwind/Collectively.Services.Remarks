@@ -6,11 +6,8 @@ using Collectively.Services.Remarks.Handlers;
 using Collectively.Messages.Events.Users;
 using Machine.Specifications;
 using Collectively.Common.Services;
-using Collectively.Common.ServiceClients.Users;
+using Collectively.Common.ServiceClients;
 using Collectively.Messages.Events;
-using Collectively.Common.Types;
-using System.Threading.Tasks;
-using System.Dynamic;
 using Collectively.Services.Remarks.Dto;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
@@ -23,7 +20,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static SignedUp Event;
         protected static Exception Exception;
-        protected static Mock<IUserServiceClient> UserServiceClient;
+        protected static Mock<IServiceClient> ServiceClient;
         protected static UserDto User;
         protected static void Initialize()
         {
@@ -35,11 +32,11 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Name = "user",
                 Role = "user"
             };
-            UserServiceClient = new Mock<IUserServiceClient>();
+            ServiceClient = new Mock<IServiceClient>();
             Event = new SignedUp(Guid.NewGuid(), Resource.Create("test", "test"), Guid.NewGuid().ToString("N"), "test");
-            UserServiceClient.Setup(x => x.GetAsync<UserDto>(Event.UserId))
+            ServiceClient.Setup(x => x.GetAsync<UserDto>(Event.Resource))
                 .ReturnsAsync(User);
-            SignedUpHandler = new SignedUpHandler(Handler, UserServiceMock.Object, UserServiceClient.Object);
+            SignedUpHandler = new SignedUpHandler(Handler, UserServiceMock.Object, ServiceClient.Object);
         }
     }
 

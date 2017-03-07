@@ -3,9 +3,7 @@ using Collectively.Messages.Events;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Events.Users;
-using Collectively.Common.ServiceClients.Users;
-using Newtonsoft.Json;
-using System;
+using Collectively.Common.ServiceClients;
 using Collectively.Services.Remarks.Dto;
 
 namespace Collectively.Services.Remarks.Handlers
@@ -14,19 +12,19 @@ namespace Collectively.Services.Remarks.Handlers
     {
         private readonly IHandler _handler;
         private readonly IUserService _userService;
-        private readonly IUserServiceClient _userServiceClient;
+        private readonly IServiceClient _serviceClient;
 
         public SignedUpHandler(IHandler handler, IUserService userService, 
-            IUserServiceClient userServiceClient)
+            IServiceClient serviceClient)
         {
             _handler = handler;
             _userService = userService;
-            _userServiceClient = userServiceClient;
+            _serviceClient = serviceClient;
         }
 
         public async Task HandleAsync(SignedUp @event)
         {
-            var user = await _userServiceClient.GetAsync<UserDto>(@event.UserId);
+            var user = await _serviceClient.GetAsync<UserDto>(@event.Resource);
             await _handler
                 .Run(async () => await _userService.CreateIfNotFoundAsync(@event.UserId, user.Value.Name, user.Value.Role))
                 .ExecuteAsync();

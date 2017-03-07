@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Tests.EndToEnd.Framework;
 using System.Linq;
 using Machine.Specifications;
-using FluentAssertions;
 
 namespace Collectively.Services.Remarks.Tests.EndToEnd.Specs
 {
