@@ -21,7 +21,7 @@ namespace Collectively.Services.Remarks.Domain
         public RemarkState State { get; protected set; }
         public string Description { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
-        public bool Resolved => State?.State == "resolved";
+        public bool Resolved => State?.State == RemarkState.Names.Resolved;
 
         public IEnumerable<RemarkPhoto> Photos
         {
@@ -67,10 +67,9 @@ namespace Collectively.Services.Remarks.Domain
         {
             if (author == null)
             {
-                throw new ArgumentNullException(nameof(author), 
+                throw new DomainException(OperationCodes.RemarkAuthorNotProvided,
                     "Remark author can not be null.");
             }
-
             Author = RemarkUser.Create(author);
         }
 
@@ -78,10 +77,9 @@ namespace Collectively.Services.Remarks.Domain
         {
             if (category == null)
             {
-                throw new ArgumentNullException(nameof(category), 
+                throw new DomainException(OperationCodes.RemarkCategoryNotProvided,
                     "Remark category can not be null.");
             }
-
             Category = RemarkCategory.Create(category);
         }
 
@@ -89,10 +87,9 @@ namespace Collectively.Services.Remarks.Domain
         {
             if (location == null)
             {
-                throw new ArgumentNullException(nameof(location), 
+                throw new DomainException(OperationCodes.RemarkLocationNotProvided, 
                     "Remark location can not be null.");
             }
-
             Location = location;
         }
 
@@ -136,10 +133,14 @@ namespace Collectively.Services.Remarks.Domain
                 return;
             }
             if (description.Length > 500)
-                throw new ArgumentException("Description is too long.", nameof(description));
+            {
+                throw new DomainException(OperationCodes.InvalidRemarkDescription, 
+                    "Remark Description is too long.");
+            }
             if (Description.EqualsCaseInvariant(description))
+            {
                 return;
-
+            }
             Description = description;
         }
 
@@ -220,7 +221,8 @@ namespace Collectively.Services.Remarks.Domain
         {
             if(state == null)
             {
-                throw new ArgumentNullException(nameof(state), "State can not be null.");
+                throw new DomainException(OperationCodes.RemarkStateNotProvided, 
+                    "Remark state can not be null.");
             }
 
             var latestState = _states.LastOrDefault();
@@ -231,13 +233,12 @@ namespace Collectively.Services.Remarks.Domain
 
                 return;
             }
-            if(latestState.State == state.State)
+            if(latestState.State == state.State &&  latestState.State != RemarkState.Names.Processing)
             {
                 throw new DomainException(OperationCodes.CannotSetState,
                     $"Can not set state to '{state}' for remark with id: '{Id}'" +
                      "as it's the same as the previous one.");
             }
-
             _states.Add(state);
             State = state;
         }

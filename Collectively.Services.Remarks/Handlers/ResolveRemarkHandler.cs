@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Collectively.Messages.Commands;
 using Collectively.Common.Domain;
 using Collectively.Common.Services;

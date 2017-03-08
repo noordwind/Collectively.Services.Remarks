@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using  Collectively.Common.Types;
-using  Collectively.Common.Domain;
-using  Collectively.Common.Extensions;
+using Collectively.Common.Types;
+using Collectively.Common.Domain;
+using Collectively.Common.Extensions;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Queries;
 using Collectively.Services.Remarks.Repositories;
-
 using Collectively.Services.Remarks.Settings;
 using NLog;
 using File = Collectively.Services.Remarks.Domain.File;
@@ -96,11 +95,17 @@ namespace Collectively.Services.Remarks.Services
                          $"latitude: {location.Latitude}, longitude: {location.Longitude}.");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
-                throw new ArgumentException($"User with id: {userId} has not been found.");
+            {
+                throw new ServiceException(OperationCodes.UserNotFound,
+                    $"User with id: '{userId}' does not exist!");
+            }
 
             var remarkCategory = await _categoryRepository.GetByNameAsync(category);
             if (remarkCategory.HasNoValue)
-                throw new ArgumentException($"Category {category} has not been found.");
+            {
+                throw new ServiceException(OperationCodes.CategoryNotFound,
+                    $"Category: '{userId}' does not exist!");
+            }
 
             var remark = new Remark(id, user.Value, remarkCategory.Value, location, description);
             if (tags == null || !tags.Any())
@@ -132,7 +137,10 @@ namespace Collectively.Services.Remarks.Services
             Logger.Debug($"Resolve remark, id:{id}, userId:{userId}, photo:{photo?.Name ?? "none"}");
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
-                throw new ArgumentException($"User with id: {userId} has not been found.");
+            {
+                throw new ServiceException(OperationCodes.UserNotFound,
+                    $"User with id: '{userId}' does not exist!");
+            }
 
             var remark = await _remarkRepository.GetByIdAsync(id);
             if (remark.HasNoValue)
@@ -149,7 +157,9 @@ namespace Collectively.Services.Remarks.Services
             }
 
             if (photo != null)
-                await UploadImagesWithDifferentSizesAsync(remark.Value, photo, "resolved");
+            {
+                await UploadImagesWithDifferentSizesAsync(remark.Value, photo, RemarkState.Names.Resolved);
+            }
 
             remark.Value.SetResolvedState(user.Value, location);
             await _remarkRepository.UpdateAsync(remark.Value);

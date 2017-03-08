@@ -15,7 +15,6 @@ namespace Collectively.Services.Remarks.Services
         IDictionary<string,File> ProcessImage(File file);
     }
 
-
     public class ImageService : IImageService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

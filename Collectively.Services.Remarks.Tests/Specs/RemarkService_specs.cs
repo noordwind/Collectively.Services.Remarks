@@ -154,10 +154,10 @@ namespace Collectively.Services.Remarks.Tests.Specs
         Because of = () => 
             Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location).Await());
 
-        It should_throw_argument_exception = () =>
+        It should_throw_service_exception = () =>
         {
             Exception.ShouldNotBeNull();
-            Exception.ShouldBeOfExactType<ArgumentException>();
+            Exception.ShouldBeOfExactType<ServiceException>();
             Exception.Message.ShouldContain(UserId);
         };
 
@@ -185,7 +185,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
         Because of = () =>
             Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location).Await());
 
-        It should_throw_argument_exception = () =>
+        It should_throw_service_exception = () =>
         {
             Exception.ShouldNotBeNull();
             Exception.ShouldBeOfExactType<ServiceException>();
@@ -215,7 +215,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
         Because of = () =>
             Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location, true).Await());
 
-        It should_throw_argument_exception = () =>
+        It should_throw_service_exception = () =>
         {
             Exception.ShouldNotBeNull();
             Exception.ShouldBeOfExactType<ServiceException>();

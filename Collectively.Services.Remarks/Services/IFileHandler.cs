@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using  Collectively.Common.Types;
+using Collectively.Common.Types;
 using Collectively.Services.Remarks.Domain;
 
 namespace Collectively.Services.Remarks.Services

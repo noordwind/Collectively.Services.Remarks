@@ -24,6 +24,7 @@ namespace Collectively.Services.Remarks.Services
             catch (Exception exception)
             {
                 Logger.Error(exception, "Error while reading image from stream");
+                
                 return false;
             }
         }
