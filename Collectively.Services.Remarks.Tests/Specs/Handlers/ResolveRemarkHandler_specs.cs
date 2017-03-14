@@ -1,13 +1,7 @@
 ﻿using System;
-using Collectively.Common;
-using Collectively.Messages.Commands;
-using Collectively.Common.Domain;
-using Collectively.Common.Services;
 using Collectively.Common.Types;
 using It = Machine.Specifications.It;
-using RawRabbit;
 using Moq;
-using Collectively.Services.Remarks.Services;
 using Collectively.Services.Remarks.Handlers;
 using Machine.Specifications;
 using RawRabbit.Configuration.Publish;
@@ -15,87 +9,35 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
+using Collectively.Common.Domain;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
-    public class ResolveRemarkHandler_specs
+    public class ResolveRemarkHandler_specs : ChangeRemarkStateBase_specs<ResolveRemark, ResolveRemarkHandler>
     {
-        protected static ResolveRemarkHandler ResolveRemarkHandler;
-        protected static IHandler Handler;
-        protected static Mock<IBusClient> BusClientMock;
-        protected static Mock<IRemarkService> RemarkServiceMock;
-        protected static Mock<IRemarkStateService> RemarkStateServiceMock;
-        protected static Mock<IFileResolver> FileResolverMock;
-        protected static Mock<IFileValidator> FileValidatorMock;
-        protected static Mock<IExceptionHandler> ExceptionHandlerMock;
-        protected static Mock<IResourceFactory> ResourceFactoryMock;
-        protected static ResolveRemark Command;
-        protected static string UserId = "UserId";
-        protected static Guid RemarkId = Guid.NewGuid();
-        protected static File File;
-        protected static Remark Remark;
-        protected static Location Location;
-        protected static User User;
-        protected static Category Category;
-        protected static string Description;
-        protected static Exception Exception;
-
         protected static void Initialize()
         {
-            ExceptionHandlerMock = new Mock<IExceptionHandler>();
-            Handler = new Handler(ExceptionHandlerMock.Object);
-            BusClientMock = new Mock<IBusClient>();
-            RemarkServiceMock = new Mock<IRemarkService>();
-            RemarkStateServiceMock = new Mock<IRemarkStateService>();
-            FileResolverMock = new Mock<IFileResolver>();
-            FileValidatorMock = new Mock<IFileValidator>();
-            ResourceFactoryMock = new Mock<IResourceFactory>();
-
-            ResolveRemarkHandler = new ResolveRemarkHandler(Handler,
+            InitializeBase();
+            CommandHandler = new ResolveRemarkHandler(Handler,
                 BusClientMock.Object, 
                 RemarkServiceMock.Object,
                 RemarkStateServiceMock.Object,
                 FileResolverMock.Object,
                 FileValidatorMock.Object,
                 ResourceFactoryMock.Object);
-
-            Description = "test";
-            Command = new ResolveRemark
+            Command.Photo = new RemarkFile
             {
-                Request = new Request
-                {
-                    Name = "resolve_remark",
-                    Id = Guid.NewGuid(),
-                    CreatedAt = DateTime.Now,
-                    Origin = "test",
-                    Resource = ""
-                },
-                Description = Description,
-                RemarkId = RemarkId,
-                UserId = UserId,
-                Longitude = 1,
-                Latitude = 1,
-                Photo = new RemarkFile
-                {
-                    Base64 = "base64",
-                    Name = "file.png",
-                    ContentType = "image/png"
-                },
-                ValidatePhoto = true,
-                ValidateLocation = true
+                Base64 = "base64",
+                Name = "file.png",
+                ContentType = "image/png"
             };
-
-            File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
-            User = new User(UserId, "user", "user");
-            Category = new Category("test");
-            Location = Location.Create(Command.Latitude, Command.Longitude, "address");
-            Remark = new Remark(RemarkId, User, Category, Location, Description);
+            Command.ValidateLocation = true;
+            Command.ValidatePhoto = true;
             Remark.SetResolvedState(User, Description, Location);
-
+            File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
             FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);
             FileValidatorMock.Setup(x => x.IsImage(Moq.It.IsAny<File>())).Returns(true);
-            RemarkServiceMock.Setup(x => x.GetAsync(Moq.It.IsAny<Guid>())).ReturnsAsync(Remark);
         }
     }
 
@@ -104,7 +46,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
     {
         Establish context = () => Initialize();
 
-        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
+        Because of = () => CommandHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -147,7 +89,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 .Returns(new Maybe<File>());
         };
 
-        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
+        Because of = () => CommandHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -198,7 +140,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 .Returns(false);
         };
 
-        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
+        Because of = () => CommandHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -248,7 +190,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Command.Latitude = 100;
         };
 
-        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
+        Because of = () => CommandHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -298,7 +240,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Command.Longitude = 200;
         };
 
-        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
+        Because of = () => CommandHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {
@@ -355,7 +297,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Moq.It.IsAny<bool>())).Throws(new ServiceException(ErrorCode));
         };
 
-        Because of = () => ResolveRemarkHandler.HandleAsync(Command).Await();
+        Because of = () => CommandHandler.HandleAsync(Command).Await();
 
         It should_resolve_file_from_base64 = () =>
         {

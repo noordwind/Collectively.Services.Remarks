@@ -53,7 +53,7 @@ namespace Collectively.Services.Remarks.Handlers
                 .OnSuccess(async () =>
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    var state = remark.Value.GetLatestStateOf(RemarkState.Names.Processing).Value;
+                    var state = remark.Value.GetLatestStateOf(RemarkState.Names.Canceled).Value;
                     var resource = _resourceFactory.Resolve<RemarkCanceled>(command.RemarkId);
                     await _bus.PublishAsync(new RemarkCanceled(command.Request.Id, resource, 
                         command.UserId, command.RemarkId));
