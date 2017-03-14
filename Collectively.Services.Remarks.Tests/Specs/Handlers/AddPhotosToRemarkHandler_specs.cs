@@ -26,6 +26,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<IRemarkPhotoService> RemarkPhotoServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static AddPhotosToRemark Command;
@@ -41,6 +42,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            RemarkPhotoServiceMock = new Mock<IRemarkPhotoService>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
             GeneralSettings = new GeneralSettings
             {
@@ -61,7 +63,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Photos = new List<RemarkFile>()
             };
             AddPhotosToRemarkHandler = new AddPhotosToRemarkHandler(Handler, BusClientMock.Object, 
-                RemarkServiceMock.Object, FileResolverMock.Object,  
+                RemarkServiceMock.Object, RemarkPhotoServiceMock.Object, FileResolverMock.Object,  
                 FileValidatorMock.Object, GeneralSettings, ResourceFactoryMock.Object);
         }
     }
@@ -110,9 +112,9 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         Because of = () => AddPhotosToRemarkHandler.HandleAsync(Command).Await();
 
-        It should_not_call_add_photos_async_on_remark_service = () =>
+        It should_not_call_add_photos_async_on_remark_photo_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), File), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), File), Times.Never);
         };
 
         It should_publish_add_photos_to_remark_rejected_message = () =>
@@ -156,9 +158,9 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         Because of = () => AddPhotosToRemarkHandler.HandleAsync(Command).Await();
 
-        It should_not_call_add_photos_async_on_remark_service = () =>
+        It should_not_call_add_photos_async_on_remark_photo_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), File), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), File), Times.Never);
         };
 
         It should_publish_add_photos_to_remark_rejected_message = () =>
@@ -199,9 +201,9 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         Because of = () => AddPhotosToRemarkHandler.HandleAsync(Command).Await();
 
-        It should_call_add_photos_async_on_remark_service = () =>
+        It should_call_add_photos_async_on_remark_photo_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), File), Times.Once);
+            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), File), Times.Once);
         };
 
         It should_publish_photos_to_remark_added_message = () =>

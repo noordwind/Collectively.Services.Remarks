@@ -21,6 +21,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
         protected static Mock<IUserRepository> UserRepositoryMock;
         protected static Mock<ICategoryRepository> CategoryRepositoryMock;
         protected static Mock<IImageService> ImageServiceMock;
+        protected static Mock<IRemarkPhotoService> RemarkPhotoServiceMock;
         protected static Mock<IUniqueNumberGenerator> UniqueNumberGeneratorMock;
         protected static GeneralSettings GeneralSettings;
         protected static string UserId = "userId";
@@ -40,19 +41,18 @@ namespace Collectively.Services.Remarks.Tests.Specs
             UserRepositoryMock = new Mock<IUserRepository>();
             CategoryRepositoryMock = new Mock<ICategoryRepository>();
             ImageServiceMock = new Mock<IImageService>();
+            RemarkPhotoServiceMock = new Mock<IRemarkPhotoService>();
             UniqueNumberGeneratorMock = new Mock<IUniqueNumberGenerator>();
             GeneralSettings = new GeneralSettings
             {
                 AllowedDistance = 15.0
             };
 
-            RemarkService = new RemarkService(FileHandlerMock.Object, 
-                RemarkRepositoryMock.Object, 
+            RemarkService = new RemarkService(RemarkRepositoryMock.Object, 
                 UserRepositoryMock.Object,
                 CategoryRepositoryMock.Object,
                 TagRepositoryMock.Object,
-                ImageServiceMock.Object,
-                UniqueNumberGeneratorMock.Object,
+                RemarkPhotoServiceMock.Object,
                 GeneralSettings);
 
             var user = new User(UserId, "name", "user");
@@ -81,9 +81,9 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         Because of = () => RemarkService.DeleteAsync(RemarkId).Await();
 
-        It should_call_delete_async_on_file_handler = () =>
+        It should_call_remove_photos_async_on_remark_photo_service = () =>
         {
-            FileHandlerMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<string>()), Times.Once);
+            RemarkPhotoServiceMock.Verify(x => x.RemovePhotosAsync(RemarkId), Times.Once);
         };
 
         It should_call_delete_async_on_remark_repository = () =>
@@ -117,119 +117,6 @@ namespace Collectively.Services.Remarks.Tests.Specs
         It should_not_call_delete_async_on_remark_repository = () =>
         {
             RemarkRepositoryMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<Remark>()), Times.Never);
-        };
-    }
-
-    [Subject("RemarkService ResolveAsync")]
-    public class when_resolve_async_is_invoked : RemarkService_specs
-    {
-        Establish context = () =>
-        {
-            Initialize();
-        };
-
-        Because of = () => RemarkService.ResolveAsync(RemarkId, UserId, File, Location).Await();
-
-        It should_update_remark = () =>
-        {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Once);
-        };
-
-        It should_upload_file = () =>
-        {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Exactly(3));
-        };
-    }
-
-    [Subject("RemarkService ResolveAsync")]
-    public class when_resolve_async_is_invoked_and_user_does_not_exist : RemarkService_specs
-    {
-        Establish context = () =>
-        {
-            Initialize();
-            UserRepositoryMock.Setup(x => x.GetByUserIdAsync(Moq.It.IsAny<string>()))
-                .ReturnsAsync(null);
-        };
-
-        Because of = () => 
-            Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location).Await());
-
-        It should_throw_service_exception = () =>
-        {
-            Exception.ShouldNotBeNull();
-            Exception.ShouldBeOfExactType<ServiceException>();
-            Exception.Message.ShouldContain(UserId);
-        };
-
-        It should_not_update_remark = () =>
-        {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never);
-        };
-
-        It should_not_upload_file = () =>
-        {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Never);
-        };
-    }
-
-    [Subject("RemarkService ResolveAsync")]
-    public class when_resolve_async_is_invoked_and_remark_does_not_exist : RemarkService_specs
-    {
-        Establish context = () =>
-        {
-            Initialize();
-            RemarkRepositoryMock.Setup(x => x.GetByIdAsync(Moq.It.IsAny<Guid>()))
-                .ReturnsAsync(null);
-        };
-
-        Because of = () =>
-            Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location).Await());
-
-        It should_throw_service_exception = () =>
-        {
-            Exception.ShouldNotBeNull();
-            Exception.ShouldBeOfExactType<ServiceException>();
-            Exception.Message.ShouldContain(RemarkId.ToString());
-        };
-
-        It should_not_update_remark = () =>
-        {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never);
-        };
-
-        It should_not_upload_file = () =>
-        {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Never);
-        };
-    }
-
-    [Subject("RemarkService ResolveAsync")]
-    public class when_resolve_async_is_invoked_and_distance_is_too_long : RemarkService_specs
-    {
-        Establish context = () =>
-        {
-            Initialize();
-            Location = Location.Create(40,40);
-        };
-
-        Because of = () =>
-            Exception = Catch.Exception(() => RemarkService.ResolveAsync(RemarkId, UserId, File, Location, true).Await());
-
-        It should_throw_service_exception = () =>
-        {
-            Exception.ShouldNotBeNull();
-            Exception.ShouldBeOfExactType<ServiceException>();
-            Exception.Message.ShouldContain(RemarkId.ToString());
-        };
-
-        It should_not_update_remark = () =>
-        {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never);
-        };
-
-        It should_not_upload_file = () =>
-        {
-            FileHandlerMock.Verify(x => x.UploadAsync(File, Moq.It.IsAny<string>(), Moq.It.IsAny<Action<string>>()), Times.Never);
         };
     }
 }

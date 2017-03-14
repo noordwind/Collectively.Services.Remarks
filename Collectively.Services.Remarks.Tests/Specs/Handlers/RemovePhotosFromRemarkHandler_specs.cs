@@ -22,6 +22,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static IHandler Handler;
         protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<IRemarkPhotoService> RemarkPhotoServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static RemovePhotosFromRemark Command;
@@ -33,6 +34,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            RemarkPhotoServiceMock = new Mock<IRemarkPhotoService>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
             Command = new RemovePhotosFromRemark
             {
@@ -49,7 +51,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Photos = new List<GroupedFile>()
             };
             RemovePhotosFromRemarkHandler = new RemovePhotosFromRemarkHandler(Handler, 
-                BusClientMock.Object, RemarkServiceMock.Object, ResourceFactoryMock.Object);
+                BusClientMock.Object, RemarkServiceMock.Object, 
+                RemarkPhotoServiceMock.Object, ResourceFactoryMock.Object);
         }       
     }
 
@@ -59,7 +62,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         Establish context = () => 
         {
             Initialize();
-            RemarkServiceMock.Setup(x => x.RemovePhotosAsync(Command.RemarkId, Moq.It.IsAny<string[]>()))
+            RemarkPhotoServiceMock.Setup(x => x.RemovePhotosAsync(Command.RemarkId, Moq.It.IsAny<string[]>()))
                 .Throws(new ServiceException(OperationCodes.NoFiles));
         };
 

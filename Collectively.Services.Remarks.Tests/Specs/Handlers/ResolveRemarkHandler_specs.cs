@@ -24,6 +24,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static IHandler Handler;
         protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<IRemarkStateService> RemarkStateServiceMock;
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
@@ -36,7 +37,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Location Location;
         protected static User User;
         protected static Category Category;
-
+        protected static string Description;
         protected static Exception Exception;
 
         protected static void Initialize()
@@ -45,6 +46,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            RemarkStateServiceMock = new Mock<IRemarkStateService>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
@@ -52,10 +54,12 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             ResolveRemarkHandler = new ResolveRemarkHandler(Handler,
                 BusClientMock.Object, 
                 RemarkServiceMock.Object,
+                RemarkStateServiceMock.Object,
                 FileResolverMock.Object,
                 FileValidatorMock.Object,
                 ResourceFactoryMock.Object);
 
+            Description = "test";
             Command = new ResolveRemark
             {
                 Request = new Request
@@ -66,6 +70,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     Origin = "test",
                     Resource = ""
                 },
+                Description = Description,
                 RemarkId = RemarkId,
                 UserId = UserId,
                 Longitude = 1,
@@ -84,8 +89,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             User = new User(UserId, "user", "user");
             Category = new Category("test");
             Location = Location.Create(Command.Latitude, Command.Longitude, "address");
-            Remark = new Remark(RemarkId, User, Category, Location, "description");
-            Remark.SetResolvedState(User, Location);
+            Remark = new Remark(RemarkId, User, Category, Location, Description);
+            Remark.SetResolvedState(User, Description, Location);
 
             FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);
@@ -113,7 +118,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Once);
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description,Location, File, true), Times.Once);
         };
 
         It should_fetch_resolved_remark = () =>
@@ -156,7 +161,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, false), Times.Never);
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, false), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -207,7 +212,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Never);
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, false), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -257,7 +262,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Never);
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -307,7 +312,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Never);
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
@@ -342,10 +347,11 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         Establish context = () =>
         {
             Initialize();
-            RemarkServiceMock.Setup(x => x.ResolveAsync(Moq.It.IsAny<Guid>(),
+            RemarkStateServiceMock.Setup(x => x.ResolveAsync(Moq.It.IsAny<Guid>(),
                 Moq.It.IsAny<string>(),
-                Moq.It.IsAny<File>(),
+                Moq.It.IsAny<string>(),
                 Moq.It.IsAny<Location>(),
+                Moq.It.IsAny<File>(),
                 Moq.It.IsAny<bool>())).Throws(new ServiceException(ErrorCode));
         };
 
@@ -363,7 +369,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, File, Location, true), Times.Once);
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Once);
         };
 
         It should_not_fetch_resolved_remark = () =>

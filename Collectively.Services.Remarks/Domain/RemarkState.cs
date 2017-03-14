@@ -54,7 +54,7 @@ namespace Collectively.Services.Remarks.Domain
         public static RemarkState Processing(RemarkUser user, string description = null) 
             => new RemarkState(Names.Processing, user, description);
 
-        public static RemarkState Resolved(RemarkUser user, Location location, string description = null) 
+        public static RemarkState Resolved(RemarkUser user, string description = null, Location location = null) 
             => new RemarkState(Names.Resolved, user, description, location);
 
         public static RemarkState Renewed(RemarkUser user, string description = null) 

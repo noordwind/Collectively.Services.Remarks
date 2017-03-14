@@ -18,6 +18,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
+        private readonly IRemarkPhotoService _remarkPhotoService;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
         private readonly GeneralSettings _generalSettings;
@@ -26,6 +27,7 @@ namespace Collectively.Services.Remarks.Handlers
         public AddPhotosToRemarkHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
+            IRemarkPhotoService remarkPhotoService,
             IFileResolver fileResolver,
             IFileValidator fileValidator,
             GeneralSettings generalSettings,
@@ -34,6 +36,7 @@ namespace Collectively.Services.Remarks.Handlers
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
+            _remarkPhotoService = remarkPhotoService;
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
             _generalSettings = generalSettings;
@@ -75,7 +78,7 @@ namespace Collectively.Services.Remarks.Handlers
                         }
                         photos.Add(photo);
                     }
-                    await _remarkService.AddPhotosAsync(command.RemarkId, photos.ToArray());
+                    await _remarkPhotoService.AddPhotosAsync(command.RemarkId, photos.ToArray());
                 })
                 .OnSuccess(async () =>
                 {

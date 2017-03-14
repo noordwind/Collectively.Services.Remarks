@@ -205,8 +205,8 @@ namespace Collectively.Services.Remarks.Domain
         public void SetProcessingState(User user, string description = null)
             => SetState(RemarkState.Processing(RemarkUser.Create(user), description));
 
-        public void SetResolvedState(User user, Location location, string description = null)
-            => SetState(RemarkState.Resolved(RemarkUser.Create(user), location, description));
+        public void SetResolvedState(User user, string description = null, Location location = null)
+            => SetState(RemarkState.Resolved(RemarkUser.Create(user), description, location));
 
         public void SetRenewedState(User user, string description = null)
             => SetState(RemarkState.Renewed(RemarkUser.Create(user), description));
@@ -232,6 +232,12 @@ namespace Collectively.Services.Remarks.Domain
                 State = state;
 
                 return;
+            }
+            if(latestState.State == RemarkState.Names.Canceled)
+            {
+                throw new DomainException(OperationCodes.CannotSetState,
+                    $"Can not set state to '{state}' for remark with id: '{Id}'" +
+                     "as it was canceled.");                
             }
             if(latestState.State == state.State &&  latestState.State != RemarkState.Names.Processing)
             {

@@ -35,7 +35,7 @@ namespace Collectively.Services.Remarks.Handlers
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>
                 {
-                    logger.Error(ex, "Error occured while deleting a remark");
+                    logger.Error(ex, "Error occured while deleting a remark.");
                     await _bus.PublishAsync(new DeleteRemarkRejected(command.Request.Id,
                         command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
                 })

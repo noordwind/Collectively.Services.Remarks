@@ -74,6 +74,8 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<UserRepository>().As<IUserRepository>();
                 builder.RegisterType<LocalizedResourceService>().As<ILocalizedResourceService>();
                 builder.RegisterType<RemarkService>().As<IRemarkService>();
+                builder.RegisterType<RemarkStateService>().As<IRemarkStateService>();
+                builder.RegisterType<RemarkPhotoService>().As<IRemarkPhotoService>();
                 builder.RegisterType<UserService>().As<IUserService>();
                 builder.RegisterType<ImageService>().As<IImageService>();
                 builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
@@ -179,7 +181,10 @@ namespace Collectively.Services.Remarks.Framework
             var resources = new Dictionary<Type, string>
             {
                 [typeof(RemarkCreated)] = remarkEndpoint,
+                [typeof(RemarkProcessed)] = remarkEndpoint,
                 [typeof(RemarkResolved)] = remarkEndpoint,
+                [typeof(RemarkRenewed)] = remarkEndpoint,
+                [typeof(RemarkCanceled)] = remarkEndpoint,
                 [typeof(PhotosToRemarkAdded)] = remarkEndpoint,
                 [typeof(PhotosFromRemarkRemoved)] = remarkEndpoint
             };

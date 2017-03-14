@@ -16,16 +16,19 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
+        private readonly IRemarkPhotoService _remarkPhotoService;
         private readonly IResourceFactory _resourceFactory;
 
         public RemovePhotosFromRemarkHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
+            IRemarkPhotoService remarkPhotoService,
             IResourceFactory resourceFactory)
         {
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
+            _remarkPhotoService = remarkPhotoService;
             _resourceFactory = resourceFactory;
         }
 
@@ -47,13 +50,13 @@ namespace Collectively.Services.Remarks.Handlers
                                 .Select(x => x.Name)
                                 .ToArray() ?? new string[]{};
 
-                    var namesForGroups =  await _remarkService.GetPhotosForGroupsAsync(command.RemarkId, groupIds);
+                    var namesForGroups =  await _remarkPhotoService.GetPhotosForGroupsAsync(command.RemarkId, groupIds);
                     removedPhotos = names
                                     .Union(namesForGroups.HasValue ? namesForGroups.Value : Enumerable.Empty<string>())
                                     .Distinct()
                                     .ToArray();
 
-                    await _remarkService.RemovePhotosAsync(command.RemarkId, removedPhotos);
+                    await _remarkPhotoService.RemovePhotosAsync(command.RemarkId, removedPhotos);
                 })
                 .OnSuccess(async () => 
                 {
