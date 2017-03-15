@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../Collectively.Services.Remarks/Collectively.Services.Remarks.csproj" />
-    <ProjectReference Include="../../Collectively.Common/Collectively.Common/Collectively.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +23,7 @@
     <PackageReference Include="dotnet-test-mspec" Version="*" />
     <PackageReference Include="Moq" Version="4.6.38-alpha" />
     <PackageReference Include="Collectively.Messages" Version="1.0.*" />
+    <PackageReference Include="Collectively.Common" Version="1.0.*" />
   </ItemGroup>
 
 </Project>
