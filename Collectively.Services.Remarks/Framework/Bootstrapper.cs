@@ -181,6 +181,7 @@ namespace Collectively.Services.Remarks.Framework
             var resources = new Dictionary<Type, string>
             {
                 [typeof(RemarkCreated)] = remarkEndpoint,
+                [typeof(RemarkDeleted)] = remarkEndpoint,
                 [typeof(RemarkProcessed)] = remarkEndpoint,
                 [typeof(RemarkResolved)] = remarkEndpoint,
                 [typeof(RemarkRenewed)] = remarkEndpoint,
