@@ -13,12 +13,14 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
+        private readonly IResourceFactory _resourceFactory;
 
-        public DeleteRemarkHandler(IHandler handler, IBusClient bus, IRemarkService remarkService)
+        public DeleteRemarkHandler(IHandler handler, IBusClient bus, IRemarkService remarkService, IResourceFactory resourceFactory)
         {
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
+            _resourceFactory = resourceFactory;
         }
 
         public async Task HandleAsync(DeleteRemark command)
@@ -29,8 +31,12 @@ namespace Collectively.Services.Remarks.Handlers
                 {
                     await _remarkService.DeleteAsync(command.RemarkId);
                 })
-                .OnSuccess(async () 
-                    => await _bus.PublishAsync(new RemarkDeleted(command.Request.Id, command.RemarkId, command.UserId)))
+                .OnSuccess(async () =>
+                {
+                    var resource = _resourceFactory.Resolve<RemarkDeleted>(command.RemarkId);
+                    await _bus.PublishAsync(new RemarkDeleted(command.Request.Id, resource, 
+                        command.UserId, command.RemarkId));
+                })
                 .OnCustomError(ex => _bus.PublishAsync(new DeleteRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>

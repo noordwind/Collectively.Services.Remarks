@@ -57,7 +57,6 @@ namespace Collectively.Services.Remarks.Handlers
                 })
                 .OnSuccess(async () =>
                 {
-                    var remark = await _remarkService.GetAsync(command.RemarkId);
                     await PublishOnSocialMediaAsync(command.RemarkId, command.Request.Culture, command.SocialMedia);
                     var resource = _resourceFactory.Resolve<RemarkCreated>(command.RemarkId);
                     await _bus.PublishAsync(new RemarkCreated(command.Request.Id, resource, 
