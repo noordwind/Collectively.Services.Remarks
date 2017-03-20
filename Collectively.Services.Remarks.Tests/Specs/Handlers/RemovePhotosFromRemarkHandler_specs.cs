@@ -7,7 +7,6 @@ using System;
 using Collectively.Messages.Commands;
 using Collectively.Common.Services;
 using Collectively.Messages.Commands.Remarks;
-using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
 using It = Machine.Specifications.It;
 using RawRabbit.Configuration.Publish;
@@ -48,7 +47,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     Resource = ""
                 },
                 UserId = "userId",
-                Photos = new List<GroupedFile>()
+                Photos = new List<Collectively.Messages.Commands.Models.GroupedFile>()
             };
             RemovePhotosFromRemarkHandler = new RemovePhotosFromRemarkHandler(Handler, 
                 BusClientMock.Object, RemarkServiceMock.Object, 

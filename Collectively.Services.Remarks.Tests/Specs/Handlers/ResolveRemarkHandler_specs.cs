@@ -8,7 +8,6 @@ using Machine.Specifications;
 using RawRabbit.Configuration.Publish;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Messages.Commands.Remarks;
-using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
 using Collectively.Common.Domain;
 
@@ -26,7 +25,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 FileResolverMock.Object,
                 FileValidatorMock.Object,
                 ResourceFactoryMock.Object);
-            Command.Photo = new RemarkFile
+            Command.Photo = new Collectively.Messages.Commands.Models.File
             {
                 Base64 = "base64",
                 Name = "file.png",

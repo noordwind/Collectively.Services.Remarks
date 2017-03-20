@@ -9,7 +9,6 @@ using System;
 using Collectively.Messages.Commands;
 using Collectively.Common.Services;
 using Collectively.Messages.Commands.Remarks;
-using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
 using It = Machine.Specifications.It;
 using RawRabbit.Configuration.Publish;
@@ -58,7 +57,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Latitude = 1,
                 Description = "test",
                 Address = "address",
-                Photo = new RemarkFile
+                Photo = new Collectively.Messages.Commands.Models.File
                 {
                     Base64 = "base64",
                     Name = "file.png",

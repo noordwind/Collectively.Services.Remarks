@@ -10,7 +10,6 @@ using Collectively.Messages.Commands;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Settings;
 using Collectively.Messages.Commands.Remarks;
-using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
 using It = Machine.Specifications.It;
 using RawRabbit.Configuration.Publish;
@@ -61,7 +60,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     Resource = ""
                 },
                 UserId = "userId",
-                Photos = new List<RemarkFile>()
+                Photos = new List<Collectively.Messages.Commands.Models.File>()
             };
             AddPhotosToRemarkHandler = new AddPhotosToRemarkHandler(Handler, BusClientMock.Object, 
                 RemarkServiceMock.Object, RemarkPhotoServiceMock.Object, FileResolverMock.Object,  
@@ -99,7 +98,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         Establish context = () =>
         {
             Initialize();
-            Command.Photos.Add(new RemarkFile
+            Command.Photos.Add(new Collectively.Messages.Commands.Models.File
                 {
                     Base64 = "base64",
                     Name = "remark.jpg",
@@ -136,19 +135,19 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         Establish context = () =>
         {
             Initialize();
-            Command.Photos.Add(new RemarkFile
+            Command.Photos.Add(new Collectively.Messages.Commands.Models.File
                 {
                     Base64 = "base64",
                     Name = "remark1.jpg",
                     ContentType = "image/jpeg"
                 });
-            Command.Photos.Add(new RemarkFile
+            Command.Photos.Add(new Collectively.Messages.Commands.Models.File
                 {
                     Base64 = "base64",
                     Name = "remark2.jpg",
                     ContentType = "image/jpeg"
                 });
-            Command.Photos.Add(new RemarkFile
+            Command.Photos.Add(new Collectively.Messages.Commands.Models.File
                 {
                     Base64 = "base64",
                     Name = "remark3.jpg",
@@ -187,7 +186,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Initialize();
             Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user"),
                 new Category("test"), Location.Create(1, 1, "Address"), "Test");
-            Command.Photos.Add(new RemarkFile
+            Command.Photos.Add(new Collectively.Messages.Commands.Models.File
                 {
                     Base64 = "base64",
                     Name = "remark.jpg",
