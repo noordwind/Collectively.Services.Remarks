@@ -7,11 +7,11 @@ using Collectively.Messages.Commands;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
-using Collectively.Messages.Commands.Remarks.Models;
 using Collectively.Messages.Events.Remarks;
 using Lockbox.Client.Extensions;
 using NLog;
 using RawRabbit;
+using Collectively.Messages.Commands.Models;
 
 namespace Collectively.Services.Remarks.Handlers
 {
@@ -84,7 +84,7 @@ namespace Collectively.Services.Remarks.Handlers
                         RemarkId = command.RemarkId,
                         Request = Request.New<AddPhotosToRemark>(),
                         UserId = command.UserId,
-                        Photos = new List<Collectively.Messages.Commands.Remarks.Models.RemarkFile>
+                        Photos = new List<Collectively.Messages.Commands.Models.File>
                         {
                             command.Photo
                         }
