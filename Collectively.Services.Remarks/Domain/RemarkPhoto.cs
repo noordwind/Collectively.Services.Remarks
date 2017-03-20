@@ -1,6 +1,6 @@
 ﻿using System;
-using  Collectively.Common.Extensions;
-using  Collectively.Common.Domain;
+using Collectively.Common.Extensions;
+using Collectively.Common.Domain;
 
 namespace Collectively.Services.Remarks.Domain
 {
@@ -19,13 +19,21 @@ namespace Collectively.Services.Remarks.Domain
         protected RemarkPhoto(Guid groupId, string name, string size, string url, string metadata)
         {
             if (groupId == Guid.Empty)
+            {
                 throw new ArgumentException("Photo id can not be empty.", nameof(groupId));
+            }
             if (name.Empty())
+            {
                 throw new ArgumentException("Photo name can not be empty.", nameof(size));
+            }
             if (size.Empty())
+            {
                 throw new ArgumentException("Photo size can not be empty.", nameof(size));
+            }
             if (url.Empty())
+            {
                 throw new ArgumentException("Photo Url can not be empty.", nameof(url));
+            }
 
             GroupId = groupId;
             Name = name;
