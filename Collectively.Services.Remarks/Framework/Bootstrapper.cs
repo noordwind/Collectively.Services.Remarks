@@ -80,20 +80,17 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<UserService>().As<IUserService>();
                 builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
                 builder.RegisterType<ImageService>().As<IImageService>();
-                builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
-                builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
                 builder.RegisterType<UniqueNumberGenerator>().As<IUniqueNumberGenerator>().SingleInstance();
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
                 builder.RegisterType<Handler>().As<IHandler>();
                 builder.RegisterModule<ServiceClientModule>();
+                builder.RegisterModule(new FilesModule(_configuration));
                 RegisterResourceFactory(builder);
 
                 var assembly = typeof(Startup).GetTypeInfo().Assembly;
                 builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(IEventHandler<>));
                 builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(ICommandHandler<>));
-
-                ConfigureStorage(builder);
                 SecurityContainer.Register(builder, _configuration);
                 RabbitMqContainer.Register(builder, _configuration.GetSettings<RawRabbitConfiguration>());
             });
@@ -138,20 +135,6 @@ namespace Collectively.Services.Remarks.Framework
             pipelines.SetupTokenAuthentication(container);
             _exceptionHandler = container.Resolve<IExceptionHandler>();
             Logger.Info("Collectively.Services.Remarks API has started.");
-        }
-
-        private void ConfigureStorage(ContainerBuilder builder)
-        {
-            builder.RegisterInstance(_configuration.GetSettings<AwsS3Settings>()).SingleInstance();
-            builder.Register(c =>
-                {
-                    var settings = c.Resolve<AwsS3Settings>();
-
-                    return new AmazonS3Client(settings.AccessKey, settings.SecretKey,
-                        RegionEndpoint.GetBySystemName(settings.Region));
-                })
-                .As<IAmazonS3>();
-            builder.RegisterType<AwsS3FileHandler>().As<IFileHandler>();
         }
 
         private void FixNumberFormat(NancyContext ctx)
