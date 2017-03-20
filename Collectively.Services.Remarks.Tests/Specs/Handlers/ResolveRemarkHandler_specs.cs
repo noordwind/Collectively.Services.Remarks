@@ -1,4 +1,5 @@
 ﻿using System;
+using Collectively.Common.Files;
 using Collectively.Common.Types;
 using It = Machine.Specifications.It;
 using Moq;

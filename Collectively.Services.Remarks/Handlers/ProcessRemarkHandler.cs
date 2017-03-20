@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Collectively.Messages.Commands;
+using Collectively.Common.Files;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Services;

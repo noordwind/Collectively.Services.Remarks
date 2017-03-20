@@ -5,6 +5,7 @@ using System.Globalization;
 using Amazon;
 using Amazon.S3;
 using Autofac;
+using Collectively.Common.Files;
 using Collectively.Messages.Commands;
 using Collectively.Messages.Events;
 using Collectively.Common.Exceptionless;
@@ -77,8 +78,8 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<RemarkStateService>().As<IRemarkStateService>();
                 builder.RegisterType<RemarkPhotoService>().As<IRemarkPhotoService>();
                 builder.RegisterType<UserService>().As<IUserService>();
-                builder.RegisterType<ImageService>().As<IImageService>();
                 builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
+                builder.RegisterType<ImageService>().As<IImageService>();
                 builder.RegisterType<FileValidator>().As<IFileValidator>().SingleInstance();
                 builder.RegisterType<FileResolver>().As<IFileResolver>().SingleInstance();
                 builder.RegisterType<UniqueNumberGenerator>().As<IUniqueNumberGenerator>().SingleInstance();

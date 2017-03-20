@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Collectively.Common.Files;
 using Collectively.Messages.Commands;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;

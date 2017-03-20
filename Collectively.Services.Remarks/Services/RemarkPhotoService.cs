@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Collectively.Common.Domain;
+using Collectively.Common.Files;
 using Collectively.Common.Types;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
 using NLog;
-using File = Collectively.Services.Remarks.Domain.File;
 
 namespace Collectively.Services.Remarks.Services
 {

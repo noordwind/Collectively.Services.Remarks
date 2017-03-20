@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Collectively.Common.Files;
 using Collectively.Common.Types;
 using Collectively.Services.Remarks.Domain;
 

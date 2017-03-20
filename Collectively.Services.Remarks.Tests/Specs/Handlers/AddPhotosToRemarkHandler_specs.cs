@@ -1,4 +1,5 @@
-﻿using Collectively.Services.Remarks.Domain;
+﻿using Collectively.Common.Files;
+using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Handlers;
 using Collectively.Services.Remarks.Services;
 using Machine.Specifications;

@@ -24,7 +24,6 @@
     <PackageReference Include="Autofac" Version="4.2.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.0.0" />
     <PackageReference Include="AutoMapper" Version="5.2.0" />
-    <PackageReference Include="AWSSDK.S3" Version="3.3.5.2" />
     <PackageReference Include="Lockbox.Client" Version="1.0.0" />
     <PackageReference Include="Exceptionless" Version="4.0.1922" />
     <PackageReference Include="jose-jwt" Version="2.1.0" />
@@ -46,7 +45,6 @@
     <PackageReference Include="RawRabbit" Version="1.10.3" />
     <PackageReference Include="RawRabbit.vNext" Version="1.10.3" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="Structure.Sketching" Version="0.1.75" />
     <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
   </ItemGroup>
 

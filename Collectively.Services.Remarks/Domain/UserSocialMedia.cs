@@ -1,8 +1,8 @@
-﻿using  Collectively.Common.Domain;
+﻿using Collectively.Common.Domain;
 
 namespace Collectively.Services.Remarks.Domain
 {
-    public class UserSocialMedia : ValueObject<File>
+    public class UserSocialMedia : ValueObject<UserSocialMedia>
     {
         public string Name { get; protected set; }
         public string AccessToken { get; protected set; }
@@ -21,7 +21,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public static UserSocialMedia Create(string name, string accessToken) => new UserSocialMedia(name, accessToken);
 
-        protected override bool EqualsCore(File other) => Name.Equals(other.Name);
+        protected override bool EqualsCore(UserSocialMedia other) => Name.Equals(other.Name);
 
         protected override int GetHashCodeCore() => Name.GetHashCode();
     }

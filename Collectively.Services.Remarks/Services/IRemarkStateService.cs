@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Collectively.Common.Files;
 using Collectively.Services.Remarks.Domain;
 
 namespace Collectively.Services.Remarks.Services
