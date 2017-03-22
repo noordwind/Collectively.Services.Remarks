@@ -9,7 +9,6 @@ namespace Collectively.Services.Remarks.Services
 {
     public interface IRemarkPhotoService
     {
-        Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size);
         Task AddPhotosAsync(Guid id, params File[] photos);
         Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, string metadata = null);
         Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid id, params Guid[] groupIds);

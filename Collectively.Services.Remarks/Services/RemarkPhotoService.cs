@@ -33,9 +33,6 @@ namespace Collectively.Services.Remarks.Services
             _settings = settings;
         }
 
-        public async Task<Maybe<FileStreamInfo>> GetPhotoAsync(Guid id, string size)
-            => await _fileHandler.GetFileStreamInfoAsync(id, size);
-
         public async Task AddPhotosAsync(Guid id, params File[] photos)
         {
             if (photos == null || !photos.Any())
