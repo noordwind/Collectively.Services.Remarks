@@ -14,6 +14,8 @@ namespace Collectively.Services.Remarks.Framework
                 cfg.CreateMap<RemarkState, RemarkStateDto>();
                 cfg.CreateMap<RemarkUser, RemarkUserDto>();
                 cfg.CreateMap<RemarkCategory, RemarkCategoryDto>();
+                cfg.CreateMap<Comment, CommentDto>();
+                cfg.CreateMap<CommentHistory, CommentHistoryDto>();
                 cfg.CreateMap<Location, LocationDto>();
                 cfg.CreateMap<RemarkPhoto, FileDto>();
                 cfg.CreateMap<Category, RemarkCategoryDto>();

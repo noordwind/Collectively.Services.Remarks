@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using  Collectively.Common.Domain;
-using  Collectively.Common.Extensions;
-using  Collectively.Common.Types;
-
+using Collectively.Common.Domain;
+using Collectively.Common.Extensions;
+using Collectively.Common.Types;
 
 namespace Collectively.Services.Remarks.Domain
 {
-    public class Remark : IdentifiableEntity, ITimestampable
+    public class Remark : Scorable, ITimestampable
     {
         private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
         private ISet<RemarkState> _states = new HashSet<RemarkState>();
+        private ISet<Comment> _comments = new HashSet<Comment>();
         private ISet<string> _tags = new HashSet<string>();
-        private ISet<Vote> _votes = new HashSet<Vote>();
         public RemarkUser Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
-        public int Rating { get; protected set; }
         public RemarkState State { get; protected set; }
         public string Description { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
@@ -41,10 +39,10 @@ namespace Collectively.Services.Remarks.Domain
             protected set { _tags = new HashSet<string>(value); }
         }
 
-        public IEnumerable<Vote> Votes
+        public IEnumerable<Comment> Comments
         {
-            get { return _votes; }
-            protected set { _votes = new HashSet<Vote>(value); }
+            get { return _comments; }
+            protected set { _comments = new HashSet<Comment>(value); }
         }
 
         protected Remark()
@@ -142,64 +140,6 @@ namespace Collectively.Services.Remarks.Domain
                 return;
             }
             Description = description;
-        }
-
-        public void VotePositive(string userId, DateTime createdAt)
-        {
-            if(Votes.Any(x => x.UserId == userId && x.Positive))
-            {
-                throw new DomainException(OperationCodes.CannotSubmitVote,
-                    $"User with id: '{userId}' has already " + 
-                    $"submitted a positive vote for remark with id: '{Id}'.");
-            }
-            var negativeVote = Votes.SingleOrDefault(x => x.UserId == userId && !x.Positive);
-            if (negativeVote != null)
-            {
-                _votes.Remove(negativeVote);
-                Rating++;
-            }
-
-            _votes.Add(Vote.GetPositive(userId, createdAt));
-            Rating++;
-        }
-
-        public void VoteNegative(string userId, DateTime createdAt)
-        {
-            if(Votes.Any(x => x.UserId == userId && !x.Positive))
-            {
-                throw new DomainException(OperationCodes.CannotSubmitVote,
-                    $"User with id: '{userId}' has already " + 
-                    $"submitted a negative vote for remark with id: '{Id}'.");
-            }
-            var positiveVote = Votes.SingleOrDefault(x => x.UserId == userId && x.Positive);
-            if (positiveVote != null)
-            {
-                _votes.Remove(positiveVote);
-                Rating--;
-            }
-
-            _votes.Add(Vote.GetNegative(userId, createdAt));
-            Rating--;
-        }
-
-        public void DeleteVote(string userId)
-        {
-            var vote = Votes.SingleOrDefault(x => x.UserId == userId);
-            if (vote == null)
-            {
-                throw new DomainException(OperationCodes.CannotDeleteVote, 
-                    $"User with id: '{userId}' has not " + 
-                    $"submitted any vote for remark with id: '{Id}'.");              
-            }
-            if (vote.Positive)
-            {
-                Rating--;
-            }
-            else
-            {
-                Rating++;
-            }
-            _votes.Remove(vote);
         }
 
         public void SetProcessingState(User user, string description = null)

@@ -14,5 +14,6 @@ namespace Collectively.Services.Remarks.Dto
         public DateTime CreatedAt { get; set; }
         public int Rating { get; set; }
         public bool Resolved { get; set; }
+        public int CommentsCount { get; set; }
     }
 }
