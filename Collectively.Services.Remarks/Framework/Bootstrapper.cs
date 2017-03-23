@@ -2,8 +2,6 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Globalization;
-using Amazon;
-using Amazon.S3;
 using Autofac;
 using Collectively.Common.Files;
 using Collectively.Messages.Commands;
@@ -79,6 +77,7 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<RemarkPhotoService>().As<IRemarkPhotoService>();
                 builder.RegisterType<UserService>().As<IUserService>();
                 builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
+                builder.RegisterType<RemarkCommentService>().As<IRemarkCommentService>();
                 builder.RegisterType<UniqueNumberGenerator>().As<IUniqueNumberGenerator>().SingleInstance();
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
