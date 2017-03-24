@@ -24,11 +24,12 @@ namespace Collectively.Services.Remarks.Handlers
 
         public async Task HandleAsync(DeleteRemarkComment command)
         {
-            Comment comment = null;
             await _handler
-                .Run(async () => await _remarkCommentService.DoSomethingAsync())
+                .Validate(async () => await _remarkCommentService
+                    .ValidateEditorAccessOrFailAsync(command.RemarkId, command.RemarkId, command.UserId))
+                .Run(async () => await _remarkCommentService.RemoveAsync(command.RemarkId, command.CommentId))
                 .OnSuccess(async () => await _bus.PublishAsync(new CommentDeletedFromRemark(command.Request.Id, 
-                    command.UserId, command.RemarkId, comment.Id)))
+                    command.UserId, command.RemarkId, command.CommentId)))
                 .OnCustomError(ex => _bus.PublishAsync(new DeleteRemarkCommentRejected(command.Request.Id,
                     command.RemarkId, command.CommentId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>

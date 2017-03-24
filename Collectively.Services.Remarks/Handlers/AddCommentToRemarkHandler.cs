@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Collectively.Common.Services;
 using Collectively.Messages.Commands;
@@ -26,7 +27,13 @@ namespace Collectively.Services.Remarks.Handlers
         {
             Comment comment = null;
             await _handler
-                .Run(async () => await _remarkCommentService.DoSomethingAsync())
+                .Run(async () => 
+                {
+                    var commentId = Guid.NewGuid();
+                    await _remarkCommentService.AddAsync(command.RemarkId, commentId, command.UserId, command.Text);
+                    var commentValue = await _remarkCommentService.GetAsync(command.RemarkId, commentId);
+                    comment = commentValue.Value;
+                })
                 .OnSuccess(async () => await _bus.PublishAsync(new CommentAddedToRemark(command.Request.Id, 
                     command.UserId, command.RemarkId, comment.Id, comment.Text, comment.CreatedAt)))
                 .OnCustomError(ex => _bus.PublishAsync(new AddCommentToRemarkRejected(command.Request.Id,

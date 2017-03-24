@@ -1,5 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Collectively.Common.Domain;
+using Collectively.Common.Types;
+using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
 using NLog;
@@ -24,7 +27,87 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task DoSomethingAsync()
         {
-             await Task.CompletedTask;
+            await Task.CompletedTask;
+        }
+
+        public async Task ValidateEditorAccessOrFailAsync(Guid remarkId, Guid commentId, string userId)
+        {
+            var comment = await GetAsync(remarkId, commentId);
+            if(comment.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.CommentNotFound, 
+                    $"Remark comment with id: '{commentId}' was not found.");
+            }
+
+            var user = await GetUserOrFailAsync(userId);
+            if (user.Role == "moderator" || user.Role == "administrator")
+            {
+                return;
+            }
+            if (comment.Value.User.UserId != user.UserId)
+            {
+                throw new ServiceException(OperationCodes.UserNotAllowedToModifyComment,
+                    $"User with id: '{userId}' is not allowed" +
+                    $"to modify the remark comment with id: '{commentId}'.");
+            }
+            if (comment.Value.Removed)
+            {
+                throw new ServiceException(OperationCodes.CommentRemoved, 
+                    $"Remark comment with id: '{commentId}' was removed.");
+            }
+        }
+
+        public async Task<Maybe<Comment>> GetAsync(Guid remarkId, Guid commentId)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            
+            return remark.GetComment(commentId);
+        }
+
+        public async Task AddAsync(Guid remarkId, Guid commentId, string userId, string text)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            var user = await GetUserOrFailAsync(userId);
+            remark.AddComment(commentId, user, text);
+            await _remarkRepository.UpdateAsync(remark);
+        }
+
+        public async Task EditAsync(Guid remarkId, Guid commentId, string text)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            remark.EditComment(commentId, text);
+            await _remarkRepository.UpdateAsync(remark);
+        }
+
+        public async Task RemoveAsync(Guid remarkId, Guid commentId)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            remark.RemoveComment(commentId);
+            await _remarkRepository.UpdateAsync(remark);
+        }
+
+        private async Task<Remark> GetRemarkOrFailAsync(Guid remarkId)
+        {
+            var remark = await _remarkRepository.GetByIdAsync(remarkId);
+            if (remark.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Remark with id: '{remarkId}' does not exist!");
+            }
+
+            return remark.Value;
+        }
+
+        private async Task<User> GetUserOrFailAsync(string userId)
+        {
+            var user = await _userRepository.GetByUserIdAsync(userId);
+            if (user.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.UserNotFound,
+                    $"User with id: '{userId}' does not exist!");
+            }
+
+            return user.Value;
         }
     }
 }

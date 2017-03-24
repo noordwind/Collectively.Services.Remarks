@@ -73,7 +73,7 @@ namespace Collectively.Services.Remarks.Services
             {
                 throw new ServiceException(OperationCodes.UserNotAllowedToModifyRemark,
                     $"User with id: '{userId}' is not allowed" +
-                    $"to modify the remark with id: '{remarkId}'.!");
+                    $"to modify the remark with id: '{remarkId}'.");
             }
         }
 

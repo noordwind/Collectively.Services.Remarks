@@ -133,13 +133,50 @@ namespace Collectively.Services.Remarks.Domain
             if (description.Length > 500)
             {
                 throw new DomainException(OperationCodes.InvalidRemarkDescription, 
-                    "Remark Description is too long.");
+                    "Remark description is too long.");
             }
             if (Description.EqualsCaseInvariant(description))
             {
                 return;
             }
             Description = description;
+        }
+
+        public void AddComment(Guid id, User user, string text)
+        {
+            if(_comments.Count >= 500)
+            {
+                throw new DomainException(OperationCodes.TooManyComments, 
+                    $"Limit of 500 remark comments was reached.");
+            }
+            _comments.Add(new Comment(id, user, text));
+        }
+
+        public void EditComment(Guid id,  string text)
+        {
+            var comment = GetCommentOrFail(id);
+            comment.Edit(text);
+        }
+
+        public void RemoveComment(Guid id)
+        {
+            var comment = GetCommentOrFail(id);
+            _comments.Remove(comment);
+        }
+
+        public Maybe<Comment> GetComment(Guid id)
+            => Comments.FirstOrDefault(x => x.Id == id);
+
+        private Comment GetCommentOrFail(Guid id)
+        {
+            var comment = GetComment(id);
+            if(comment.HasNoValue)
+            {
+                throw new DomainException(OperationCodes.CommentNotFound, 
+                    $"Remark comment with id: '{id}' was not found.");
+            }
+
+            return comment.Value;
         }
 
         public void SetProcessingState(User user, string description = null)

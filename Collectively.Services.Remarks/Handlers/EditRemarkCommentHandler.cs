@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Collectively.Common.Services;
 using Collectively.Messages.Commands;
@@ -24,11 +25,18 @@ namespace Collectively.Services.Remarks.Handlers
 
         public async Task HandleAsync(EditRemarkComment command)
         {
-            Comment comment = null;
+            CommentHistory history = null;
             await _handler
-                .Run(async () => await _remarkCommentService.DoSomethingAsync())
+                .Validate(async () => await _remarkCommentService
+                    .ValidateEditorAccessOrFailAsync(command.RemarkId, command.RemarkId, command.UserId))
+                .Run(async () => 
+                {
+                    await _remarkCommentService.EditAsync(command.RemarkId, command.CommentId, command.Text);
+                    var commentValue = await _remarkCommentService.GetAsync(command.RemarkId, command.CommentId);
+                    history = commentValue.Value.History.Last();
+                })
                 .OnSuccess(async () => await _bus.PublishAsync(new CommentEditedInRemark(command.Request.Id, 
-                    command.UserId, command.RemarkId, comment.Id, comment.Text, comment.CreatedAt)))
+                    command.UserId, command.RemarkId, command.CommentId, history.Text, history.CreatedAt)))
                 .OnCustomError(ex => _bus.PublishAsync(new EditRemarkCommentRejected(command.Request.Id,
                     command.RemarkId, command.CommentId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>

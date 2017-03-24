@@ -10,10 +10,13 @@ namespace Collectively.Services.Remarks
         public static string RemarkLocationNotProvided => "remark_location_not_provided";
         public static string RemarkStateNotProvided => "remark_state_not_provided";
         public static string CommentUserNotProvided => "comment_user_not_provided";
+        public static string TooManyComments => "comment_not_found";
         public static string EmptyComment => "empty_comment";
+        public static string CommentNotFound => "comment_not_found";
         public static string CommentEditedTooManyTimes => "comment_edited_too_many_times";
         public static string CommentRemoved => "comment_removed";
         public static string InvalidComment => "invalid_comment";
+        public static string UserNotAllowedToModifyComment => "user_not_allowed_to_modify_comment";
         public static string UserNotAllowedToModifyRemark => "user_not_allowed_to_modify_remark";
         public static string UserNotFound => "user_not_found";
         public static string CategoryNotFound => "category_not_found";
