@@ -26,7 +26,8 @@ namespace Collectively.Services.Remarks.Handlers
         {
             Comment comment = null;
             await _handler
-                .Run(async () => await _remarkCommentService.DoSomethingAsync())
+                .Run(async () => await _remarkCommentService.DeleteVoteAsync(command.RemarkId, command.CommentId,
+                    command.UserId))
                 .OnSuccess(async () => await _bus.PublishAsync(new RemarkCommentVoteDeleted(command.Request.Id, 
                     command.UserId, command.RemarkId, comment.Id)))
                 .OnCustomError(ex => _bus.PublishAsync(new DeleteRemarkCommentVoteRejected(command.Request.Id,

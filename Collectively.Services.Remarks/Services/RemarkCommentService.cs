@@ -25,11 +25,6 @@ namespace Collectively.Services.Remarks.Services
             _settings = settings;
         }
 
-        public async Task DoSomethingAsync()
-        {
-            await Task.CompletedTask;
-        }
-
         public async Task ValidateEditorAccessOrFailAsync(Guid remarkId, Guid commentId, string userId)
         {
             var comment = await GetAsync(remarkId, commentId);
@@ -83,6 +78,39 @@ namespace Collectively.Services.Remarks.Services
         {
             var remark = await GetRemarkOrFailAsync(remarkId);
             remark.RemoveComment(commentId);
+            await _remarkRepository.UpdateAsync(remark);
+        }
+
+        public async Task SubmitVoteAsync(Guid remarkId, Guid commentId, string userId, bool positive, DateTime createdAt)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            var comment = remark.GetComment(commentId);
+            if(comment.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.CommentNotFound, 
+                    $"Remark comment with id: '{commentId}' was not found.");
+            }
+            if (positive)
+            {
+                comment.Value.VotePositive(userId, createdAt);
+            } 
+            else
+            {
+                comment.Value.VoteNegative(userId, createdAt);
+            }
+            await _remarkRepository.UpdateAsync(remark);
+        }
+
+        public async Task DeleteVoteAsync(Guid remarkId, Guid commentId, string userId)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            var comment = remark.GetComment(commentId);
+            if(comment.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.CommentNotFound, 
+                    $"Remark comment with id: '{commentId}' was not found.");
+            }
+            comment.Value.DeleteVote(userId);
             await _remarkRepository.UpdateAsync(remark);
         }
 

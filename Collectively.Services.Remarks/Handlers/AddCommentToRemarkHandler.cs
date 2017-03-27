@@ -35,7 +35,7 @@ namespace Collectively.Services.Remarks.Handlers
                     comment = commentValue.Value;
                 })
                 .OnSuccess(async () => await _bus.PublishAsync(new CommentAddedToRemark(command.Request.Id, 
-                    command.UserId, command.RemarkId, comment.Id, comment.Text, comment.CreatedAt)))
+                    command.UserId, comment.User.Name, command.RemarkId, comment.Id, comment.Text, comment.CreatedAt)))
                 .OnCustomError(ex => _bus.PublishAsync(new AddCommentToRemarkRejected(command.Request.Id,
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>
