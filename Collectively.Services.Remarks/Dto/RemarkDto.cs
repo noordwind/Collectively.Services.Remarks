@@ -8,5 +8,6 @@ namespace Collectively.Services.Remarks.Dto
         public IList<RemarkStateDto> States { get; set; }
         public IList<string> Tags { get; set; }
         public IList<VoteDto> Votes { get; set; }
+        public IList<CommentDto> Comments { get; set; }
     }
 }

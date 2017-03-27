@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Linq;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Dto;
 
@@ -10,6 +11,12 @@ namespace Collectively.Services.Remarks.Framework
         {
             var config = new MapperConfiguration(cfg =>
             {
+                cfg.CreateMap<Remark, BasicRemarkDto>()
+                    .ForMember(x => x.CommentsCount, 
+                               m => m.MapFrom(p => p.Comments == null ? 0 : p.Comments.Count()))
+                    .ForMember(x => x.SmallPhotoUrl,
+                               m => m.MapFrom(p => p.Photos == null ? 
+                                    string.Empty : p.Photos.First(x => x.Size == "small").Url));
                 cfg.CreateMap<Remark, RemarkDto>();
                 cfg.CreateMap<RemarkState, RemarkStateDto>();
                 cfg.CreateMap<RemarkUser, RemarkUserDto>();
