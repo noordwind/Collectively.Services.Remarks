@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Collectively.Common.Domain;
 using Collectively.Common.Types;
@@ -63,14 +64,16 @@ namespace Collectively.Services.Remarks.Services
         {
             var remark = await GetRemarkOrFailAsync(remarkId);
             var user = await GetUserOrFailAsync(userId);
-            remark.AddComment(commentId, user, text);
+            var encodedText = WebUtility.HtmlEncode(text);
+            remark.AddComment(commentId, user, encodedText);
             await _remarkRepository.UpdateAsync(remark);
         }
 
         public async Task EditAsync(Guid remarkId, Guid commentId, string text)
         {
             var remark = await GetRemarkOrFailAsync(remarkId);
-            remark.EditComment(commentId, text);
+            var encodedText = WebUtility.HtmlEncode(text);
+            remark.EditComment(commentId, encodedText);
             await _remarkRepository.UpdateAsync(remark);
         }
 
