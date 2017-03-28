@@ -1,7 +1,7 @@
-﻿using  Collectively.Common.Host;
+﻿using Collectively.Common.Host;
 using Collectively.Services.Remarks.Framework;
 using Collectively.Messages.Commands.Remarks;
-using  Collectively.Messages.Events.Users;
+using Collectively.Messages.Events.Users;
 
 namespace Collectively.Services.Remarks
 {
@@ -23,6 +23,11 @@ namespace Collectively.Services.Remarks
                 .SubscribeToCommand<RemovePhotosFromRemark>()
                 .SubscribeToCommand<SubmitRemarkVote>()
                 .SubscribeToCommand<DeleteRemarkVote>()
+                .SubscribeToCommand<AddCommentToRemark>()
+                .SubscribeToCommand<EditRemarkComment>()
+                .SubscribeToCommand<DeleteRemarkComment>()
+                .SubscribeToCommand<SubmitRemarkCommentVote>()
+                .SubscribeToCommand<DeleteRemarkCommentVote>()
                 .SubscribeToEvent<SignedUp>()
                 .SubscribeToEvent<UsernameChanged>()
                 .Build()
