@@ -29,8 +29,7 @@ namespace Collectively.Services.Remarks.Handlers
             await _handler
                 .Run(async () => 
                 {
-                    var commentId = Guid.NewGuid();
-                    await _remarkCommentService.AddAsync(command.RemarkId, commentId, command.UserId, command.Text);
+                    await _remarkCommentService.AddAsync(command.RemarkId, command.CommentId, command.UserId, command.Text);
                     var commentValue = await _remarkCommentService.GetAsync(command.RemarkId, commentId);
                     comment = commentValue.Value;
                 })
