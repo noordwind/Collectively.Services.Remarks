@@ -28,7 +28,7 @@ namespace Collectively.Services.Remarks.Handlers
             CommentHistory history = null;
             await _handler
                 .Validate(async () => await _remarkCommentService
-                    .ValidateEditorAccessOrFailAsync(command.RemarkId, command.RemarkId, command.UserId))
+                    .ValidateEditorAccessOrFailAsync(command.RemarkId, command.CommentId, command.UserId))
                 .Run(async () => 
                 {
                     await _remarkCommentService.EditAsync(command.RemarkId, command.CommentId, command.Text);

@@ -26,7 +26,7 @@ namespace Collectively.Services.Remarks.Handlers
         {
             await _handler
                 .Validate(async () => await _remarkCommentService
-                    .ValidateEditorAccessOrFailAsync(command.RemarkId, command.RemarkId, command.UserId))
+                    .ValidateEditorAccessOrFailAsync(command.RemarkId, command.CommentId, command.UserId))
                 .Run(async () => await _remarkCommentService.RemoveAsync(command.RemarkId, command.CommentId))
                 .OnSuccess(async () => await _bus.PublishAsync(new CommentDeletedFromRemark(command.Request.Id, 
                     command.UserId, command.RemarkId, command.CommentId)))
