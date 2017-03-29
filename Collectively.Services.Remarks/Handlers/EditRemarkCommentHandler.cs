@@ -36,7 +36,7 @@ namespace Collectively.Services.Remarks.Handlers
                     history = commentValue.Value.History.Last();
                 })
                 .OnSuccess(async () => await _bus.PublishAsync(new CommentEditedInRemark(command.Request.Id, 
-                    command.UserId, command.RemarkId, command.CommentId, history.Text, history.CreatedAt)))
+                    command.UserId, command.RemarkId, command.CommentId, command.Text, history.CreatedAt)))
                 .OnCustomError(ex => _bus.PublishAsync(new EditRemarkCommentRejected(command.Request.Id,
                     command.RemarkId, command.CommentId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>
