@@ -30,7 +30,7 @@ namespace Collectively.Services.Remarks.Handlers
                 .Run(async () => 
                 {
                     await _remarkCommentService.AddAsync(command.RemarkId, command.CommentId, command.UserId, command.Text);
-                    var commentValue = await _remarkCommentService.GetAsync(command.RemarkId, commentId);
+                    var commentValue = await _remarkCommentService.GetAsync(command.RemarkId, command.CommentId);
                     comment = commentValue.Value;
                 })
                 .OnSuccess(async () => await _bus.PublishAsync(new CommentAddedToRemark(command.Request.Id, 
