@@ -45,8 +45,9 @@ namespace Collectively.Services.Remarks.Domain
                 throw new DomainException(OperationCodes.CommentEditedTooManyTimes,
                     $"Comment: '{Id}' can not be edited more than 5 times.");
             }
-            ValidateText(text);
-            _history.Add(CommentHistory.Create(text));
+            var originalText = Text;
+            SetText(text);
+            _history.Add(CommentHistory.Create(originalText));
         }
 
         public void Remove()
