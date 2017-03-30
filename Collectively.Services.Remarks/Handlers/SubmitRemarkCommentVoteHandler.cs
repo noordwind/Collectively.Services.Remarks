@@ -24,12 +24,11 @@ namespace Collectively.Services.Remarks.Handlers
 
         public async Task HandleAsync(SubmitRemarkCommentVote command)
         {
-            Comment comment = null;
             await _handler
                 .Run(async () => await _remarkCommentService.SubmitVoteAsync(command.RemarkId, command.CommentId,
                     command.UserId, command.Positive, command.CreatedAt))
                 .OnSuccess(async () => await _bus.PublishAsync(new RemarkCommentVoteSubmitted(command.Request.Id, 
-                    command.UserId, command.RemarkId, comment.Id, command.Positive, command.CreatedAt)))
+                    command.UserId, command.RemarkId, command.CommentId, command.Positive, command.CreatedAt)))
                 .OnCustomError(ex => _bus.PublishAsync(new SubmitRemarkCommentVoteRejected(command.Request.Id,
                     command.RemarkId, command.CommentId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>
