@@ -12,6 +12,7 @@ namespace Collectively.Services.Remarks.Domain
         private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
         private ISet<RemarkState> _states = new HashSet<RemarkState>();
         private ISet<Comment> _comments = new HashSet<Comment>();
+        private ISet<string> _userFavorites = new HashSet<string>();
         private ISet<string> _tags = new HashSet<string>();
         public RemarkUser Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
@@ -37,6 +38,12 @@ namespace Collectively.Services.Remarks.Domain
         {
             get { return _tags; }
             protected set { _tags = new HashSet<string>(value); }
+        }
+
+        public IEnumerable<string> UserFavorites
+        {
+            get { return _userFavorites; }
+            protected set { _userFavorites = new HashSet<string>(value); }
         }
 
         public IEnumerable<Comment> Comments
@@ -177,6 +184,16 @@ namespace Collectively.Services.Remarks.Domain
             }
 
             return comment.Value;
+        }
+
+        public void AddUserFavorite(User user)
+        {
+            _userFavorites.Add(user.UserId);
+        }
+
+        public void RemoveUserFavorite(User user)
+        {
+            _userFavorites.Remove(user.UserId);
         }
 
         public void SetProcessingState(User user, string description = null)

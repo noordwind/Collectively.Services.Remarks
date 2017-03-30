@@ -52,24 +52,13 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task ValidateEditorAccessOrFailAsync(Guid remarkId, string userId)
         {
-            var remark = await _remarkRepository.GetByIdAsync(remarkId);
-            if (remark.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: '{remarkId}' does not exist!");
-            }
-
-            var user = await _userRepository.GetByUserIdAsync(userId);
-            if (user.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.UserNotFound,
-                    $"User with id: '{userId}' does not exist!");
-            }
-            if (user.Value.Role == "moderator" || user.Value.Role == "administrator")
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            var user = await GetUserOrFailAsync(userId);
+            if (user.Role == "moderator" || user.Role == "administrator")
             {
                 return;
             }
-            if (remark.Value.Author.UserId != user.Value.UserId)
+            if (remark.Author.UserId != user.UserId)
             {
                 throw new ServiceException(OperationCodes.UserNotAllowedToModifyRemark,
                     $"User with id: '{userId}' is not allowed" +
@@ -82,13 +71,7 @@ namespace Collectively.Services.Remarks.Services
         {
             Logger.Debug($"Create remark, id:{id}, userId: {userId}, category: {category}, " +
                          $"latitude: {location.Latitude}, longitude: {location.Longitude}.");
-            var user = await _userRepository.GetByUserIdAsync(userId);
-            if (user.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.UserNotFound,
-                    $"User with id: '{userId}' does not exist!");
-            }
-
+            var user = await GetUserOrFailAsync(userId);
             var remarkCategory = await _categoryRepository.GetByNameAsync(category);
             if (remarkCategory.HasNoValue)
             {
@@ -96,7 +79,7 @@ namespace Collectively.Services.Remarks.Services
                     $"Category: '{userId}' does not exist!");
             }
 
-            var remark = new Remark(id, user.Value, remarkCategory.Value, location, description);
+            var remark = new Remark(id, user, remarkCategory.Value, location, description);
             if (tags == null || !tags.Any())
             {
                 await _remarkRepository.AddAsync(remark);
@@ -124,50 +107,61 @@ namespace Collectively.Services.Remarks.Services
         public async Task UpdateUserNamesAsync(string userId, string name)
         {
             Logger.Debug($"Update user's remarks with new userName, userid: {userId}, userName: {name}");
-            var user = await _userRepository.GetByUserIdAsync(userId);
-            if (user.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.UserNotFound,
-                     $"User with id: {userId} has not been found.");
-            }
-
+            var user = await GetUserOrFailAsync(userId);
             await _remarkRepository.UpdateUserNamesAsync(userId, name);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid remarkId)
         {
-            Logger.Debug($"Deleting remark with id: '{id}'.");
-            var remark = await _remarkRepository.GetByIdAsync(id);
-            if (remark.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: '{id}' does not exist!");
-            }
-            await _remarkPhotoService.RemovePhotosAsync(remark.Value.Id);
-            await _remarkRepository.DeleteAsync(remark.Value);
-            Logger.Debug($"Remark with id: '{id}' was deleted.");
+            Logger.Debug($"Deleting remark with id: '{remarkId}'.");
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            await _remarkPhotoService.RemovePhotosAsync(remark.Id);
+            await _remarkRepository.DeleteAsync(remark);
+            Logger.Debug($"Remark with id: '{remarkId}' was deleted.");
         }
 
         public async Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt)
         {
-            var remark = await _remarkRepository.GetByIdAsync(remarkId);
-            if (remark.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: '{remarkId}' does not exist!");
-            }
+            var remark = await GetRemarkOrFailAsync(remarkId);
             if (positive)
             {
-                remark.Value.VotePositive(userId, createdAt);
+                remark.VotePositive(userId, createdAt);
             } 
             else
             {
-                remark.Value.VoteNegative(userId, createdAt);
+                remark.VoteNegative(userId, createdAt);
             }
-            await _remarkRepository.UpdateAsync(remark.Value);
+            await _remarkRepository.UpdateAsync(remark);
         }
 
         public async Task DeleteVoteAsync(Guid remarkId, string userId)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            remark.DeleteVote(userId);
+            await _remarkRepository.UpdateAsync(remark);
+        }
+
+        public async Task AddFavoriteRemarkAsync(Guid remarkId, string userId)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            var user = await GetUserOrFailAsync(userId);
+            remark.AddUserFavorite(user);
+            user.AddFavoriteRemark(remark);
+            await _remarkRepository.UpdateAsync(remark);    
+            await _userRepository.UpdateAsync(user);                  
+        }
+
+        public async Task DeleteFavoriteRemarkAsync(Guid remarkId, string userId)
+        {
+            var remark = await GetRemarkOrFailAsync(remarkId);
+            var user = await GetUserOrFailAsync(userId);
+            remark.RemoveUserFavorite(user);
+            user.RemoveFavoriteRemark(remark);
+            await _remarkRepository.UpdateAsync(remark);    
+            await _userRepository.UpdateAsync(user);        
+        }
+
+        public async Task<Remark> GetRemarkOrFailAsync(Guid remarkId)
         {
             var remark = await _remarkRepository.GetByIdAsync(remarkId);
             if (remark.HasNoValue)
@@ -176,8 +170,19 @@ namespace Collectively.Services.Remarks.Services
                     $"Remark with id: '{remarkId}' does not exist!");
             }
 
-            remark.Value.DeleteVote(userId);
-            await _remarkRepository.UpdateAsync(remark.Value);
+            return remark.Value;
+        }
+
+        public async Task<User> GetUserOrFailAsync(string userId)
+        {
+            var user = await _userRepository.GetByUserIdAsync(userId);
+            if (user.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.UserNotFound,
+                    $"User with id: '{userId}' does not exist!");
+            }
+
+            return user.Value;
         }
     }
 }

@@ -20,5 +20,7 @@ namespace Collectively.Services.Remarks.Services
         Task DeleteAsync(Guid id);
         Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt);
         Task DeleteVoteAsync(Guid remarkId, string userId);
+        Task AddFavoriteRemarkAsync(Guid remarkId, string userId);
+        Task DeleteFavoriteRemarkAsync(Guid remarkId, string userId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using  Collectively.Common.Domain;
 using  Collectively.Common.Extensions;
 
@@ -6,10 +7,16 @@ namespace Collectively.Services.Remarks.Domain
 {
     public class User : IdentifiableEntity, ITimestampable
     {
+        private ISet<Guid> _favoriteRemarks = new HashSet<Guid>();
         public string UserId { get; protected set; }
         public string Name { get; protected set; }
         public string Role { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
+        public IEnumerable<Guid> FavoriteRemarks
+        {
+            get { return _favoriteRemarks; }
+            protected set { _favoriteRemarks = new HashSet<Guid>(value); }
+        }
 
         protected User()
         {
@@ -33,6 +40,16 @@ namespace Collectively.Services.Remarks.Domain
                 return;
 
             Name = name.ToLowerInvariant();
+        }
+
+        public void AddFavoriteRemark(Remark remark)
+        {
+            _favoriteRemarks.Add(remark.Id);
+        }
+
+        public void RemoveFavoriteRemark(Remark remark)
+        {
+            _favoriteRemarks.Remove(remark.Id);
         }
     }
 }
