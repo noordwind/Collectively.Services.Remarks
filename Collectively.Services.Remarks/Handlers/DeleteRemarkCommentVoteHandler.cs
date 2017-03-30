@@ -3,7 +3,6 @@ using Collectively.Common.Services;
 using Collectively.Messages.Commands;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
-using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Services;
 using RawRabbit;
 
