@@ -23,10 +23,16 @@ namespace Collectively.Services.Remarks.Handlers
 
         public async Task HandleAsync(TakeRemarkAction command)
         {
+            var username = string.Empty;
             await _handler
-                .Run(async () => await _remarkActionService.ParticipateAsync(command.RemarkId, command.UserId, command.Description))
+                .Run(async () => 
+                {
+                    await _remarkActionService.ParticipateAsync(command.RemarkId, command.UserId, command.Description);
+                    var participant = await _remarkActionService.GetParticipantAsync(command.RemarkId, command.UserId);
+                    username = participant.Value.User.Name;
+                })
                 .OnSuccess(async () => await _bus.PublishAsync(new RemarkActionTaken(command.Request.Id, 
-                        command.UserId, command.RemarkId, command.Description)))
+                        command.UserId, username, command.RemarkId, command.Description)))
                 .OnCustomError(ex => _bus.PublishAsync(new TakeRemarkActionRejected(command.Request.Id,
                     command.UserId, command.RemarkId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>
