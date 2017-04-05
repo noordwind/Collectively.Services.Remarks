@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using  Collectively.Messages.Commands;
+using Collectively.Messages.Commands;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
-using  Collectively.Messages.Commands.Users;
+using Collectively.Messages.Commands.Users;
 using NLog;
 using RawRabbit;
 
@@ -33,7 +33,9 @@ namespace Collectively.Services.Remarks.Services
         {
             var remark = await _remarkRepository.GetByIdAsync(remarkId);
             if (remark.HasNoValue)
+            {
                 return;
+            }
 
             foreach (var service in socialMedia)
             {

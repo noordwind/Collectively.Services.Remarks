@@ -9,6 +9,7 @@ namespace Collectively.Services.Remarks.Domain
 {
     public class Remark : Scorable, ITimestampable
     {
+        private ISet<Participant> _participants = new HashSet<Participant>();
         private ISet<RemarkPhoto> _photos = new HashSet<RemarkPhoto>();
         private ISet<RemarkState> _states = new HashSet<RemarkState>();
         private ISet<Comment> _comments = new HashSet<Comment>();
@@ -50,6 +51,12 @@ namespace Collectively.Services.Remarks.Domain
         {
             get { return _comments; }
             protected set { _comments = new HashSet<Comment>(value); }
+        }
+
+        public IEnumerable<Participant> Participants
+        {
+            get { return _participants; }
+            protected set { _participants = new HashSet<Participant>(value); }
         }
 
         protected Remark()
@@ -196,14 +203,32 @@ namespace Collectively.Services.Remarks.Domain
             _userFavorites.Remove(user.UserId);
         }
 
-        public void SetProcessingState(User user, string description = null)
-            => SetState(RemarkState.Processing(RemarkUser.Create(user), description));
+        public void Participate(User user, string description)
+        {
+            _participants.Add(Participant.Create(user, description));
+        }
 
-        public void SetResolvedState(User user, string description = null, Location location = null)
-            => SetState(RemarkState.Resolved(RemarkUser.Create(user), description, location));
+        public void CancelParticipation(string userId)
+        {
+            var participant = _participants.FirstOrDefault(x => x.User.UserId == userId);
+            if(participant == null)
+            {
+                return;
+            }
+            _participants.Remove(participant);
+        }
 
-        public void SetRenewedState(User user, string description = null)
-            => SetState(RemarkState.Renewed(RemarkUser.Create(user), description));
+        public void SetProcessingState(User user, string description = null, 
+            RemarkPhoto photo = null)
+            => SetState(RemarkState.Processing(RemarkUser.Create(user), description, photo));
+
+        public void SetResolvedState(User user, string description = null, 
+            Location location = null, RemarkPhoto photo = null)
+            => SetState(RemarkState.Resolved(RemarkUser.Create(user), description, location, photo));
+
+        public void SetRenewedState(User user, string description = null, 
+            RemarkPhoto photo = null)
+            => SetState(RemarkState.Renewed(RemarkUser.Create(user), description, photo));
 
         public void SetCanceledState(User user, string description = null)
             => SetState(RemarkState.Canceled(RemarkUser.Create(user), description));

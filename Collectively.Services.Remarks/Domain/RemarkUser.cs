@@ -1,6 +1,6 @@
 ﻿using System;
-using  Collectively.Common.Extensions;
-using  Collectively.Common.Domain;
+using Collectively.Common.Extensions;
+using Collectively.Common.Domain;
 
 namespace Collectively.Services.Remarks.Domain
 {
@@ -32,9 +32,9 @@ namespace Collectively.Services.Remarks.Domain
             => new RemarkUser(user.UserId, user.Name);
 
         protected override bool EqualsCore(RemarkUser other) 
-            => UserId.Equals(other.UserId) && Name.Equals(other.Name);
+            => UserId.Equals(other.UserId);
 
         protected override int GetHashCodeCore() 
-            => UserId.GetHashCode() ^ Name.GetHashCode();
+            => UserId.GetHashCode();
     }
 }

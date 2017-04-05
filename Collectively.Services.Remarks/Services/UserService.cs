@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using  Collectively.Common.Domain;
 using Collectively.Services.Remarks.Domain;
+using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Repositories;
 using NLog;
 
@@ -31,15 +31,9 @@ namespace Collectively.Services.Remarks.Services
         public async Task UpdateNameAsync(string userId, string name)
         {
             Logger.Debug($"Update userName, userId:{userId}, name:{name}");
-            var user = await _userRepository.GetByUserIdAsync(userId);
-            if (user.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.UserNotFound, 
-                    $"User with id: {userId} does not exist");
-            }
-
-            user.Value.SetName(name);
-            await _userRepository.UpdateAsync(user.Value);
+            var user = await _userRepository.GetOrFailAsync(userId);
+            user.SetName(name);
+            await _userRepository.UpdateAsync(user);
         }
     }
 }

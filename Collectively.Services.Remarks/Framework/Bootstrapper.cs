@@ -78,6 +78,7 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<UserService>().As<IUserService>();
                 builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
                 builder.RegisterType<RemarkCommentService>().As<IRemarkCommentService>();
+                builder.RegisterType<RemarkActionService>().As<IRemarkActionService>();
                 builder.RegisterType<UniqueNumberGenerator>().As<IUniqueNumberGenerator>().SingleInstance();
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();

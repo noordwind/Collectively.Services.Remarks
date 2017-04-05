@@ -50,20 +50,9 @@ namespace Collectively.Services.Remarks.Services
             Guid id, string userId, string description = null, Location location = null, 
             File photo = null, bool validateLocation = false)
         {
-            var user = await _userRepository.GetByUserIdAsync(userId);
-            if (user.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.UserNotFound,
-                    $"User with id: '{userId}' does not exist!");
-            }
-
-            var remark = await _remarkRepository.GetByIdAsync(id);
-            if (remark.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: {id} does not exist!");
-            }
-            if (location != null && validateLocation && remark.Value.Location.IsInRange(location, _settings.AllowedDistance) == false)
+            var user = await _userRepository.GetOrFailAsync(userId);
+            var remark = await _remarkRepository.GetOrFailAsync(id);
+            if (location != null && validateLocation && remark.Location.IsInRange(location, _settings.AllowedDistance) == false)
             {
                 throw new ServiceException(OperationCodes.DistanceBetweenUserAndRemarkIsTooBig,
                     $"The distance between user and remark: {id} is too big! " +
@@ -71,10 +60,10 @@ namespace Collectively.Services.Remarks.Services
             }
             if (photo != null)
             {
-                await _remarkPhotoService.UploadImagesWithDifferentSizesAsync(remark.Value, photo, state);
+                await _remarkPhotoService.UploadImagesWithDifferentSizesAsync(remark, photo, state);
             }
-            updateStateAction(remark.Value, user.Value, description);
-            await _remarkRepository.UpdateAsync(remark.Value);              
+            updateStateAction(remark, user, description);
+            await _remarkRepository.UpdateAsync(remark);              
         }        
     }
 }

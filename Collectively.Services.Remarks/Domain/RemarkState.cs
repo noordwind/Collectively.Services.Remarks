@@ -1,6 +1,6 @@
 using System;
-using  Collectively.Common.Domain;
-using  Collectively.Common.Extensions;
+using Collectively.Common.Domain;
+using Collectively.Common.Extensions;
 
 namespace Collectively.Services.Remarks.Domain
 {
@@ -10,6 +10,7 @@ namespace Collectively.Services.Remarks.Domain
         public RemarkUser User { get; protected set; }
         public string Description { get; protected set; }
         public Location Location { get; protected set; }
+        public RemarkPhoto Photo { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
 
         public static class Names
@@ -25,7 +26,8 @@ namespace Collectively.Services.Remarks.Domain
         {
         }
 
-        protected RemarkState(string state, RemarkUser user, string description = null, Location location = null)
+        protected RemarkState(string state, RemarkUser user, 
+            string description = null, Location location = null, RemarkPhoto photo = null)
         {
             if (state.Empty())
             {
@@ -40,25 +42,29 @@ namespace Collectively.Services.Remarks.Domain
                 throw new ArgumentException("Description can not have more than 2000 characters.", 
                                             nameof(description));
             }
-
             State = state;
             User = user;
             Description = description?.Trim() ?? string.Empty;
             Location = location;
+            Photo = photo;
             CreatedAt = DateTime.UtcNow;
         }
 
-        public static RemarkState New(RemarkUser user, Location location, string description = null) 
+        public static RemarkState New(RemarkUser user, Location location, 
+            string description = null) 
             => new RemarkState(Names.New, user, description, location);
 
-        public static RemarkState Processing(RemarkUser user, string description = null) 
-            => new RemarkState(Names.Processing, user, description);
+        public static RemarkState Processing(RemarkUser user, 
+            string description = null, RemarkPhoto photo = null) 
+            => new RemarkState(Names.Processing, user, description, photo: photo);
 
-        public static RemarkState Resolved(RemarkUser user, string description = null, Location location = null) 
-            => new RemarkState(Names.Resolved, user, description, location);
+        public static RemarkState Resolved(RemarkUser user, 
+            string description = null, Location location = null, RemarkPhoto photo = null) 
+            => new RemarkState(Names.Resolved, user, description, location, photo);
 
-        public static RemarkState Renewed(RemarkUser user, string description = null) 
-            => new RemarkState(Names.Renewed, user, description);
+        public static RemarkState Renewed(RemarkUser user, 
+            string description = null, RemarkPhoto photo = null) 
+            => new RemarkState(Names.Renewed, user, description, photo: photo);
 
         public static RemarkState Canceled(RemarkUser user, string description = null) 
             => new RemarkState(Names.Canceled, user, description);

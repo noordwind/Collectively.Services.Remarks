@@ -10,5 +10,6 @@ namespace Collectively.Services.Remarks.Dto
         public IList<VoteDto> Votes { get; set; }
         public IList<CommentDto> Comments { get; set; }
         public IList<string> UserFavorites { get; set; }
+        public IList<ParticipantDto> Participants { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using Collectively.Common.Domain;
 using Collectively.Common.Files;
 using Collectively.Common.Types;
 using Collectively.Services.Remarks.Domain;
+using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
 using NLog;
@@ -33,36 +34,31 @@ namespace Collectively.Services.Remarks.Services
             _settings = settings;
         }
 
-        public async Task AddPhotosAsync(Guid id, params File[] photos)
+        public async Task AddPhotosAsync(Guid remarkId, params File[] photos)
         {
             if (photos == null || !photos.Any())
             {
                 throw new ServiceException(OperationCodes.NoFiles, 
-                    $"There are no photos to be added to the remark with id: '{id}'.");
+                    $"There are no photos to be added to the remark with id: '{remarkId}'.");
             }
 
-            Logger.Debug($"Adding {photos.Count()} photos to remark with id: '{id}'.");
-            var remark = await _remarkRepository.GetByIdAsync(id);
-            if (remark.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: {id} does not exist!");
-            }
-            if(remark.Value.Photos.GroupBy(x => x.Size).Count() + photos.Count() > _settings.PhotosLimit) 
+            Logger.Debug($"Adding {photos.Count()} photos to remark with id: '{remarkId}'.");
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+            if(remark.Photos.GroupBy(x => x.Size).Count() + photos.Count() > _settings.PhotosLimit) 
             {
                 throw new ServiceException(OperationCodes.TooManyFiles,
-                    $"There are too many photos ({photos.Count()}) to be added to the remark with id: '{id}'.");
+                    $"There are too many photos ({photos.Count()}) to be added to the remark with id: '{remarkId}'.");
             }
 
             var tasks = new List<Task>();
             foreach(var photo in photos)
             {
-                var task = UploadImagesWithDifferentSizesAsync(remark.Value, photo);
+                var task = UploadImagesWithDifferentSizesAsync(remark, photo);
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
-            await _remarkRepository.UpdateAsync(remark.Value);
-            Logger.Debug($"Added {photos.Count()} photos to remark with id: '{id}'.");
+            await _remarkRepository.UpdateAsync(remark);
+            Logger.Debug($"Added {photos.Count()} photos to remark with id: '{remarkId}'.");
         }
 
         public async Task UploadImagesWithDifferentSizesAsync(Remark remark, File originalPhoto, string metadata = null)
@@ -87,14 +83,14 @@ namespace Collectively.Services.Remarks.Services
             await Task.WhenAll(tasks);
         }
 
-        public async Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid id, params Guid[] groupIds)
+        public async Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid remarkId, params Guid[] groupIds)
         {
             if (groupIds == null || !groupIds.Any())
             {
                 return null;
             }
 
-            var remark = await _remarkRepository.GetByIdAsync(id);
+            var remark = await _remarkRepository.GetByIdAsync(remarkId);
             if (remark.HasNoValue)
             {
                 return null;
@@ -106,32 +102,26 @@ namespace Collectively.Services.Remarks.Services
                             .ToList();
         }
 
-        public async Task RemovePhotosAsync(Guid id, params string[] names)
+        public async Task RemovePhotosAsync(Guid remarkId, params string[] names)
         {
             if (names == null || !names.Any())
             {
                 throw new ServiceException(OperationCodes.NoFiles, 
-                    $"There are no photos to be removed from the remark with id: '{id}'.");
+                    $"There are no photos to be removed from the remark with id: '{remarkId}'.");
             }
 
-            var remark = await _remarkRepository.GetByIdAsync(id);
-            if (remark.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: {id} does not exist!");
-            }
-
-            Logger.Debug($"Removing {names.Count()} photos from the remark with id: '{id}'.");
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+            Logger.Debug($"Removing {names.Count()} photos from the remark with id: '{remarkId}'.");
             foreach (var name in names)
             {
-                if(remark.Value.GetPhoto(name).HasNoValue)
+                if(remark.GetPhoto(name).HasNoValue)
                 {
                     throw new ServiceException(OperationCodes.FileNotFound,
-                        $"Remark photo with name: '{name}' was not found in the remark with id: '{id}'.");
+                        $"Remark photo with name: '{name}' was not found in the remark with id: '{remarkId}'.");
                 }
-                remark.Value.RemovePhoto(name);
+                remark.RemovePhoto(name);
             }
-            await _remarkRepository.UpdateAsync(remark.Value);
+            await _remarkRepository.UpdateAsync(remark);
 
             var tasks = new List<Task>();
             foreach (var photo in names)
@@ -140,7 +130,7 @@ namespace Collectively.Services.Remarks.Services
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
-            Logger.Debug($"Removed {names.Count()} photos from the remark with id: '{id}'.");
+            Logger.Debug($"Removed {names.Count()} photos from the remark with id: '{remarkId}'.");
         }
     }
 }

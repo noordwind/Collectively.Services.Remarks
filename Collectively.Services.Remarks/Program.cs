@@ -30,6 +30,8 @@ namespace Collectively.Services.Remarks
                 .SubscribeToCommand<DeleteRemarkCommentVote>()
                 .SubscribeToCommand<AddFavoriteRemark>()
                 .SubscribeToCommand<DeleteFavoriteRemark>()
+                .SubscribeToCommand<TakeRemarkAction>()
+                .SubscribeToCommand<CancelRemarkAction>()
                 .SubscribeToEvent<SignedUp>()
                 .SubscribeToEvent<UsernameChanged>()
                 .Build()

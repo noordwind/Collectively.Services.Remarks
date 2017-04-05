@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Collectively.Common.Domain;
 using Collectively.Common.Types;
 using Collectively.Services.Remarks.Domain;
+using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
 using NLog;
@@ -35,7 +36,7 @@ namespace Collectively.Services.Remarks.Services
                     $"Remark comment with id: '{commentId}' was not found.");
             }
 
-            var user = await GetUserOrFailAsync(userId);
+            var user = await _userRepository.GetOrFailAsync(userId);
             if (user.Role == "moderator" || user.Role == "administrator")
             {
                 return;
@@ -55,15 +56,15 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task<Maybe<Comment>> GetAsync(Guid remarkId, Guid commentId)
         {
-            var remark = await GetRemarkOrFailAsync(remarkId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             
             return remark.GetComment(commentId);
         }
 
         public async Task AddAsync(Guid remarkId, Guid commentId, string userId, string text)
         {
-            var remark = await GetRemarkOrFailAsync(remarkId);
-            var user = await GetUserOrFailAsync(userId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+            var user = await _userRepository.GetOrFailAsync(userId);
             var encodedText = WebUtility.HtmlEncode(text);
             remark.AddComment(commentId, user, encodedText);
             await _remarkRepository.UpdateAsync(remark);
@@ -71,7 +72,7 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task EditAsync(Guid remarkId, Guid commentId, string text)
         {
-            var remark = await GetRemarkOrFailAsync(remarkId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             var encodedText = WebUtility.HtmlEncode(text);
             remark.EditComment(commentId, encodedText);
             await _remarkRepository.UpdateAsync(remark);
@@ -79,14 +80,14 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task RemoveAsync(Guid remarkId, Guid commentId)
         {
-            var remark = await GetRemarkOrFailAsync(remarkId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             remark.RemoveComment(commentId);
             await _remarkRepository.UpdateAsync(remark);
         }
 
         public async Task SubmitVoteAsync(Guid remarkId, Guid commentId, string userId, bool positive, DateTime createdAt)
         {
-            var remark = await GetRemarkOrFailAsync(remarkId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             var comment = remark.GetComment(commentId);
             if(comment.HasNoValue)
             {
@@ -106,7 +107,7 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task DeleteVoteAsync(Guid remarkId, Guid commentId, string userId)
         {
-            var remark = await GetRemarkOrFailAsync(remarkId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             var comment = remark.GetComment(commentId);
             if(comment.HasNoValue)
             {
@@ -115,30 +116,6 @@ namespace Collectively.Services.Remarks.Services
             }
             comment.Value.DeleteVote(userId);
             await _remarkRepository.UpdateAsync(remark);
-        }
-
-        private async Task<Remark> GetRemarkOrFailAsync(Guid remarkId)
-        {
-            var remark = await _remarkRepository.GetByIdAsync(remarkId);
-            if (remark.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.RemarkNotFound,
-                    $"Remark with id: '{remarkId}' does not exist!");
-            }
-
-            return remark.Value;
-        }
-
-        private async Task<User> GetUserOrFailAsync(string userId)
-        {
-            var user = await _userRepository.GetByUserIdAsync(userId);
-            if (user.HasNoValue)
-            {
-                throw new ServiceException(OperationCodes.UserNotFound,
-                    $"User with id: '{userId}' does not exist!");
-            }
-
-            return user.Value;
         }
     }
 }
