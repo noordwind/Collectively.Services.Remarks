@@ -100,7 +100,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
         {
             Initialize();
             RemarkRepositoryMock.Setup(x => x.GetByIdAsync(Moq.It.IsAny<Guid>()))
-                .ReturnsAsync(null);
+                .ReturnsAsync(() => null);
         };
 
         Because of = () => Exception = Catch.Exception(() => RemarkService.DeleteAsync(RemarkId).Await());

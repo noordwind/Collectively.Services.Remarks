@@ -97,11 +97,6 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Command.Category, Location, Command.Description, Command.Tags), Times.Once);
         };
 
-        It should_call_get_async_on_remark_service = () =>
-        {
-            RemarkServiceMock.Verify(x => x.GetAsync(Moq.It.IsAny<Guid>()), Times.Once);
-        };
-
         It should_publish_remark_created_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkCreated>(),
