@@ -14,6 +14,8 @@ namespace Collectively.Services.Remarks.Framework
                 cfg.CreateMap<Remark, BasicRemarkDto>()
                     .ForMember(x => x.CommentsCount, 
                                m => m.MapFrom(p => p.Comments == null ? 0 : p.Comments.Count()))
+                    .ForMember(x => x.ParticipantsCount, 
+                               m => m.MapFrom(p => p.Participants == null ? 0 : p.Participants.Count()))
                     .ForMember(x => x.SmallPhotoUrl,
                                m => m.MapFrom(p => p.Photos == null ? 
                                     string.Empty : p.Photos.First(x => x.Size == "small").Url));
