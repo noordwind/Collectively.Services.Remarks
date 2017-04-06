@@ -144,7 +144,7 @@ namespace Collectively.Services.Remarks.Domain
 
                 return;
             }
-            if (description.Length > 500)
+            if (description.Length > 2000)
             {
                 throw new DomainException(OperationCodes.InvalidRemarkDescription, 
                     "Remark description is too long.");
@@ -158,10 +158,10 @@ namespace Collectively.Services.Remarks.Domain
 
         public void AddComment(Guid id, User user, string text)
         {
-            if(_comments.Count >= 500)
+            if(_comments.Count >= 1000)
             {
                 throw new DomainException(OperationCodes.TooManyComments, 
-                    $"Limit of 500 remark comments was reached.");
+                    $"Limit of 1000 remark comments was reached.");
             }
             _comments.Add(new Comment(id, user, text));
         }
@@ -178,9 +178,6 @@ namespace Collectively.Services.Remarks.Domain
             _comments.Remove(comment);
         }
 
-        public Maybe<Comment> GetComment(Guid id)
-            => Comments.FirstOrDefault(x => x.Id == id);
-
         private Comment GetCommentOrFail(Guid id)
         {
             var comment = GetComment(id);
@@ -192,6 +189,9 @@ namespace Collectively.Services.Remarks.Domain
 
             return comment.Value;
         }
+
+        public Maybe<Comment> GetComment(Guid id)
+            => Comments.SingleOrDefault(x => x.Id == id);
 
         public void AddUserFavorite(User user)
         {
@@ -205,18 +205,27 @@ namespace Collectively.Services.Remarks.Domain
 
         public void Participate(User user, string description)
         {
+            var participant = GetParticipant(user.UserId);
+            if (participant.HasValue)
+            {
+                throw new DomainException(OperationCodes.UserAlreadyParticipatesInRemark, 
+                    $"User: '{user.UserId}' already participates in a remark: '{Id}'.");
+            }
             _participants.Add(Participant.Create(user, description));
         }
 
         public void CancelParticipation(string userId)
         {
-            var participant = _participants.FirstOrDefault(x => x.User.UserId == userId);
-            if(participant == null)
+            var participant = GetParticipant(userId);
+            if(participant.HasNoValue)
             {
                 return;
             }
-            _participants.Remove(participant);
+            _participants.Remove(participant.Value);
         }
+
+        public Maybe<Participant> GetParticipant(string userId)
+            => Participants.SingleOrDefault(x => x.User.UserId == userId);
 
         public void SetProcessingState(User user, string description = null, 
             RemarkPhoto photo = null)

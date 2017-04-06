@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Collectively.Common.Domain;
 using Collectively.Common.Types;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
@@ -21,12 +22,12 @@ namespace Collectively.Services.Remarks.Services
             _remarkRepository = remarkRepository;
             _userRepository = userRepository;
         }
+        
         public async Task<Maybe<Participant>> GetParticipantAsync(Guid remarkId, string userId)
         {
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
-            var user = await _userRepository.GetOrFailAsync(userId);
 
-            return remark.Participants.SingleOrDefault(x => x.User.UserId == userId);
+            return remark.GetParticipant(userId);
         }
 
         public async Task ParticipateAsync(Guid remarkId, string userId, string description)

@@ -23,7 +23,6 @@ namespace Collectively.Services.Remarks.Domain
             {
                 throw new ArgumentException("User name can not be empty.", nameof(name));
             }
-
             UserId = userId;
             Name = name;
         }

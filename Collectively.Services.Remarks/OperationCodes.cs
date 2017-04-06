@@ -18,6 +18,7 @@ namespace Collectively.Services.Remarks
         public static string InvalidComment => "invalid_comment";
         public static string UserNotAllowedToModifyComment => "user_not_allowed_to_modify_comment";
         public static string UserNotAllowedToModifyRemark => "user_not_allowed_to_modify_remark";
+        public static string UserAlreadyParticipatesInRemark => "user_already_participates_in_remark";
         public static string UserNotFound => "user_not_found";
         public static string CategoryNotFound => "category_not_found";
         public static string InactiveUser => "inactive_user";        

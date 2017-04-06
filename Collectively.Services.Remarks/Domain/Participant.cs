@@ -1,5 +1,6 @@
 using System;
 using Collectively.Common.Domain;
+using Collectively.Common.Extensions;
 
 namespace Collectively.Services.Remarks.Domain
 {
@@ -19,7 +20,12 @@ namespace Collectively.Services.Remarks.Domain
             {
                 throw new ArgumentException("User can not be null.", nameof(user));
             }
-            if (description?.Length > 2000)
+            if (description.Empty())
+            {
+                throw new ArgumentException("Description can not be empty.", 
+                                            nameof(description));
+            }
+            if (description.Length > 2000)
             {
                 throw new ArgumentException("Description can not have more than 2000 characters.", 
                                             nameof(description));
