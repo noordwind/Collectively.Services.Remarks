@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Collectively.Common.Domain;
+using Collectively.Common.Extensions;
 using Collectively.Common.Files;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
@@ -62,7 +64,8 @@ namespace Collectively.Services.Remarks.Services
             {
                 await _remarkPhotoService.UploadImagesWithDifferentSizesAsync(remark, photo, state);
             }
-            updateStateAction(remark, user, description);
+            var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
+            updateStateAction(remark, user, encodedDescription);
             await _remarkRepository.UpdateAsync(remark);              
         }        
     }

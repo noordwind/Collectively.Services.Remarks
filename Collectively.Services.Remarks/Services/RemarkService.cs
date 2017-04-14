@@ -11,6 +11,7 @@ using Collectively.Services.Remarks.Queries;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
 using NLog;
+using System.Net;
 
 namespace Collectively.Services.Remarks.Services
 {
@@ -79,8 +80,8 @@ namespace Collectively.Services.Remarks.Services
                 throw new ServiceException(OperationCodes.CategoryNotFound,
                     $"Category: '{userId}' does not exist!");
             }
-
-            var remark = new Remark(id, user, remarkCategory.Value, location, description);
+            var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
+            var remark = new Remark(id, user, remarkCategory.Value, location, encodedDescription);
             if (tags == null || !tags.Any())
             {
                 await _remarkRepository.AddAsync(remark);

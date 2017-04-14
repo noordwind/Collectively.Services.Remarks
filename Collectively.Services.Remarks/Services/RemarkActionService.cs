@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Collectively.Common.Domain;
 using Collectively.Common.Types;
@@ -34,7 +35,8 @@ namespace Collectively.Services.Remarks.Services
         {
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             var user = await _userRepository.GetOrFailAsync(userId);
-            remark.Participate(user, description);
+            var encodedDescription = WebUtility.HtmlEncode(description);
+            remark.Participate(user, encodedDescription);
             await _remarkRepository.UpdateAsync(remark);
         }
 
