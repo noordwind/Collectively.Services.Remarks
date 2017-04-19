@@ -43,7 +43,7 @@ namespace Collectively.Services.Remarks.Handlers
                     command.RemarkId, command.UserId, ex.Code, ex.Message)))
                 .OnError(async (ex, logger) =>
                 {
-                    logger.Error(ex, "Error occured while adding a comment to the remark.");
+                    logger.Error(ex, $"Error occured while adding a comment to the remark: '{command.RemarkId}' by user: '{command.UserId}'.");
                     await _bus.PublishAsync(new AddCommentToRemarkRejected(command.Request.Id,
                         command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
                 })
