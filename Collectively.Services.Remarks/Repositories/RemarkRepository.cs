@@ -5,6 +5,7 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Queries;
 using Collectively.Services.Remarks.Repositories.Queries;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Collectively.Services.Remarks.Repositories
 {
@@ -26,6 +27,13 @@ namespace Collectively.Services.Remarks.Repositories
         public async Task AddAsync(Remark remark)
             => await _database.Remarks().InsertOneAsync(remark);
 
+        public async Task<Maybe<Remark>> GetLatestUserRemarkAsync(string userId)
+            => await _database.Remarks()
+                .AsQueryable()
+                .Where(x => x.Author.UserId == userId)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+
         public async Task UpdateAsync(Remark remark)
             => await _database.Remarks().ReplaceOneAsync(x => x.Id == remark.Id, remark);
 
@@ -40,5 +48,5 @@ namespace Collectively.Services.Remarks.Repositories
 
         public async Task DeleteAsync(Remark remark)
             => await _database.Remarks().DeleteOneAsync(x => x.Id == remark.Id);
-    }
+  }
 }

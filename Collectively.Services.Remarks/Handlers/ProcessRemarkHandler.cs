@@ -3,6 +3,7 @@ using Collectively.Messages.Commands;
 using Collectively.Common.Files;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Domain;
+using Collectively.Services.Remarks.Policies;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
@@ -22,6 +23,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
         private readonly IResourceFactory _resourceFactory;
+        private readonly IProcessRemarkPolicy _policy;
 
         public ProcessRemarkHandler(IHandler handler,
             IBusClient bus,
@@ -29,7 +31,8 @@ namespace Collectively.Services.Remarks.Handlers
             IRemarkStateService remarkStateService,
             IFileResolver fileResolver,
             IFileValidator fileValidator,
-            IResourceFactory resourceFactory)
+            IResourceFactory resourceFactory,
+            IProcessRemarkPolicy policy)
         {
             _handler = handler;
             _bus = bus;
@@ -38,11 +41,14 @@ namespace Collectively.Services.Remarks.Handlers
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
             _resourceFactory = resourceFactory;
+            _policy = policy;
         }
 
         public async Task HandleAsync(ProcessRemark command)
         {
-            await _handler.Run(async () =>
+            await _handler
+                .Validate(async () =>  await _policy.ValidateAsync(command.RemarkId, command.UserId)) 
+                .Run(async () =>
                 {
                     Location location = null;
                     if (command.Latitude != 0 && command.Longitude != 0)

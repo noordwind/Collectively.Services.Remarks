@@ -4,7 +4,7 @@ using Collectively.Common.Extensions;
 
 namespace Collectively.Services.Remarks.Domain
 {
-    public class RemarkState : ValueObject<RemarkState>
+    public class RemarkState : ValueObject<RemarkState>, ITimestampable
     {
         public string State { get; protected set; }
         public RemarkUser User { get; protected set; }

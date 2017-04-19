@@ -4,6 +4,7 @@ namespace Collectively.Services.Remarks
     {
         public static string Success => "success";
         public static string RemarkNotFound => "remark_not_found";
+        public static string CannotCreateRemarkTooOften => "cannot_create_remark_too_ofen";
         public static string InvalidRemarkDescription => "invalid_remark_description";
         public static string RemarkAuthorNotProvided => "remark_author_not_provided";
         public static string RemarkCategoryNotProvided => "remark_category_not_provided";
@@ -16,6 +17,7 @@ namespace Collectively.Services.Remarks
         public static string CommentEditedTooManyTimes => "comment_edited_too_many_times";
         public static string CommentRemoved => "comment_removed";
         public static string InvalidComment => "invalid_comment";
+        public static string CannotAddCommentTooOften => "cannot_add_comment_too_ofen";
         public static string UserNotAllowedToModifyComment => "user_not_allowed_to_modify_comment";
         public static string UserNotAllowedToModifyRemark => "user_not_allowed_to_modify_remark";
         public static string UserAlreadyParticipatesInRemark => "user_already_participates_in_remark";
@@ -32,6 +34,7 @@ namespace Collectively.Services.Remarks
         public static string CannotDeleteVote => "cannot_delete_vote";
         public static string VoteAlreadySubmitted => "vote_already_submitted";
         public static string CannotSetState => "cannot_set_state";
+        public static string CannotSetStateTooOften => "cannot_set_state_too_ofen";
         public static string Error => "error";
     }
 }

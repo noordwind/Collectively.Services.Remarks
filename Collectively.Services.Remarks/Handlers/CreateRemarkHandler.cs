@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Collectively.Common.Files;
 using Collectively.Messages.Commands;
 using Collectively.Common.Services;
+using Collectively.Services.Remarks.Policies;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
@@ -25,6 +26,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IRemarkService _remarkService;
         private readonly ISocialMediaService _socialMediaService;
         private readonly IResourceFactory _resourceFactory;
+        private readonly ICreateRemarkPolicy _policy;
 
         public CreateRemarkHandler(IHandler handler,
             IBusClient bus, 
@@ -32,7 +34,8 @@ namespace Collectively.Services.Remarks.Handlers
             IFileValidator fileValidator,
             IRemarkService remarkService,
             ISocialMediaService socialMediaService,
-            IResourceFactory resourceFactory)
+            IResourceFactory resourceFactory,
+            ICreateRemarkPolicy policy)
         {
             _handler = handler;
             _bus = bus;
@@ -41,11 +44,13 @@ namespace Collectively.Services.Remarks.Handlers
             _remarkService = remarkService;
             _socialMediaService = socialMediaService;
             _resourceFactory = resourceFactory;
+            _policy = policy;
         }
 
         public async Task HandleAsync(CreateRemark command)
         {
             await _handler
+                .Validate(async () =>  await _policy.ValidateAsync(command.UserId))
                 .Run(async () =>
                 {
                     Logger.Debug($"Handle {nameof(CreateRemark)} command, userId: {command.UserId}, " +

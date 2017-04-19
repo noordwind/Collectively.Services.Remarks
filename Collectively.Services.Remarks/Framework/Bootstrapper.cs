@@ -13,6 +13,7 @@ using Collectively.Common.RabbitMq;
 using Collectively.Common.Security;
 using Collectively.Common.Services;
 using Collectively.Common.ServiceClients;
+using Collectively.Services.Remarks.Policies;
 using Collectively.Services.Remarks.Settings;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Services;
@@ -79,6 +80,9 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
                 builder.RegisterType<RemarkCommentService>().As<IRemarkCommentService>();
                 builder.RegisterType<RemarkActionService>().As<IRemarkActionService>();
+                builder.RegisterType<AddCommentPolicy>().As<IAddCommentPolicy>();
+                builder.RegisterType<CreateRemarkPolicy>().As<ICreateRemarkPolicy>();
+                builder.RegisterType<ProcessRemarkPolicy>().As<IProcessRemarkPolicy>();
                 builder.RegisterType<UniqueNumberGenerator>().As<IUniqueNumberGenerator>().SingleInstance();
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
