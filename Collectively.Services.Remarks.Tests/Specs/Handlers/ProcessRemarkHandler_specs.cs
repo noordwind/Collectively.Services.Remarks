@@ -2,6 +2,7 @@
 using It = Machine.Specifications.It;
 using Moq;
 using Collectively.Services.Remarks.Handlers;
+using Collectively.Services.Remarks.Policies;
 using Machine.Specifications;
 using RawRabbit.Configuration.Publish;
 using Collectively.Messages.Commands.Remarks;
@@ -11,16 +12,20 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
     public class ProcessRemarkHandler_specs : ChangeRemarkStateBase_specs<ProcessRemark, ProcessRemarkHandler>
     {
+        protected static Mock<IProcessRemarkPolicy> ProcessRemarkPolicyMock;  
+
         protected static void Initialize()
         {
             InitializeBase();
+            ProcessRemarkPolicyMock = new Mock<IProcessRemarkPolicy>();
             CommandHandler = new ProcessRemarkHandler(Handler,
                 BusClientMock.Object, 
                 RemarkServiceMock.Object,
                 RemarkStateServiceMock.Object,
                 FileResolverMock.Object,
                 FileValidatorMock.Object,
-                ResourceFactoryMock.Object);
+                ResourceFactoryMock.Object,
+                ProcessRemarkPolicyMock.Object);
             Remark.SetProcessingState(User, Description);
         }
     }
