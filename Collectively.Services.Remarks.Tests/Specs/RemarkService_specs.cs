@@ -7,6 +7,7 @@ using Machine.Specifications;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Collectively.Services.Remarks.Settings;
 using It = Machine.Specifications.It;
 
@@ -84,7 +85,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_call_remove_photos_async_on_remark_photo_service = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.RemovePhotosAsync(RemarkId), Times.Once);
+            RemarkPhotoServiceMock.Verify(x => x.RemovePhotosAsync(RemarkId, Moq.It.IsAny<string[]>()), Times.Once);
         };
 
         It should_call_delete_async_on_remark_repository = () =>
