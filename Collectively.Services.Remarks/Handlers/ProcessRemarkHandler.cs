@@ -24,6 +24,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IFileValidator _fileValidator;
         private readonly IResourceFactory _resourceFactory;
         private readonly IProcessRemarkPolicy _policy;
+        private readonly IRemarkActionService _remarkActionService;
 
         public ProcessRemarkHandler(IHandler handler,
             IBusClient bus,
@@ -32,7 +33,8 @@ namespace Collectively.Services.Remarks.Handlers
             IFileResolver fileResolver,
             IFileValidator fileValidator,
             IResourceFactory resourceFactory,
-            IProcessRemarkPolicy policy)
+            IProcessRemarkPolicy policy,
+            IRemarkActionService remarkActionService)
         {
             _handler = handler;
             _bus = bus;
@@ -42,10 +44,12 @@ namespace Collectively.Services.Remarks.Handlers
             _fileValidator = fileValidator;
             _resourceFactory = resourceFactory;
             _policy = policy;
+            _remarkActionService = remarkActionService;
         }
 
         public async Task HandleAsync(ProcessRemark command)
         {
+            var remarkProcessed = false;
             await _handler
                 .Validate(async () =>  await _policy.ValidateAsync(command.RemarkId, command.UserId)) 
                 .Run(async () =>
@@ -59,6 +63,7 @@ namespace Collectively.Services.Remarks.Handlers
                 })
                 .OnSuccess(async () =>
                 {
+                    remarkProcessed = true;
                     var remark = await _remarkService.GetAsync(command.RemarkId);
                     var state = remark.Value.GetLatestStateOf(RemarkState.Names.Processing).Value;
                     var resource = _resourceFactory.Resolve<RemarkProcessed>(command.RemarkId);
@@ -73,7 +78,30 @@ namespace Collectively.Services.Remarks.Handlers
                     await _bus.PublishAsync(new ProcessRemarkRejected(command.Request.Id,
                         command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
                 })
-                .ExecuteAsync();
+                .Next()
+                .Run(async () => 
+                {
+                    if(!remarkProcessed)
+                    {
+                        return;
+                    }
+
+                    var participant = await _remarkActionService.GetParticipantAsync(command.RemarkId, command.UserId);
+                    if(participant.HasValue)
+                    {
+                        return;
+                    }
+                    var takeRemarkAction = new TakeRemarkAction
+                    {
+                        Request = Messages.Commands.Request.From<TakeRemarkAction>(command.Request),
+                        UserId = command.UserId,
+                        RemarkId = command.RemarkId,
+                        Description = command.Description
+                    };
+                    await _bus.PublishAsync(takeRemarkAction);
+                })              
+                .Next()
+                .ExecuteAllAsync();
         }
     }
 }
