@@ -117,7 +117,11 @@ namespace Collectively.Services.Remarks.Services
         {
             Logger.Debug($"Deleting remark with id: '{remarkId}'.");
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
-            await _remarkPhotoService.RemovePhotosAsync(remark.Id);
+            if (remark.Photos.Any())
+            {
+                var photoNames = remark.Photos.Select(x => x.Name).ToArray();
+                await _remarkPhotoService.RemovePhotosAsync(remark.Id, photoNames);
+            }
             await _remarkRepository.DeleteAsync(remark);
             Logger.Debug($"Remark with id: '{remarkId}' was deleted.");
         }
