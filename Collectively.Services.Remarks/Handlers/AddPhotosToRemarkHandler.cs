@@ -46,9 +46,8 @@ namespace Collectively.Services.Remarks.Handlers
         public async Task HandleAsync(AddPhotosToRemark command)
         {
             await _handler
-                .Validate(async () => 
+                .Validate(() => 
                 {
-                    await _remarkService.ValidateEditorAccessOrFailAsync(command.RemarkId, command.UserId);
                     if (command.Photos == null || !command.Photos.Any())
                     {
                         throw new ServiceException(OperationCodes.NoFiles, 
@@ -78,7 +77,7 @@ namespace Collectively.Services.Remarks.Handlers
                         }
                         photos.Add(photo);
                     }
-                    await _remarkPhotoService.AddPhotosAsync(command.RemarkId, photos.ToArray());
+                    await _remarkPhotoService.AddPhotosAsync(command.RemarkId, command.UserId, photos.ToArray());
                 })
                 .OnSuccess(async () =>
                 {

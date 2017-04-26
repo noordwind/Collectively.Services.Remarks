@@ -46,7 +46,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
             var category = new Category("category");
             Description = "test";
             Remark = new Remark(RemarkId, user, category, Location);
-            Remark.AddPhoto(RemarkPhoto.Small(Guid.NewGuid(), "test.jpg", "http://my-test-image.com"));
+            Remark.AddPhoto(RemarkPhoto.Small(Guid.NewGuid(), "test.jpg", "http://my-test-image.com", RemarkUser.Create(user)));
 
             RemarkRepositoryMock.Setup(x => x.GetByIdAsync(Moq.It.IsAny<Guid>()))
                 .ReturnsAsync(Remark);
@@ -72,7 +72,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, File, RemarkState.Names.Resolved), Times.Once);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Once);
         };
     }
 
@@ -103,7 +103,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_not_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, File, RemarkState.Names.Resolved), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never);
         };
     }
 
@@ -134,7 +134,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_not_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, File, RemarkState.Names.Resolved), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never);
         };
     }
 
@@ -164,7 +164,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_not_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, File, RemarkState.Names.Resolved), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never);
         };
     }
 }

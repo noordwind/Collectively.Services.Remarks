@@ -11,12 +11,14 @@ namespace Collectively.Services.Remarks.Domain
         public string Size { get; protected set; }
         public string Url { get; protected set; }
         public string Metadata { get; protected set; }
+        public RemarkUser User { get; protected set; }
+        public DateTime CreatedAt { get; protected set; }
 
         protected RemarkPhoto()
         {
         }
 
-        protected RemarkPhoto(Guid groupId, string name, string size, string url, string metadata)
+        protected RemarkPhoto(Guid groupId, string name, string size, string url, RemarkUser user, string metadata)
         {
             if (groupId == Guid.Empty)
             {
@@ -34,27 +36,36 @@ namespace Collectively.Services.Remarks.Domain
             {
                 throw new ArgumentException("Photo Url can not be empty.", nameof(url));
             }
-
+            if (user == null)
+            {
+                throw new ArgumentException("Photo user can not be empty.", nameof(user));
+            }
             GroupId = groupId;
             Name = name;
             Size = size;
             Url = url;
             Metadata = metadata;
+            User = user;
+            CreatedAt = DateTime.UtcNow;
         }
 
         public static RemarkPhoto Empty => new RemarkPhoto();
 
-        public static RemarkPhoto Small(Guid groupId, string name, string url, string metadata = null)
-            => new RemarkPhoto(groupId, name, "small", url, metadata);
+        public static RemarkPhoto Small(Guid groupId, string name, string url, 
+            RemarkUser user, string metadata = null)
+            => new RemarkPhoto(groupId, name, "small", url, user, metadata);
 
-        public static RemarkPhoto Medium(Guid groupId, string name, string url, string metadata = null)
-            => new RemarkPhoto(groupId, name, "medium", url, metadata);
+        public static RemarkPhoto Medium(Guid groupId, string name, string url, 
+            RemarkUser user, string metadata = null)
+            => new RemarkPhoto(groupId, name, "medium", url, user, metadata);
 
-        public static RemarkPhoto Big(Guid groupId, string name, string url, string metadata = null)
-            => new RemarkPhoto(groupId, name, "big", url, metadata);
+        public static RemarkPhoto Big(Guid groupId, string name, string url, 
+            RemarkUser user, string metadata = null)
+            => new RemarkPhoto(groupId, name, "big", url, user, metadata);
 
-        public static RemarkPhoto Create(Guid groupId, string name, string size, string url, string metadata = null)
-            => new RemarkPhoto(groupId, name, size, url, metadata);
+        public static RemarkPhoto Create(Guid groupId, string name, string size, string url, 
+            RemarkUser user, string metadata = null)
+            => new RemarkPhoto(groupId, name, size, url, user, metadata);
 
         protected override bool EqualsCore(RemarkPhoto other) => Name.Equals(other.Name);
 

@@ -97,7 +97,7 @@ namespace Collectively.Services.Remarks.Services
             }
             if (photo != null)
             {
-                await _remarkPhotoService.UploadImagesWithDifferentSizesAsync(remark, photo, state);
+                await _remarkPhotoService.UploadImagesWithDifferentSizesAsync(remark, userId, photo, state);
             }
             var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
             updateStateAction(remark, user, encodedDescription);
