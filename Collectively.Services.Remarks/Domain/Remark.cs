@@ -31,7 +31,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public IEnumerable<RemarkState> States
         {
-            get { return _states; }
+            get { return _states.OrderBy(s => s.CreatedAt); }
             protected set { _states = new HashSet<RemarkState>(value); }
         }
 
@@ -243,9 +243,35 @@ namespace Collectively.Services.Remarks.Domain
             => SetState(RemarkState.Canceled(RemarkUser.Create(user), description));
 
         public Maybe<RemarkState> GetLatestStateOf(string state) 
-            => States.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.State == state); 
+            => States.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.State == state);
 
-        private void SetState(RemarkState state) 
+        public Maybe<RemarkState> GetState(Guid id)
+            => States.SingleOrDefault(s => s.Id == id);
+
+        public void RemoveState(Guid id)
+        {
+            var state = GetStateOrFail(id);
+            state.Remove();
+
+            var isLatest = _states
+                .OrderBy(s => s.CreatedAt)
+                .LastOrDefault()?.Id == state.Id;
+
+            if (isLatest == false)
+                return;
+
+            var previousState = _states
+                .Reverse()
+                .Skip(1)
+                .FirstOrDefault();
+
+            if (previousState != null)
+            {
+                State = previousState;
+            }
+        }
+
+        private void SetState(RemarkState state)
         {
             if(state == null)
             {
@@ -275,6 +301,17 @@ namespace Collectively.Services.Remarks.Domain
             }
             _states.Add(state);
             State = state;
+        }
+
+        private RemarkState GetStateOrFail(Guid id)
+        {
+            var state = GetState(id);
+            if (state.HasNoValue)
+            {
+                throw new DomainException(OperationCodes.StateNotFound, "Cannot find state." +
+                    $" remarkId: {Id}, stateId: {id}");
+            }
+            return state.Value;
         }
     }
 }

@@ -6,12 +6,15 @@ namespace Collectively.Services.Remarks.Domain
 {
     public class RemarkState : ValueObject<RemarkState>, ITimestampable
     {
+        public Guid Id { get; protected set; }
         public string State { get; protected set; }
         public RemarkUser User { get; protected set; }
         public string Description { get; protected set; }
         public Location Location { get; protected set; }
         public RemarkPhoto Photo { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
+        public bool Removed => RemovedAt.HasValue;
+        public DateTime? RemovedAt { get; protected set; }
 
         public static class Names
         {
@@ -42,12 +45,28 @@ namespace Collectively.Services.Remarks.Domain
                 throw new ArgumentException("Description can not have more than 2000 characters.", 
                                             nameof(description));
             }
+            Id = Guid.NewGuid();
             State = state;
             User = user;
             Description = description?.Trim() ?? string.Empty;
             Location = location;
             Photo = photo;
             CreatedAt = DateTime.UtcNow;
+        }
+
+        public void Remove()
+        {
+            if (Removed)
+            {
+                throw new DomainException(OperationCodes.StateRemoved,
+                    $"State: '{Id} was removed at {RemovedAt}");
+            }
+            if (State != Names.Processing)
+            {
+                throw new DomainException(OperationCodes.CannotRemoveNonProcessingState, 
+                    "Cannot remove state different than processing");
+            }
+            RemovedAt = DateTime.UtcNow;
         }
 
         public static RemarkState New(RemarkUser user, Location location, 

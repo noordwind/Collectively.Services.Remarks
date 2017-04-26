@@ -35,6 +35,10 @@ namespace Collectively.Services.Remarks
         public static string VoteAlreadySubmitted => "vote_already_submitted";
         public static string CannotSetState => "cannot_set_state";
         public static string CannotSetStateTooOften => "cannot_set_state_too_often";
+        public static string CannotRemoveNonProcessingState => "cannot_remove_non_processing_state";
+        public static string UserNotAllowedToRemoveState => "user_not_allowed_to_remove_state";
+        public static string StateNotFound => "state_not_found";
+        public static string StateRemoved => "state_removed";
         public static string Error => "error";
     }
 }

@@ -19,6 +19,7 @@ namespace Collectively.Services.Remarks
                 .SubscribeToCommand<ResolveRemark>()
                 .SubscribeToCommand<RenewRemark>()
                 .SubscribeToCommand<CancelRemark>()
+                .SubscribeToCommand<DeleteRemarkState>()
                 .SubscribeToCommand<AddPhotosToRemark>()
                 .SubscribeToCommand<RemovePhotosFromRemark>()
                 .SubscribeToCommand<SubmitRemarkVote>()

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Collectively.Common.Domain;
@@ -31,6 +32,25 @@ namespace Collectively.Services.Remarks.Services
             _settings = settings;
         }
 
+        public async Task ValidateRemoveStateAccessOrFailAsync(Guid remarkId, Guid stateId, string userId)
+        {
+            var user = await _userRepository.GetOrFailAsync(userId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+
+            var state = remark.GetState(stateId);
+            if (state.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.StateNotFound, "Cannot find state." +
+                    $" remarkId: {remarkId}, stateId: {stateId}");
+            }
+
+            if (state.Value.User.UserId != user.UserId)
+            {
+                throw new ServiceException(OperationCodes.UserNotAllowedToRemoveState,
+                    $"User: {userId} is not allowed to remove state: {stateId}");
+            }
+        }
+
         public async Task ResolveAsync(Guid id, string userId, string description = null, Location location = null, 
             File photo = null, bool validateLocation = false)
          => await UpdateRemarkStateAsync(RemarkState.Names.Resolved, 
@@ -47,6 +67,21 @@ namespace Collectively.Services.Remarks.Services
         public async Task CancelAsync(Guid id, string userId, string description = null, Location location = null)
          => await UpdateRemarkStateAsync(RemarkState.Names.Canceled, 
             (r,u,d) => r.SetCanceledState(u,d), id, userId, description, location);
+
+        public async Task DeleteStateAsync(Guid remarkId, string userId, Guid stateId)
+        {
+            var user = await _userRepository.GetOrFailAsync(userId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+            var state = remark.GetState(stateId);
+            if (state.Value.User.UserId != user.UserId)
+            {
+                throw new ServiceException(OperationCodes.UserNotAllowedToRemoveState,
+                    $"User: {userId} is not allowed to remove state: {stateId}");
+            }
+
+            remark.RemoveState(stateId);
+            await _remarkRepository.UpdateAsync(remark);
+        }
 
         private async Task UpdateRemarkStateAsync(string state, Action<Remark,User,string> updateStateAction,
             Guid id, string userId, string description = null, Location location = null, 
