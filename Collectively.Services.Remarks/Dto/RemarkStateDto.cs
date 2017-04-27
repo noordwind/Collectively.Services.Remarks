@@ -4,6 +4,7 @@ namespace Collectively.Services.Remarks.Dto
 {
     public class RemarkStateDto
     {
+        public Guid Id { get; set; }
         public string State { get; set; }
         public RemarkUserDto User { get; set; }
         public string Description { get; set; }
