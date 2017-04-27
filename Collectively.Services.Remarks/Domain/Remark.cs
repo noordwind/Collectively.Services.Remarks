@@ -263,7 +263,7 @@ namespace Collectively.Services.Remarks.Domain
             var previousState = _states
                 .Reverse()
                 .Skip(1)
-                .FirstOrDefault();
+                .FirstOrDefault(s => s.Removed == false);
 
             if (previousState != null)
             {

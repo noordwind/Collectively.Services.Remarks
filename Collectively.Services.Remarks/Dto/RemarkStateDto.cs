@@ -11,5 +11,6 @@ namespace Collectively.Services.Remarks.Dto
         public LocationDto Location { get; set; }
         public FileDto Photo { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool Removed { get; set; }
     }
 }
