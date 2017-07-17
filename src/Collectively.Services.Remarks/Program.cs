@@ -10,7 +10,7 @@ namespace Collectively.Services.Remarks
         public static void Main(string[] args)
         {
             WebServiceHost
-                .Create<Startup>()
+                .Create<Startup>(args: args)
                 .UseAutofac(Bootstrapper.LifetimeScope)
                 .UseRabbitMq(queueName: typeof(Program).Namespace)
                 .SubscribeToCommand<CreateRemark>()
