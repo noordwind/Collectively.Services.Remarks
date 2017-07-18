@@ -2,7 +2,7 @@
   "profiles": {
     "Collectively.Services.Remarks": {
       "commandName": "Project",
-      "applicationUrl": "http://localhost:10002"
+      "applicationUrl": "http://localhost:10003"
     }
   }
 }
