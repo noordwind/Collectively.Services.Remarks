@@ -98,7 +98,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags), Times.Once);
+                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once);
         };
 
         It should_publish_remark_created_event = () =>
@@ -128,7 +128,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             FileValidatorMock.Setup(x => x.IsImage(Moq.It.IsAny<File>())).Returns(true);
             RemarkServiceMock.Setup(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Moq.It.IsAny<string>(),
                     Moq.It.IsAny<string>(), Moq.It.IsAny<Location>(), Moq.It.IsAny<string>(),
-                    Moq.It.IsAny<IEnumerable<string>>()))
+                    Moq.It.IsAny<IEnumerable<string>>(), Moq.It.IsAny<Guid?>()))
                 .Throws<Exception>();
         };
 
@@ -137,7 +137,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags), Times.Once);
+                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once);
         };
 
         It should_not_publish_remark_created_event = () =>
