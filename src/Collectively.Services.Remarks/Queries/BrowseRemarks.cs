@@ -4,6 +4,5 @@ namespace Collectively.Services.Remarks.Queries
 {
     public class BrowseRemarks : PagedQueryBase
     {
-        
     }
 }

@@ -69,7 +69,8 @@ namespace Collectively.Services.Remarks.Services
         }
 
         public async Task CreateAsync(Guid id, string userId, string category, 
-            Location location, string description = null, IEnumerable<string> tags = null)
+            Location location, string description = null, IEnumerable<string> tags = null,
+            Guid? groupId = null)
         {
             Logger.Debug($"Create remark, id:{id}, userId: {userId}, category: {category}, " +
                          $"latitude: {location.Latitude}, longitude: {location.Longitude}.");
@@ -81,7 +82,7 @@ namespace Collectively.Services.Remarks.Services
                     $"Category: '{userId}' does not exist!");
             }
             var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
-            var remark = new Remark(id, user, remarkCategory.Value, location, encodedDescription);
+            var remark = new Remark(id, user, remarkCategory.Value, location, encodedDescription, groupId);
             if (tags == null || !tags.Any())
             {
                 await _remarkRepository.AddAsync(remark);

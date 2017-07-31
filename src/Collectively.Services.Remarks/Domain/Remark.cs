@@ -20,6 +20,7 @@ namespace Collectively.Services.Remarks.Domain
         public Location Location { get; protected set; }
         public RemarkState State { get; protected set; }
         public string Description { get; protected set; }
+        public Guid? GroupId { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
         public bool Resolved => State?.State == RemarkState.Names.Resolved;
 
@@ -64,7 +65,7 @@ namespace Collectively.Services.Remarks.Domain
         }
 
         public Remark(Guid id, User author, Category category, Location location,
-            string description = null)
+            string description = null, Guid? groupId = null)
         {
             Id = id;
             SetAuthor(author);
@@ -72,6 +73,7 @@ namespace Collectively.Services.Remarks.Domain
             SetLocation(location);
             SetDescription(description);
             SetState(RemarkState.New(Author, location, description));
+            GroupId = groupId;
             CreatedAt = DateTime.UtcNow;
         }
 

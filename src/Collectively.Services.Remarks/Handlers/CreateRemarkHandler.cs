@@ -59,7 +59,7 @@ namespace Collectively.Services.Remarks.Handlers
 
                     var location = Domain.Location.Create(command.Latitude, command.Longitude, command.Address);
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
-                            location, command.Description, command.Tags);
+                            location, command.Description, command.Tags, command.GroupId);
                 })
                 .OnSuccess(async () =>
                 {

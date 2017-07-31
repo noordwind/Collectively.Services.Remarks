@@ -15,7 +15,8 @@ namespace Collectively.Services.Remarks.Services
         Task<Maybe<PagedResult<Tag>>> BrowseTagsAsync(BrowseTags query);
         Task ValidateEditorAccessOrFailAsync(Guid remarkId, string userId);
         Task CreateAsync(Guid id, string userId, string category,
-            Location location, string description = null, IEnumerable<string> tags = null);
+            Location location, string description = null, IEnumerable<string> tags = null,
+            Guid? groupId = null);
         Task UpdateUserNamesAsync(string userId, string name);
         Task DeleteAsync(Guid id);
         Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt);
