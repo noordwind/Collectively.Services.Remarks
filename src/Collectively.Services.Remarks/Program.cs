@@ -2,6 +2,7 @@
 using Collectively.Services.Remarks.Framework;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Users;
+using Collectively.Messages.Events.Groups;
 
 namespace Collectively.Services.Remarks
 {
@@ -36,6 +37,7 @@ namespace Collectively.Services.Remarks
                 .SubscribeToCommand<CancelRemarkAction>()
                 .SubscribeToEvent<SignedUp>()
                 .SubscribeToEvent<UsernameChanged>()
+                .SubscribeToEvent<GroupCreated>()
                 .Build()
                 .Run();
         }

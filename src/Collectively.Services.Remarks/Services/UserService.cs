@@ -9,7 +9,6 @@ namespace Collectively.Services.Remarks.Services
     public class UserService : IUserService
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
         private readonly IUserRepository _userRepository;
 
         public UserService(IUserRepository userRepository)
@@ -22,9 +21,10 @@ namespace Collectively.Services.Remarks.Services
         {
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasValue)
+            {
                 return;
-
-            Logger.Debug($"User not found, creating new one. userId: {userId}, name: {name}, role: {role}.");
+            }
+            Logger.Debug($"Creating a new user: '{userId}', name: '{name}', role: '{role}'.");
             user = new User(userId, name, role);
             user.Value.SetAvatar(avatarUrl);
             await _userRepository.AddAsync(user.Value);

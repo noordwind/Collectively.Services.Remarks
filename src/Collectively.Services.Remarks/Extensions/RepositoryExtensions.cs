@@ -20,5 +20,11 @@ namespace Collectively.Services.Remarks.Extensions
                 .GetByUserIdAsync(userId)
                 .UnwrapAsync(noValueException: new ServiceException(OperationCodes.UserNotFound,
                     $"User with id: '{userId}' does not exist!"));
+
+        public static async Task<Group> GetOrFailAsync(this IGroupRepository repository, Guid groupId)
+            => await repository
+                .GetAsync(groupId)
+                .UnwrapAsync(noValueException: new ServiceException(OperationCodes.RemarkNotFound,
+                    $"Group with id: '{groupId}' does not exist!"));
     }
 }
