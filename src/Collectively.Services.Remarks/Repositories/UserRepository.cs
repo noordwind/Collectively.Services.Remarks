@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
-using  Collectively.Common.Types;
+﻿using System;
+using System.Threading.Tasks;
+using Collectively.Common.Types;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Repositories.Queries;
 using MongoDB.Driver;
@@ -26,5 +27,8 @@ namespace Collectively.Services.Remarks.Repositories
 
         public async Task UpdateAsync(User user)
             => await _database.Users().ReplaceOneAsync(x => x.Id == user.Id, user);
+
+        public async Task DeleteAsync(string userId)
+            => await _database.Users().DeleteOneAsync(x => x.UserId == userId);
     }
 }

@@ -7,5 +7,6 @@ namespace Collectively.Services.Remarks.Services
         Task CreateIfNotFoundAsync(string userId, string name, string role, string avatarUrl);
         Task UpdateNameAsync(string userId, string name);
         Task UpdateAvatarAsync(string userId, string avatarUrl);
+        Task DeleteAsync(string userId, bool soft);
     }
 }

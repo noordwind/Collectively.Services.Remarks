@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Collectively.Common.Domain;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Repositories;
@@ -44,6 +45,24 @@ namespace Collectively.Services.Remarks.Services
             var user = await _userRepository.GetOrFailAsync(userId);
             user.SetAvatar(avatarUrl);
             await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task DeleteAsync(string userId, bool soft)
+        {
+            var user = await _userRepository.GetByUserIdAsync(userId);
+            if (user.HasNoValue)
+            {
+                throw new ServiceException(OperationCodes.UserNotFound,
+                    $"User with id: '{userId}' has not been found.");
+            }
+            if(soft)
+            {
+                user.Value.MarkAsDeleted();
+                await _userRepository.UpdateAsync(user.Value);
+
+                return;
+            }
+            await _userRepository.DeleteAsync(userId);
         }
     }
 }

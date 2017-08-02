@@ -10,6 +10,7 @@ namespace Collectively.Services.Remarks.Domain
         private ISet<Guid> _favoriteRemarks = new HashSet<Guid>();
         public string UserId { get; protected set; }
         public string Name { get; protected set; }
+        public string State { get; protected set; }
         public string Role { get; protected set; }
         public string AvatarUrl { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
@@ -56,6 +57,11 @@ namespace Collectively.Services.Remarks.Domain
         public void RemoveFavoriteRemark(Remark remark)
         {
             _favoriteRemarks.Remove(remark.Id);
+        }
+
+        public void MarkAsDeleted()
+        {
+            State = "deleted";
         }
     }
 }
