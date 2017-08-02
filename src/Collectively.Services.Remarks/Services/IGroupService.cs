@@ -11,5 +11,6 @@ namespace Collectively.Services.Remarks.Services
             Guid? organizationId = null);
         Task ValidateIfRemarkCanBeCreatedOrFailAsync(Guid groupId, string userId, 
             double latitude, double longitude);
+        Task ValidateIfRemarkCanBeResolvedOrFailAsync(Guid groupId, string userId);
     }
 }

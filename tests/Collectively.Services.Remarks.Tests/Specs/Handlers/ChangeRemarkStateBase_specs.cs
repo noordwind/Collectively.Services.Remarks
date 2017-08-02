@@ -18,6 +18,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static IHandler Handler;
         protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<IGroupService> GroupServiceMock;
         protected static Mock<IRemarkStateService> RemarkStateServiceMock;
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
@@ -40,6 +41,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            GroupServiceMock = new Mock<IGroupService>();
             RemarkStateServiceMock = new Mock<IRemarkStateService>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
@@ -61,7 +63,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Longitude = 1,
                 Latitude = 1,
             };
-            User = new User(UserId, "user", "user");
+            User = new User(UserId, "user", "user", "active");
             Category = new Category("test");
             Location = Location.Create(Command.Latitude, Command.Longitude, "address");
             Remark = new Remark(RemarkId, User, Category, Location, Description);

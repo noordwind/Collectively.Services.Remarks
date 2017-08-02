@@ -184,7 +184,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         Establish context = () =>
         {
             Initialize();
-            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user"),
+            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user", "active"),
                 new Category("test"), Location.Create(1, 1, "Address"), "Test");
             Command.Photos.Add(new Collectively.Messages.Commands.Models.File
                 {

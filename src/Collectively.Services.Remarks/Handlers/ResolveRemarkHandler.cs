@@ -19,6 +19,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
+        private readonly IGroupService _groupService;
         private readonly IRemarkStateService _remarkStateService;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
@@ -27,6 +28,7 @@ namespace Collectively.Services.Remarks.Handlers
         public ResolveRemarkHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
+            IGroupService groupService,
             IRemarkStateService remarkStateService,
             IFileResolver fileResolver,
             IFileValidator fileValidator,
@@ -35,6 +37,7 @@ namespace Collectively.Services.Remarks.Handlers
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
+            _groupService = groupService;
             _remarkStateService = remarkStateService;
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
@@ -45,7 +48,7 @@ namespace Collectively.Services.Remarks.Handlers
         {
             File file = null;
             
-            await _handler.Validate(() => 
+            await _handler.Validate(async () => 
                 {
                     if (command.ValidatePhoto)
                     {
@@ -65,6 +68,12 @@ namespace Collectively.Services.Remarks.Handlers
                             throw new ServiceException(OperationCodes.InvalidFile);
                         }
                     }
+                    var remark = await _remarkService.GetAsync(command.RemarkId);
+                    if(!remark.Value.GroupId.HasValue)
+                    {
+                        return;
+                    }
+                    await _groupService.ValidateIfRemarkCanBeResolvedOrFailAsync(remark.Value.GroupId.Value, command.UserId);
                 })
                 .Run(async () =>
                 {

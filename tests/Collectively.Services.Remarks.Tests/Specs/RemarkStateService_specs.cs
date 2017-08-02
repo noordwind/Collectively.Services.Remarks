@@ -19,7 +19,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
         protected static Mock<IRemarkPhotoService> RemarkPhotoServiceMock;
         protected static GeneralSettings GeneralSettings;
         protected static string UserId = "userId";
-        protected static User User = new User(UserId, "TestUser", "user");
+        protected static User User = new User(UserId, "TestUser", "user", "active");
         protected static File File = File.Create("image.png", "image/png", new byte[] { 1, 2, 3, 4 });
         protected static Guid RemarkId = Guid.NewGuid();
         protected static Location Location = Location.Zero;
@@ -42,7 +42,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
                 RemarkPhotoServiceMock.Object,
                 GeneralSettings);
             
-            var user = new User(UserId, "name", "user");
+            var user = new User(UserId, "name", "user", "active");
             var category = new Category("category");
             Description = "test";
             Remark = new Remark(RemarkId, user, category, Location);

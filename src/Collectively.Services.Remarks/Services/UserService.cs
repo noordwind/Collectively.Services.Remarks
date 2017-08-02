@@ -18,7 +18,7 @@ namespace Collectively.Services.Remarks.Services
         }
 
         public async Task CreateIfNotFoundAsync(string userId, string name, 
-            string role, string avatarUrl)
+            string role, string state, string avatarUrl)
         {
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasValue)
@@ -26,7 +26,7 @@ namespace Collectively.Services.Remarks.Services
                 return;
             }
             Logger.Debug($"Creating a new user: '{userId}', name: '{name}', role: '{role}'.");
-            user = new User(userId, name, role);
+            user = new User(userId, name, role, state);
             user.Value.SetAvatar(avatarUrl);
             await _userRepository.AddAsync(user.Value);
         }

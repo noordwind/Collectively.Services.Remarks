@@ -24,11 +24,12 @@ namespace Collectively.Services.Remarks.Domain
         {
         }
 
-        public User(string userId, string name, string role)
+        public User(string userId, string name, string role, string state)
         {
             UserId = userId;
             Name = name;
             Role = role;
+            State = state;
             CreatedAt = DateTime.UtcNow;
         }
 

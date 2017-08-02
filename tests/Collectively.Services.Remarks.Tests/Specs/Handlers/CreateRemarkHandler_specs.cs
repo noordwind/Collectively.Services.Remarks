@@ -87,7 +87,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Initialize();
             Location = Location.Create(Command.Latitude, Command.Longitude, Command.Address);
             File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
-            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user"),
+            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user", "active"),
                 new Category("test"), Location, Command.Description);
             FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);
@@ -123,7 +123,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             Initialize();
             Location = Location.Create(Command.Latitude, Command.Longitude, Command.Address);
             File = File.Create(Command.Photo.Name, Command.Photo.ContentType, new byte[] { 0x1 });
-            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user"),
+            Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user", "active"),
                 new Category("test"), Location, Command.Description);
             FileResolverMock.Setup(x => x.FromBase64(Moq.It.IsAny<string>(),
                 Moq.It.IsAny<string>(), Moq.It.IsAny<string>())).Returns(File);

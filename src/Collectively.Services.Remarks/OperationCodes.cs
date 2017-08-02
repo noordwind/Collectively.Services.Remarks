@@ -22,6 +22,7 @@ namespace Collectively.Services.Remarks
         public static string UserNotAllowedToModifyRemark => "user_not_allowed_to_modify_remark";
         public static string UserAlreadyParticipatesInRemark => "user_already_participates_in_remark";
         public static string UserNotFound => "user_not_found";
+        public static string UserNotActive => "user_not_active";
         public static string CategoryNotFound => "category_not_found";
         public static string InactiveUser => "inactive_user";  
         public static string InvalidLocality => "invalid_locality";        
@@ -40,6 +41,10 @@ namespace Collectively.Services.Remarks
         public static string UserNotAllowedToRemoveState => "user_not_allowed_to_remove_state";
         public static string StateNotFound => "state_not_found";
         public static string StateRemoved => "state_removed";
+        public static string GroupMemberNotFound => "group_member_not_found";
+        public static string GroupMemberNotActive => "group_member_not_active";
+        public static string UnknownGroupMemberCriteria => "unknown_group_member_criteria";
+        public static string InsufficientGroupMemberCriteria => "insufficient_group_member_criteria"; 
         public static string Error => "error";
     }
 }
