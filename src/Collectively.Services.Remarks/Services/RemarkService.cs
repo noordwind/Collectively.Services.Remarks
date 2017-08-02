@@ -12,6 +12,7 @@ using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
 using NLog;
 using System.Net;
+using Collectively.Common.Locations;
 
 namespace Collectively.Services.Remarks.Services
 {
@@ -19,10 +20,10 @@ namespace Collectively.Services.Remarks.Services
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IRemarkRepository _remarkRepository;
+        private readonly IUserRepository _userRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITagRepository _tagRepository;
         private readonly IRemarkPhotoService _remarkPhotoService;
-        private readonly IUserRepository _userRepository;
         private readonly GeneralSettings _settings;
 
         public RemarkService(IRemarkRepository remarkRepository, 
@@ -33,10 +34,10 @@ namespace Collectively.Services.Remarks.Services
             GeneralSettings settings)
         {
             _remarkRepository = remarkRepository;
+            _userRepository = userRepository;
             _categoryRepository = categoryRepository;
             _tagRepository = tagRepository;
             _remarkPhotoService = remarkPhotoService;
-            _userRepository = userRepository;
             _settings = settings;
         }
 

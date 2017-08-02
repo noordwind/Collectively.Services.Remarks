@@ -44,7 +44,7 @@ namespace Collectively.Services.Remarks.Domain
             State = state;
             OrganizationId = organizationId;
             _members.Add(new GroupMember(userId, "owner", true));
-            _criteria = criteria ?? new Dictionary<string,string>(); 
+            _criteria = criteria ?? new Dictionary<string,string>();
             _locations = locations == null ? new HashSet<string>() : new HashSet<string>(locations);
         }
     }

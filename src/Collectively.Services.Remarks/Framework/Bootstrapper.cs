@@ -27,7 +27,7 @@ using NLog;
 using RawRabbit.Configuration;
 using Collectively.Common.Extensions;
 using Collectively.Messages.Events.Remarks;
-
+using Collectively.Common.Locations;
 
 namespace Collectively.Services.Remarks.Framework
 {
@@ -62,6 +62,7 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<CustomJsonSerializer>().As<JsonSerializer>().SingleInstance();
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
                 builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
+                builder.RegisterInstance(_configuration.GetSettings<LocationSettings>()).SingleInstance();
                 builder.RegisterInstance(generalSettings).SingleInstance();
                 builder.RegisterInstance(AutoMapperConfig.InitializeMapper());
                 builder.RegisterModule<MongoDbModule>();
@@ -91,6 +92,7 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<Handler>().As<IHandler>();
                 builder.RegisterModule<ServiceClientModule>();
                 builder.RegisterModule(new FilesModule(_configuration));
+                builder.RegisterModule<LocationModule>();
                 RegisterResourceFactory(builder);
 
                 var assembly = typeof(Startup).GetTypeInfo().Assembly;

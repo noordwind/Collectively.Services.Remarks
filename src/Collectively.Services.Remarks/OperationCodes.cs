@@ -23,7 +23,8 @@ namespace Collectively.Services.Remarks
         public static string UserAlreadyParticipatesInRemark => "user_already_participates_in_remark";
         public static string UserNotFound => "user_not_found";
         public static string CategoryNotFound => "category_not_found";
-        public static string InactiveUser => "inactive_user";        
+        public static string InactiveUser => "inactive_user";  
+        public static string InvalidLocality => "invalid_locality";        
         public static string DistanceBetweenUserAndRemarkIsTooBig => "distance_between_user_and_remark_is_too_big";
         public static string FileNotFound => "file_not_found";
         public static string NoFiles => "no_files";

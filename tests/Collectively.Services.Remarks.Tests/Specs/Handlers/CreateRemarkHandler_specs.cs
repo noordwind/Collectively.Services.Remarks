@@ -25,6 +25,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<IGroupService> GroupServiceMock;
         protected static Mock<ISocialMediaService> SocialMediaServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static Mock<IResourceFactory> ResourceFactoryMock;
@@ -40,6 +41,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
             RemarkServiceMock = new Mock<IRemarkService>();
+            GroupServiceMock = new Mock<IGroupService>();
             SocialMediaServiceMock = new Mock<ISocialMediaService>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
             CreateRemarkPolicyMock = new Mock<ICreateRemarkPolicy>();
@@ -68,8 +70,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 }
             };
             CreateRemarkHandler = new CreateRemarkHandler(Handler, BusClientMock.Object, FileResolverMock.Object,
-                FileValidatorMock.Object, RemarkServiceMock.Object, SocialMediaServiceMock.Object, 
-                ResourceFactoryMock.Object, CreateRemarkPolicyMock.Object);
+                FileValidatorMock.Object, RemarkServiceMock.Object, GroupServiceMock.Object, 
+                SocialMediaServiceMock.Object, ResourceFactoryMock.Object, CreateRemarkPolicyMock.Object);
         }
     }
 

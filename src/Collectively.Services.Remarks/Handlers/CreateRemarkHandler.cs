@@ -24,6 +24,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
         private readonly IRemarkService _remarkService;
+        private readonly IGroupService _groupService;
         private readonly ISocialMediaService _socialMediaService;
         private readonly IResourceFactory _resourceFactory;
         private readonly ICreateRemarkPolicy _policy;
@@ -33,6 +34,7 @@ namespace Collectively.Services.Remarks.Handlers
             IFileResolver fileResolver, 
             IFileValidator fileValidator,
             IRemarkService remarkService,
+            IGroupService groupService,
             ISocialMediaService socialMediaService,
             IResourceFactory resourceFactory,
             ICreateRemarkPolicy policy)
@@ -42,6 +44,7 @@ namespace Collectively.Services.Remarks.Handlers
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
             _remarkService = remarkService;
+            _groupService = groupService;
             _socialMediaService = socialMediaService;
             _resourceFactory = resourceFactory;
             _policy = policy;
@@ -50,7 +53,15 @@ namespace Collectively.Services.Remarks.Handlers
         public async Task HandleAsync(CreateRemark command)
         {
             await _handler
-                .Validate(async () =>  await _policy.ValidateAsync(command.UserId))
+                .Validate(async () =>  
+                {
+                    await _policy.ValidateAsync(command.UserId);
+                    if(command.GroupId.HasValue)
+                    {
+                        await _groupService.ValidateIfRemarkCanBeCreatedOrFailAsync(command.GroupId.Value,
+                            command.UserId, command.Latitude, command.Longitude);
+                    }
+                })
                 .Run(async () =>
                 {
                     Logger.Debug($"Handle {nameof(CreateRemark)} command, userId: {command.UserId}, " +
