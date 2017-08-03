@@ -52,7 +52,7 @@ namespace Collectively.Services.Remarks.Services
             }
             var group = await _groupRepository.GetOrFailAsync(groupId);
             var user = await _userRepository.GetOrFailAsync(userId);
-            ValidateRemarkCriteriaOrFail(group, user, "create_remark");
+            ValidateRemarkCriteriaOrFail(group, user, "remark_create");
             await ValidateLocationOrFailAsync(group, latitude, longitude);
         }
 
@@ -64,7 +64,7 @@ namespace Collectively.Services.Remarks.Services
             }
             var group = await _groupRepository.GetOrFailAsync(groupId);
             var user = await _userRepository.GetOrFailAsync(userId);
-            ValidateRemarkCriteriaOrFail(group, user, "resolve_remark");
+            ValidateRemarkCriteriaOrFail(group, user, "remark_resolve");
         }
 
         private void ValidateRemarkCriteriaOrFail(Group group, User user, string operation)
@@ -119,7 +119,7 @@ namespace Collectively.Services.Remarks.Services
         private async Task ValidateLocationOrFailAsync(Group group, double latitude, double longitude)
         {
             ISet<string> locations;
-            if(!group.Criteria.TryGetValue("locations", out locations))
+            if(!group.Criteria.TryGetValue("remark_location", out locations))
             {
                 return;
             }
