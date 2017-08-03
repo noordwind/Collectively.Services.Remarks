@@ -11,7 +11,6 @@ namespace Collectively.Services.Remarks.Dto
         public bool IsPublic { get; set; }
         public string State { get; set; }  
         public IList<GroupMemberDto> Members { get; set; }
-        public IList<string> Locations { get; set; }
-        public IDictionary<string,string> Criteria { get; set; }
+        public IDictionary<string, ISet<string>> Criteria { get; set; }
     }
 }

@@ -7,9 +7,8 @@ namespace Collectively.Services.Remarks.Domain
 {
     public class Group : IdentifiableEntity
     {
-        private IDictionary<string,string> _criteria = new Dictionary<string,string>();
+        private IDictionary<string,ISet<string>> _criteria = new Dictionary<string,ISet<string>>();
         private ISet<GroupMember> _members = new HashSet<GroupMember>();
-        private ISet<string> _locations = new HashSet<string>();
         public string Name { get; protected set; } 
         public Guid? OrganizationId { get; protected set; } 
         public bool IsPublic { get; protected set; }
@@ -19,15 +18,10 @@ namespace Collectively.Services.Remarks.Domain
             get { return _members; }
             protected set { _members =  new HashSet<GroupMember>(value); }
         }
-        public IEnumerable<string> Locations
-        {
-            get { return _locations; }
-            protected set { _locations = new HashSet<string>(value); }
-        }
-        public IDictionary<string,string> Criteria
+        public IDictionary<string,ISet<string>> Criteria
         {
             get { return _criteria; }
-            protected set { _criteria = new Dictionary<string,string>(value); }
+            protected set { _criteria = new Dictionary<string,ISet<string>>(value); }
         }
 
         protected Group()
@@ -35,8 +29,7 @@ namespace Collectively.Services.Remarks.Domain
         }
 
         public Group(Guid id, string name, bool isPublic, string state, 
-            string userId, IDictionary<string, string> criteria, IEnumerable<string> locations,
-            Guid? organizationId = null)
+            string userId, IDictionary<string, ISet<string>> criteria, Guid? organizationId = null)
         {
             Id = id;
             Name = name;
@@ -44,8 +37,7 @@ namespace Collectively.Services.Remarks.Domain
             State = state;
             OrganizationId = organizationId;
             _members.Add(new GroupMember(userId, "owner", true));
-            _criteria = criteria ?? new Dictionary<string,string>();
-            _locations = locations == null ? new HashSet<string>() : new HashSet<string>(locations);
+            _criteria = criteria ?? new Dictionary<string,ISet<string>>();
         }
     }
 }

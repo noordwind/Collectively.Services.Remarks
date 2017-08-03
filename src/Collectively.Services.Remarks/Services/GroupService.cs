@@ -30,8 +30,8 @@ namespace Collectively.Services.Remarks.Services
         }
 
         public async Task CreateIfNotFoundAsync(Guid id, string name, bool isPublic, 
-            string state, string userId, IDictionary<string, string> criteria, 
-            IEnumerable<string> locations, Guid? organizationId = null)
+            string state, string userId, IDictionary<string, ISet<string>> criteria, 
+            Guid? organizationId = null)
         {
             var group = await _groupRepository.GetAsync(id);
             if(group.HasValue)
@@ -39,7 +39,7 @@ namespace Collectively.Services.Remarks.Services
                 return;
             }
             Logger.Debug($"Creating a new group: '{id}', name: '{name}', public: '{isPublic}'.");
-            group = new Group(id, name, isPublic, state, userId, criteria, locations, organizationId);
+            group = new Group(id, name, isPublic, state, userId, criteria, organizationId);
             await _groupRepository.AddAsync(group.Value);
         }
 
@@ -78,52 +78,56 @@ namespace Collectively.Services.Remarks.Services
             ValidateRemarkMemberCriteriaOrFail(criteria.Item2, role, operation);           
         }
 
-        private Tuple<bool,string> AreDefaultRemarkCriteriaMet(Group group, User user, string operation)
+        private Tuple<bool,ISet<string>> AreDefaultRemarkCriteriaMet(Group group, User user, string operation)
         {
             if(user.State != "active")
             {
-                return new Tuple<bool,string>(false, string.Empty);
+                return new Tuple<bool,ISet<string>>(false, null);
             }
             if (user.Role == "moderator" || user.Role == "administrator")
             {
-                return new Tuple<bool,string>(true, string.Empty);
+                return new Tuple<bool,ISet<string>>(true, null);
             }
-            var criteria = "";
+            ISet<string> criteria = null;
             if(!group.Criteria.TryGetValue(operation, out criteria))
             {
-                return new Tuple<bool,string>(true, string.Empty);
+                return new Tuple<bool,ISet<string>>(true, null);
             }
-            if(criteria.Empty() || criteria == "public")
+            if(criteria == null || !criteria.Any() || criteria.Contains("public"))
             {
-                return new Tuple<bool,string>(true, criteria);
+                return new Tuple<bool,ISet<string>>(true, criteria);
             }
-            return new Tuple<bool,string>(false, criteria);
+            return new Tuple<bool,ISet<string>>(false, criteria);
         }
 
-        private void ValidateRemarkMemberCriteriaOrFail(string criteria, string role, string operation)
+        private void ValidateRemarkMemberCriteriaOrFail(ISet<string> criteria, string role, string operation)
         {
-            var criteriaIndex = RemarkMemberCriteria.IndexOf(criteria);
             var roleIndex = RemarkMemberCriteria.IndexOf(role);
-            if(criteriaIndex < 0 || roleIndex < 0)
+            if(!criteria.Any() || roleIndex < 0)
             {
                 throw new ServiceException(OperationCodes.UnknownGroupMemberCriteria, 
                     $"Unknown group member criteria: '{role}', required: '{criteria}' for: '{operation}'.");                
             }
-            if(criteriaIndex <= roleIndex)
+            if(criteria.Contains(role))
             {
                 return;
             }
             throw new ServiceException(OperationCodes.InsufficientGroupMemberCriteria, 
-                $"Insufficient group member criteria: '{role}', required: '{criteria}' for: '{operation}'.");
+                $"Insufficient group member criteria: '{role}', required: '{string.Join(", ", criteria)}' for: '{operation}'.");
         }
 
         private async Task ValidateLocationOrFailAsync(Group group, double latitude, double longitude)
         {
-            if(group.Locations == null || !group.Locations.Any())
+            ISet<string> locations;
+            if(!group.Criteria.TryGetValue("locations", out locations))
             {
                 return;
             }
-            var availableLocalities = group.Locations.Select(x => x.ToLowerInvariant());
+            if(!locations.Any())
+            {
+                return;
+            }
+            var availableLocalities = locations.Select(x => x.ToLowerInvariant());
             var response = await _locationService.GetAsync(latitude, longitude);
             if(response.HasNoValue || response.Value.Results == null)
             {
