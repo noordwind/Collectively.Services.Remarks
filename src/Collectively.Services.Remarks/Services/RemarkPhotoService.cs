@@ -77,16 +77,17 @@ namespace Collectively.Services.Remarks.Services
             var uniqueNumber = _uniqueNumberGenerator.Generate();
             var groupId = Guid.NewGuid();
             var tasks = new List<Task>();
-            var processingPhotos = photos.Select(x => RemarkPhoto.AsProcessing(groupId, user));
-            foreach (var photo in processingPhotos)
-            {
-                remark.AddPhoto(photo);
-            }
-            await _remarkRepository.UpdateAsync(remark);
-            foreach (var photo in processingPhotos)
-            {
-                remark.RemovePhoto(photo.Name);
-            }
+            //Rethink if it's a good solution...
+            // var processingPhotos = photos.Select(x => RemarkPhoto.AsProcessing(groupId, user));
+            // foreach (var photo in processingPhotos)
+            // {
+            //     remark.AddPhoto(photo);
+            // }
+            // await _remarkRepository.UpdateAsync(remark);
+            // foreach (var photo in processingPhotos)
+            // {
+            //     remark.RemovePhoto(photo.Name);
+            // }
             foreach (var photo in photos)
             {
                 var size = photo.Key;
