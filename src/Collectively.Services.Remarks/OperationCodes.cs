@@ -41,6 +41,7 @@ namespace Collectively.Services.Remarks
         public static string UserNotAllowedToRemoveState => "user_not_allowed_to_remove_state";
         public static string StateNotFound => "state_not_found";
         public static string StateRemoved => "state_removed";
+        public static string GroupNotFound => "group_not_found";
         public static string GroupMemberNotFound => "group_member_not_found";
         public static string GroupMemberNotActive => "group_member_not_active";
         public static string UnknownGroupMemberCriteria => "unknown_group_member_criteria";
