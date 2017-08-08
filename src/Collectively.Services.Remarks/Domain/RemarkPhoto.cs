@@ -21,11 +21,11 @@ namespace Collectively.Services.Remarks.Domain
         protected RemarkPhoto(Guid groupId, string name, string size, string url, RemarkUser user, string metadata,
             bool validate = true)
         {
-            if (validate && groupId == Guid.Empty)
+            if (groupId == Guid.Empty)
             {
                 throw new ArgumentException("Photo id can not be empty.", nameof(groupId));
             }
-            if (validate && name.Empty())
+            if (name.Empty())
             {
                 throw new ArgumentException("Photo name can not be empty.", nameof(size));
             }
@@ -37,7 +37,7 @@ namespace Collectively.Services.Remarks.Domain
             {
                 throw new ArgumentException("Photo Url can not be empty.", nameof(url));
             }
-            if (validate && user == null)
+            if (user == null)
             {
                 throw new ArgumentException("Photo user can not be empty.", nameof(user));
             }
@@ -65,7 +65,7 @@ namespace Collectively.Services.Remarks.Domain
             => new RemarkPhoto(groupId, name, "big", url, user, metadata);
 
         public static RemarkPhoto AsProcessing(Guid groupId, RemarkUser user)
-            => new RemarkPhoto(groupId, null, null, null, user, "processing", validate: false);
+            => new RemarkPhoto(groupId, $"processing-{Guid.NewGuid()}", null, null, user, "processing", validate: false);
 
         public static RemarkPhoto Create(Guid groupId, string name, string size, string url, 
             RemarkUser user, string metadata = null)
