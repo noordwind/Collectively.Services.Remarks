@@ -53,7 +53,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_if_not_found_async_on_user_service = () =>
         {
             UserServiceMock.Verify(x => x.CreateIfNotFoundAsync(Event.UserId, 
-                User.Name, User.Role, User.State, User.AvatarUrl), Times.Once);
+                User.Name, User.Role, User.AvatarUrl), Times.Once);
         };
     }
 }

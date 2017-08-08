@@ -29,7 +29,7 @@ namespace Collectively.Services.Remarks.Handlers
                 {
                     var user = await _serviceClient.GetAsync<UserDto>(@event.Resource);
                     await _userService.CreateIfNotFoundAsync(@event.UserId, user.Value.Name, 
-                        user.Value.Role, user.Value.State, user.Value.AvatarUrl);
+                        user.Value.Role, user.Value.AvatarUrl);
                 })
                 .ExecuteAsync();
         }

@@ -63,7 +63,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Longitude = 1,
                 Latitude = 1,
             };
-            User = new User(UserId, "user", "user", "active");
+            User = new User(UserId, "user", "user");
             Category = new Category("test");
             Location = Location.Create(Command.Latitude, Command.Longitude, "address");
             Remark = new Remark(RemarkId, User, Category, Location, Description);

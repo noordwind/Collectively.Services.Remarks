@@ -97,7 +97,6 @@ namespace Collectively.Services.Remarks.Services
                 await _remarkRepository.AddAsync(remark);
                 return;
             }
-
             var availableTags = await _tagRepository.BrowseAsync(new BrowseTags
             {
                 Results = 1000

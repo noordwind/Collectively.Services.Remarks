@@ -36,7 +36,6 @@ namespace Collectively.Services.Remarks.Services
         {
             var user = await _userRepository.GetOrFailAsync(userId);
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
-
             var state = remark.GetState(stateId);
             if (state.HasNoValue)
             {
@@ -78,7 +77,6 @@ namespace Collectively.Services.Remarks.Services
                 throw new ServiceException(OperationCodes.UserNotAllowedToRemoveState,
                     $"User: {userId} is not allowed to remove state: {stateId}");
             }
-
             remark.RemoveState(stateId);
             await _remarkRepository.UpdateAsync(remark);
         }

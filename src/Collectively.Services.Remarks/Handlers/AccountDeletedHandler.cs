@@ -21,7 +21,7 @@ namespace Collectively.Services.Remarks.Handlers
         public async Task HandleAsync(AccountDeleted @event)
         {
             await _handler
-                .Run(async () =>await _userService.DeleteAsync(@event.UserId, @event.Soft))
+                .Run(async () =>await _userService.DeleteAsync(@event.UserId))
                 .OnError((ex, logger) =>
                 {
                     logger.Error(ex, $"Error occured while handling {@event.GetType().Name} event");

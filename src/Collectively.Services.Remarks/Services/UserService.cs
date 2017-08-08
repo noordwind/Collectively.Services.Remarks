@@ -18,7 +18,7 @@ namespace Collectively.Services.Remarks.Services
         }
 
         public async Task CreateIfNotFoundAsync(string userId, string name, 
-            string role, string state, string avatarUrl)
+            string role, string avatarUrl)
         {
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasValue)
@@ -26,7 +26,7 @@ namespace Collectively.Services.Remarks.Services
                 return;
             }
             Logger.Debug($"Creating a new user: '{userId}', name: '{name}', role: '{role}'.");
-            user = new User(userId, name, role, state);
+            user = new User(userId, name, role);
             user.Value.SetAvatar(avatarUrl);
             await _userRepository.AddAsync(user.Value);
         }
@@ -47,20 +47,13 @@ namespace Collectively.Services.Remarks.Services
             await _userRepository.UpdateAsync(user);
         }
 
-        public async Task DeleteAsync(string userId, bool soft)
+        public async Task DeleteAsync(string userId)
         {
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasNoValue)
             {
                 throw new ServiceException(OperationCodes.UserNotFound,
                     $"User with id: '{userId}' has not been found.");
-            }
-            if(soft)
-            {
-                user.Value.MarkAsDeleted();
-                await _userRepository.UpdateAsync(user.Value);
-
-                return;
             }
             await _userRepository.DeleteAsync(userId);
         }

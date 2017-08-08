@@ -83,10 +83,6 @@ namespace Collectively.Services.Remarks.Services
 
         private Tuple<bool,ISet<string>> AreDefaultRemarkCriteriaMet(Group group, User user, string operation)
         {
-            if(user.State != "active")
-            {
-                return new Tuple<bool,ISet<string>>(false, null);
-            }
             if (user.Role == "moderator" || user.Role == "administrator")
             {
                 return new Tuple<bool,ISet<string>>(true, null);
@@ -149,11 +145,6 @@ namespace Collectively.Services.Remarks.Services
 
         private string GetActiveMemberRoleOrFail(Group group, User user)
         {
-            if(user.State != "active")
-            {
-                throw new ServiceException(OperationCodes.UserNotActive,
-                    $"'User is not active '{user.Name}', id: '{user.UserId}'.");
-            }
             var member = group.Members.FirstOrDefault(x => x.UserId == user.UserId);
             if(member == null)
             {
@@ -192,11 +183,6 @@ namespace Collectively.Services.Remarks.Services
 
         private void ValidateUserOrFail(User user)
         {
-            if(user.State != "active")
-            {
-                throw new ServiceException(OperationCodes.UserNotActive, 
-                    $"User with id: '{user.Id}' is not active.");
-            }
             if (user.Role == "moderator" || user.Role == "administrator")
             {
                 return;

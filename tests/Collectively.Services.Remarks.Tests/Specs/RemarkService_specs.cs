@@ -28,7 +28,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
         protected static Mock<IUniqueNumberGenerator> UniqueNumberGeneratorMock;
         protected static GeneralSettings GeneralSettings;
         protected static string UserId = "userId";
-        protected static User User = new User(UserId, "TestUser", "user", "active");
+        protected static User User = new User(UserId, "TestUser", "user");
         protected static File File = File.Create("image.png", "image/png", new byte[] { 1, 2, 3, 4 });
         protected static Guid RemarkId = Guid.NewGuid();
         protected static Location Location = Location.Zero;
@@ -60,7 +60,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
                 RemarkPhotoServiceMock.Object,
                 GeneralSettings);
 
-            var user = new User(UserId, "name", "user", "active");
+            var user = new User(UserId, "name", "user");
             var category = new Category("category");
             Remark = new Remark(RemarkId, user, category, Location);
             Remark.AddPhoto(RemarkPhoto.Small(Guid.NewGuid(), "test.jpg", "http://my-test-image.com", RemarkUser.Create(user)));
