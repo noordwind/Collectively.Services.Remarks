@@ -128,15 +128,6 @@ namespace Collectively.Services.Remarks.Domain
             _photos.Remove(photo.Value);
         }
 
-        public void RemovePhotos(Guid groupId)
-        {
-            var photos = _photos.Where(x => x.GroupId == groupId).ToList();
-            for(var i=0; i<photos.Count; i++)
-            {
-                _photos.Remove(photos[i]);
-            }
-        }
-
         public void AddTag(string tag)
         {
             _tags.Add(tag);
