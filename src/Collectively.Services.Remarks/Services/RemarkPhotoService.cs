@@ -53,7 +53,6 @@ namespace Collectively.Services.Remarks.Services
                 throw new ServiceException(OperationCodes.TooManyFiles,
                     $"There are too many photos ({photos.Count()}) to be added to the remark with id: '{remarkId}'.");
             }
-
             var tasks = new List<Task>();
             foreach(var photo in photos)
             {
@@ -78,6 +77,9 @@ namespace Collectively.Services.Remarks.Services
             var uniqueNumber = _uniqueNumberGenerator.Generate();
             var groupId = Guid.NewGuid();
             var tasks = new List<Task>();
+            remark.AddPhoto(RemarkPhoto.AsProcessing(groupId, user));
+            await _remarkRepository.UpdateAsync(remark);
+            remark.RemovePhotos(groupId);
             foreach (var photo in photos)
             {
                 var size = photo.Key;

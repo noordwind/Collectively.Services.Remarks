@@ -69,11 +69,11 @@ namespace Collectively.Services.Remarks.Handlers
                         }
                     }
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    if(!remark.Value.GroupId.HasValue)
+                    if(remark.Value.Group == null)
                     {
                         return;
                     }
-                    await _groupService.ValidateIfRemarkCanBeResolvedOrFailAsync(remark.Value.GroupId.Value, command.UserId);
+                    await _groupService.ValidateIfRemarkCanBeResolvedOrFailAsync(remark.Value.Group.Id, command.UserId);
                 })
                 .Run(async () =>
                 {

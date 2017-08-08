@@ -18,25 +18,26 @@ namespace Collectively.Services.Remarks.Domain
         {
         }
 
-        protected RemarkPhoto(Guid groupId, string name, string size, string url, RemarkUser user, string metadata)
+        protected RemarkPhoto(Guid groupId, string name, string size, string url, RemarkUser user, string metadata,
+            bool validate = true)
         {
-            if (groupId == Guid.Empty)
+            if (validate && groupId == Guid.Empty)
             {
                 throw new ArgumentException("Photo id can not be empty.", nameof(groupId));
             }
-            if (name.Empty())
+            if (validate && name.Empty())
             {
                 throw new ArgumentException("Photo name can not be empty.", nameof(size));
             }
-            if (size.Empty())
+            if (validate && size.Empty())
             {
                 throw new ArgumentException("Photo size can not be empty.", nameof(size));
             }
-            if (url.Empty())
+            if (validate && url.Empty())
             {
                 throw new ArgumentException("Photo Url can not be empty.", nameof(url));
             }
-            if (user == null)
+            if (validate && user == null)
             {
                 throw new ArgumentException("Photo user can not be empty.", nameof(user));
             }
@@ -44,8 +45,8 @@ namespace Collectively.Services.Remarks.Domain
             Name = name;
             Size = size;
             Url = url;
-            Metadata = metadata;
             User = user;
+            Metadata = metadata;
             CreatedAt = DateTime.UtcNow;
         }
 
@@ -62,6 +63,9 @@ namespace Collectively.Services.Remarks.Domain
         public static RemarkPhoto Big(Guid groupId, string name, string url, 
             RemarkUser user, string metadata = null)
             => new RemarkPhoto(groupId, name, "big", url, user, metadata);
+
+        public static RemarkPhoto AsProcessing(Guid groupId, RemarkUser user)
+            => new RemarkPhoto(groupId, null, null, null, user, "processing", validate: false);
 
         public static RemarkPhoto Create(Guid groupId, string name, string size, string url, 
             RemarkUser user, string metadata = null)

@@ -23,6 +23,7 @@ namespace Collectively.Services.Remarks.Services
         private readonly IUserRepository _userRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITagRepository _tagRepository;
+        private readonly IGroupRepository _groupRepository;
         private readonly IRemarkPhotoService _remarkPhotoService;
         private readonly GeneralSettings _settings;
 
@@ -30,6 +31,7 @@ namespace Collectively.Services.Remarks.Services
             IUserRepository userRepository,
             ICategoryRepository categoryRepository,
             ITagRepository tagRepository,
+            IGroupRepository groupRepository,
             IRemarkPhotoService remarkPhotoService,
             GeneralSettings settings)
         {
@@ -37,6 +39,7 @@ namespace Collectively.Services.Remarks.Services
             _userRepository = userRepository;
             _categoryRepository = categoryRepository;
             _tagRepository = tagRepository;
+            _groupRepository = groupRepository;
             _remarkPhotoService = remarkPhotoService;
             _settings = settings;
         }
@@ -83,7 +86,12 @@ namespace Collectively.Services.Remarks.Services
                     $"Category: '{userId}' does not exist!");
             }
             var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
-            var remark = new Remark(id, user, remarkCategory.Value, location, encodedDescription, groupId);
+            Group group = null;
+            if(groupId != null)
+            {
+                group = await _groupRepository.GetOrFailAsync(groupId.Value);
+            }
+            var remark = new Remark(id, user, remarkCategory.Value, location, encodedDescription, group);
             if (tags == null || !tags.Any())
             {
                 await _remarkRepository.AddAsync(remark);

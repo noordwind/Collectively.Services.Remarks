@@ -22,6 +22,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
         protected static Mock<ITagRepository> TagRepositoryMock;
         protected static Mock<IUserRepository> UserRepositoryMock;
         protected static Mock<ICategoryRepository> CategoryRepositoryMock;
+        protected static Mock<IGroupRepository> GroupRepositoryMock;
         protected static Mock<IImageService> ImageServiceMock;
         protected static Mock<IRemarkPhotoService> RemarkPhotoServiceMock;
         protected static Mock<IUniqueNumberGenerator> UniqueNumberGeneratorMock;
@@ -42,6 +43,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
             TagRepositoryMock = new Mock<ITagRepository>();
             UserRepositoryMock = new Mock<IUserRepository>();
             CategoryRepositoryMock = new Mock<ICategoryRepository>();
+            GroupRepositoryMock = new Mock<IGroupRepository>();
             ImageServiceMock = new Mock<IImageService>();
             RemarkPhotoServiceMock = new Mock<IRemarkPhotoService>();
             UniqueNumberGeneratorMock = new Mock<IUniqueNumberGenerator>();
@@ -54,6 +56,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
                 UserRepositoryMock.Object,
                 CategoryRepositoryMock.Object,
                 TagRepositoryMock.Object,
+                GroupRepositoryMock.Object,
                 RemarkPhotoServiceMock.Object,
                 GeneralSettings);
 

@@ -5,7 +5,7 @@ namespace Collectively.Services.Remarks.Dto
     public class BasicRemarkDto
     {
         public Guid Id { get; set; }
-        public Guid? GroupId { get; set; }
+        public RemarkGroupDto Group { get; set; }
         public RemarkUserDto Author { get; set; }
         public RemarkCategoryDto Category { get; set; }
         public LocationDto Location { get; set; }
