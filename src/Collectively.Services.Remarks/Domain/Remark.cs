@@ -130,10 +130,10 @@ namespace Collectively.Services.Remarks.Domain
 
         public void RemovePhotos(Guid groupId)
         {
-            var photos = _photos.Where(x => x.GroupId == groupId);
-            foreach(var photo in photos)
+            var photos = _photos.Where(x => x.GroupId == groupId).ToList();
+            for(var i=0; i<photos.Count; i++)
             {
-                _photos.Remove(photo);
+                _photos.Remove(photos[i]);
             }
         }
 
