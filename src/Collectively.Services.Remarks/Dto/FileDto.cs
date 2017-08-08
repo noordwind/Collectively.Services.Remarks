@@ -10,5 +10,6 @@ namespace Collectively.Services.Remarks.Dto
         public string Url { get; set; }
         public string Metadata { get; set; }
         public RemarkUserDto User { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
