@@ -18,14 +18,17 @@ namespace Collectively.Services.Remarks.Services
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IUserRepository _userRepository;
         private readonly IGroupRepository _groupRepository;
+        private readonly IRemarkRepository _remarkRepository;
         private readonly ILocationService _locationService;
 
 
         public GroupService(IGroupRepository groupRepository, 
-            IUserRepository userRepository, ILocationService locationService)
+            IUserRepository userRepository, IRemarkRepository remarkRepository,
+            ILocationService locationService)
         {
             _groupRepository = groupRepository;
             _userRepository = userRepository;
+            _remarkRepository = remarkRepository;
             _locationService = locationService;
         }
 
@@ -163,6 +166,41 @@ namespace Collectively.Services.Remarks.Services
                     $"'{group.Name}', id: '{group.Id}', is not active '{user.Name}', id: '{user.UserId}'.");
             }
             return member.Role;
+        }
+
+        public async Task ValidateIfRemarkCanBeDeletedOrFailAsync(Guid groupId, 
+            string userId, Guid remarkId)
+        {
+            var user = await _userRepository.GetOrFailAsync(userId);
+            ValidateUserOrFail(user);
+            var group = await _groupRepository.GetOrFailAsync(groupId);
+            var memberRole = GetActiveMemberRoleOrFail(group, user);
+            ValidateRemarkMemberCriteriaOrFail(null, memberRole, "remark_delete");
+        }
+
+        public async Task ValidateIfRemarkCommentCanBeDeletedOrFailAsync(Guid groupId, 
+            string userId, Guid remarkId, Guid commentId)
+        {
+            var user = await _userRepository.GetOrFailAsync(userId);
+            ValidateUserOrFail(user);
+            var group = await _groupRepository.GetOrFailAsync(groupId);
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+            var comment = remark.GetCommentOrFail(commentId);
+            var memberRole = GetActiveMemberRoleOrFail(group, user);
+            ValidateRemarkMemberCriteriaOrFail(null, memberRole, "remark_comment_delete");
+        }
+
+        private void ValidateUserOrFail(User user)
+        {
+            if(user.State != "active")
+            {
+                throw new ServiceException(OperationCodes.UserNotActive, 
+                    $"User with id: '{user.Id}' is not active.");
+            }
+            if (user.Role == "moderator" || user.Role == "administrator")
+            {
+                return;
+            }
         }
     }
 }

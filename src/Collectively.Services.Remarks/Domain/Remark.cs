@@ -180,7 +180,7 @@ namespace Collectively.Services.Remarks.Domain
             _comments.Remove(comment);
         }
 
-        private Comment GetCommentOrFail(Guid id)
+        public Comment GetCommentOrFail(Guid id)
         {
             var comment = GetComment(id);
             if(comment.HasNoValue)

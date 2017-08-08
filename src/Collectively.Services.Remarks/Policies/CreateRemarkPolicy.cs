@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Collectively.Services.Remarks.Repositories;
+using Collectively.Services.Remarks.Settings;
 
 namespace Collectively.Services.Remarks.Policies
 {
@@ -7,7 +8,8 @@ namespace Collectively.Services.Remarks.Policies
     {
         private readonly IRemarkRepository _remarkRepository;
 
-        public CreateRemarkPolicy(IRemarkRepository remarkRepository)
+        public CreateRemarkPolicy(IRemarkRepository remarkRepository,
+            PolicySettings settings) : base(settings.CreateRemarkInterval)
         {
             _remarkRepository = remarkRepository;
         }

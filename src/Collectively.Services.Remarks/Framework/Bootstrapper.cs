@@ -63,6 +63,7 @@ namespace Collectively.Services.Remarks.Framework
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
                 builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
                 builder.RegisterInstance(_configuration.GetSettings<LocationSettings>()).SingleInstance();
+                builder.RegisterInstance(_configuration.GetSettings<PolicySettings>()).SingleInstance();
                 builder.RegisterInstance(generalSettings).SingleInstance();
                 builder.RegisterInstance(AutoMapperConfig.InitializeMapper());
                 builder.RegisterModule<MongoDbModule>();

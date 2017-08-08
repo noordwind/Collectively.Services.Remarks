@@ -1,16 +1,17 @@
 using System;
 using Collectively.Common.Domain;
 using Collectively.Common.Types;
+using Collectively.Services.Remarks.Settings;
 
 namespace Collectively.Services.Remarks.Policies
 {
     public abstract class PolicyBase : IPolicy
     {
-        private readonly int _minutesBreak;
+        private readonly int _secondsBreak;
 
-        protected PolicyBase(int minutesBreak = 1)
+        protected PolicyBase(int secondsBreak)
         {
-            _minutesBreak = minutesBreak;
+            _secondsBreak = secondsBreak;
         }
 
         protected void Validate(Maybe<ITimestampable> latestResource, 
@@ -20,7 +21,7 @@ namespace Collectively.Services.Remarks.Policies
             {
                 return;
             }
-            if(latestResource.Value.CreatedAt.AddMinutes(_minutesBreak) <= DateTime.UtcNow)
+            if(latestResource.Value.CreatedAt.AddSeconds(_secondsBreak) <= DateTime.UtcNow)
             {
                 return;
             }
