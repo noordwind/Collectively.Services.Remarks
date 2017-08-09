@@ -11,7 +11,6 @@ namespace Collectively.Services.Remarks.Domain
         public string UserId { get; protected set; }
         public string Name { get; protected set; }
         public string Role { get; protected set; }
-        public string AvatarUrl { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
         public IEnumerable<Guid> FavoriteRemarks
         {
@@ -41,11 +40,6 @@ namespace Collectively.Services.Remarks.Domain
                 return;
 
             Name = name.ToLowerInvariant();
-        }
-
-        public void SetAvatar(string avatarUrl)
-        {
-            AvatarUrl = avatarUrl;
         }
 
         public void AddFavoriteRemark(Remark remark)

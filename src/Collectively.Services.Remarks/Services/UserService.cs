@@ -17,8 +17,7 @@ namespace Collectively.Services.Remarks.Services
             _userRepository = userRepository;
         }
 
-        public async Task CreateIfNotFoundAsync(string userId, string name, 
-            string role, string avatarUrl)
+        public async Task CreateIfNotFoundAsync(string userId, string name, string role)
         {
             var user = await _userRepository.GetByUserIdAsync(userId);
             if (user.HasValue)
@@ -27,7 +26,6 @@ namespace Collectively.Services.Remarks.Services
             }
             Logger.Debug($"Creating a new user: '{userId}', name: '{name}', role: '{role}'.");
             user = new User(userId, name, role);
-            user.Value.SetAvatar(avatarUrl);
             await _userRepository.AddAsync(user.Value);
         }
 
@@ -36,14 +34,6 @@ namespace Collectively.Services.Remarks.Services
             Logger.Debug($"Updating username for user: '{userId}' ['{name}'].");
             var user = await _userRepository.GetOrFailAsync(userId);
             user.SetName(name);
-            await _userRepository.UpdateAsync(user);
-        }
-
-        public async Task UpdateAvatarAsync(string userId, string avatarUrl)
-        {
-            Logger.Debug($"Updating avatar for user: '{userId}' ['{avatarUrl}'].");
-            var user = await _userRepository.GetOrFailAsync(userId);
-            user.SetAvatar(avatarUrl);
             await _userRepository.UpdateAsync(user);
         }
 
