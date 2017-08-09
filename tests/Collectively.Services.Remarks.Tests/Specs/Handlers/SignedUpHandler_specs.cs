@@ -33,7 +33,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 Role = "user"
             };
             ServiceClient = new Mock<IServiceClient>();
-            Event = new SignedUp(Guid.NewGuid(), Resource.Create("test", "test"), Guid.NewGuid().ToString("N"), "test");
+            Event = new SignedUp(Guid.NewGuid(), Resource.Create("test", "test"), 
+                Guid.NewGuid().ToString("N"), "test", "user", "active");
             ServiceClient.Setup(x => x.GetAsync<UserDto>(Event.Resource))
                 .ReturnsAsync(User);
             SignedUpHandler = new SignedUpHandler(Handler, UserServiceMock.Object, ServiceClient.Object);
