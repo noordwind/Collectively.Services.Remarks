@@ -188,5 +188,13 @@ namespace Collectively.Services.Remarks.Services
                 return;
             }
         }
+
+        public async Task AddMemberAsync(Guid groupId, string memberId, string role)
+        {
+            var group = await _groupRepository.GetOrFailAsync(groupId);
+            var member = await _userRepository.GetOrFailAsync(memberId);
+            group.Members.Add(new GroupMember(member.UserId, role, true));
+            await _groupRepository.UpdateAsync(group);
+        }
     }
 }

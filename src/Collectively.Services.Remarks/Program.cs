@@ -38,6 +38,7 @@ namespace Collectively.Services.Remarks
                 .SubscribeToEvent<AccountDeleted>()
                 .SubscribeToEvent<UsernameChanged>()
                 .SubscribeToEvent<GroupCreated>()
+                .SubscribeToEvent<MemberAddedToGroup>()
                 .Build()
                 .Run();
         }
