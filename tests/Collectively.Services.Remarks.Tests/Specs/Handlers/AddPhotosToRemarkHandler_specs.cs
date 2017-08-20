@@ -12,9 +12,10 @@ using Collectively.Services.Remarks.Settings;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using It = Machine.Specifications.It;
-using RawRabbit.Configuration.Publish;
 using System.Collections.Generic;
 using Collectively.Common.Types;
+using RawRabbit.Pipe;
+using System.Threading;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
@@ -87,8 +88,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.NoFiles),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -124,8 +125,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.InvalidFile),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -170,8 +171,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.TooManyFiles),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -212,8 +213,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 }

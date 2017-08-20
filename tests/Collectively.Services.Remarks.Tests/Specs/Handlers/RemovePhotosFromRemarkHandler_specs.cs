@@ -9,9 +9,10 @@ using Collectively.Common.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using It = Machine.Specifications.It;
-using RawRabbit.Configuration.Publish;
 using System.Collections.Generic;
 using Collectively.Common.Domain;
+using System.Threading;
+using RawRabbit.Pipe;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
@@ -74,8 +75,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.NoFiles),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -98,8 +99,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.UserNotAllowedToModifyRemark),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }    
 }

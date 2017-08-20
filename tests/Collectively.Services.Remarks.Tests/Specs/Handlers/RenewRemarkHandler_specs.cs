@@ -3,9 +3,11 @@ using It = Machine.Specifications.It;
 using Moq;
 using Collectively.Services.Remarks.Handlers;
 using Machine.Specifications;
-using RawRabbit.Configuration.Publish;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
+using System.Threading;
+using RawRabbit.Pipe;
+using RawRabbit;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
@@ -45,8 +47,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_publish_remark_renewed_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkRenewed>(), 
-                Moq.It.IsAny<Guid>(), 
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -75,8 +77,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_not_publish_remark_renewed_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkRenewed>(),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Never);
         };
 
         It should_publish_renew_remark_rejected_message = () =>
@@ -86,8 +88,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.Error),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 }

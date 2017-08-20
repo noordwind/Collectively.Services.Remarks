@@ -5,11 +5,13 @@ using It = Machine.Specifications.It;
 using Moq;
 using Collectively.Services.Remarks.Handlers;
 using Machine.Specifications;
-using RawRabbit.Configuration.Publish;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using Collectively.Common.Domain;
+using RawRabbit;
+using RawRabbit.Pipe;
+using System.Threading;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
@@ -72,8 +74,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_publish_remark_resolved_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(), 
-                Moq.It.IsAny<Guid>(), 
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -115,8 +117,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_not_publish_remark_resolved_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -126,8 +128,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.CannotConvertFile),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -166,8 +168,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_not_publish_remark_resolved_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -177,8 +179,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.InvalidFile),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -216,8 +218,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_not_publish_remark_resolved_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -227,8 +229,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.Error),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -266,8 +268,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_not_publish_remark_resolved_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -277,8 +279,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == OperationCodes.Error),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 
@@ -323,8 +325,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_not_publish_remark_resolved_event = () =>
         {
             BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkResolved>(),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Never);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -334,8 +336,8 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
                     && m.Code == ErrorCode),
-                Moq.It.IsAny<Guid>(),
-                Moq.It.IsAny<Action<IPublishConfigurationBuilder>>()), Times.Once);
+                Moq.It.IsAny<Action<IPipeContext>>(),
+                Moq.It.IsAny<CancellationToken>()), Times.Once);
         };
     }
 }
