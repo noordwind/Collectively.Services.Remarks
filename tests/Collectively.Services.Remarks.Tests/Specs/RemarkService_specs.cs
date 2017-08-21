@@ -88,12 +88,12 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_call_remove_photos_async_on_remark_photo_service = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.RemovePhotosAsync(RemarkId, Moq.It.IsAny<string[]>()), Times.Once());
+            RemarkPhotoServiceMock.Verify(x => x.RemovePhotosAsync(RemarkId, Moq.It.IsAny<string[]>()), Times.Once);
         };
 
         It should_call_delete_async_on_remark_repository = () =>
         {
-            RemarkRepositoryMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<Remark>()), Times.Once());
+            RemarkRepositoryMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<Remark>()), Times.Once);
         };
     }
 
@@ -116,12 +116,12 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_not_call_delete_async_on_file_handler = () =>
         {
-            FileHandlerMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<string>()), Times.Never());
+            FileHandlerMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<string>()), Times.Never);
         };
 
         It should_not_call_delete_async_on_remark_repository = () =>
         {
-            RemarkRepositoryMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<Remark>()), Times.Never());
+            RemarkRepositoryMock.Verify(x => x.DeleteAsync(Moq.It.IsAny<Remark>()), Times.Never);
         };
     }
 }

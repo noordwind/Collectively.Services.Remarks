@@ -53,17 +53,17 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_file_from_base64 = () =>
         {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once());
+            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once);
         };
 
         It should_validate_image = () =>
         {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once());
+            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
         };
 
         It should_resolve_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description,Location, File, true), Times.Once());
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description,Location, File, true), Times.Once);
         };
 
         It should_fetch_resolved_remark = () =>
@@ -73,7 +73,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_publish_remark_resolved_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Once());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Once);
         };
     }
 
@@ -94,27 +94,27 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_file_from_base64 = () =>
         {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once());
+            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once);
         };
 
         It should_not_validate_image = () =>
         {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Never());
+            FileValidatorMock.Verify(x => x.IsImage(File), Times.Never);
         };
 
         It should_not_resolve_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, false), Times.Never());
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, false), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Never());
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Never);
         };
 
         It should_not_publish_remark_resolved_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -123,7 +123,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.CannotConvertFile), Times.Once());
+                    && m.Code == OperationCodes.CannotConvertFile), Times.Once);
         };
     }
 
@@ -141,27 +141,27 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_file_from_base64 = () =>
         {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once());
+            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once);
         };
 
         It should_validate_image = () =>
         {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once());
+            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
         };
 
         It should_not_resolve_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, false), Times.Never());
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, false), Times.Never);
         };
 
         It should_not_fetch_resolved_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Never());
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Never);
         };
 
         It should_not_publish_remark_resolved_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -170,7 +170,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.InvalidFile), Times.Once());
+                    && m.Code == OperationCodes.InvalidFile), Times.Once);
         };
     }
 
@@ -187,27 +187,27 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_file_from_base64 = () =>
         {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once());
+            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once);
         };
 
         It should_validate_image = () =>
         {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once());
+            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
         };
 
         It should_not_resolve_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Never());
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Never);
         };
 
         It should_fetch_resolved_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once());
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once);
         };
 
         It should_not_publish_remark_resolved_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -216,7 +216,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.Error), Times.Once());
+                    && m.Code == OperationCodes.Error), Times.Once);
         };
     }
 
@@ -233,27 +233,27 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_file_from_base64 = () =>
         {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once());
+            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once);
         };
 
         It should_validate_image = () =>
         {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once());
+            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
         };
 
         It should_not_resolve_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Never());
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Never);
         };
 
         It should_fetch_resolved_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once());
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once);
         };
 
         It should_not_publish_remark_resolved_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -262,7 +262,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.Error), Times.Once());
+                    && m.Code == OperationCodes.Error), Times.Once);
         };
     }
 
@@ -286,27 +286,27 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_resolve_file_from_base64 = () =>
         {
-            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once());
+            FileResolverMock.Verify(x => x.FromBase64(Command.Photo.Base64, Command.Photo.Name, Command.Photo.ContentType), Times.Once);
         };
 
         It should_validate_image = () =>
         {
-            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once());
+            FileValidatorMock.Verify(x => x.IsImage(File), Times.Once);
         };
 
         It should_resolve_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Once());
+            RemarkStateServiceMock.Verify(x => x.ResolveAsync(Command.RemarkId, Command.UserId, Description, Location, File, true), Times.Once);
         };
 
         It should_fetch_resolved_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once());
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once);
         };
 
         It should_not_publish_remark_resolved_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkResolved>(), Times.Never);
         };
 
         It should_publish_resolve_remark_rejected_message = () =>
@@ -315,7 +315,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == ErrorCode), Times.Once());
+                    && m.Code == ErrorCode), Times.Once);
         };
     }
 }

@@ -18,7 +18,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         }
 
         //Temporary fix due to extension method PublishAsync.
-        protected static void VerifyPublishAsync<TMessage>(TMessage message, Times times)
+        protected static void VerifyPublishAsync<TMessage>(TMessage message, Func<Times> times)
         => BusClientMock.Verify(x => x.InvokeAsync(Moq.It.IsAny<Action<IPipeBuilder>>(),
                 Moq.It.IsAny<Action<IPipeContext>>(), Moq.It.IsAny<CancellationToken>()), Times.AtLeastOnce());
     }

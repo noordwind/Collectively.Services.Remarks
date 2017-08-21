@@ -62,12 +62,12 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_delete_async_on_remark_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once());
+            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once);
         };
 
         It should_publish_remark_deleted_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkDeleted>(), Times.Once());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkDeleted>(), Times.Once);
         };
     }
 
@@ -88,12 +88,12 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_delete_async_on_remark_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once());
+            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once);
         };
 
         It should_not_publish_remark_deleted_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkDeleted>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkDeleted>(), Times.Never);
         };
 
         It should_publish_delete_remark_rejected_message = () =>
@@ -102,7 +102,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == ErrorCode), Times.Once());
+                    && m.Code == ErrorCode), Times.Once);
         };
     }
 }

@@ -100,12 +100,12 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once());
+                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once);
         };
 
         It should_publish_remark_created_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkCreated>(), Times.Once());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkCreated>(), Times.Once);
         };
     }
 
@@ -137,12 +137,12 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once());
+                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once);
         };
 
         It should_not_publish_remark_created_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkCreated>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkCreated>(), Times.Never);
         };
 
         It should_publish_create_remark_rejected_message = () =>
@@ -151,7 +151,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.Error), Times.Once());
+                    && m.Code == OperationCodes.Error), Times.Once);
         };
     }
 }

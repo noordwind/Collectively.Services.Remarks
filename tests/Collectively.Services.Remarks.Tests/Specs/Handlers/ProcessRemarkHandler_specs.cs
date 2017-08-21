@@ -45,17 +45,17 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_process_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ProcessAsync(Command.RemarkId, Command.UserId, Description, Location), Times.Once());
+            RemarkStateServiceMock.Verify(x => x.ProcessAsync(Command.RemarkId, Command.UserId, Description, Location), Times.Once);
         };
 
         It should_fetch_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once());
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Once);
         };
 
         It should_publish_remark_processed_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkProcessed>(), Times.Once());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkProcessed>(), Times.Once);
         };
     }
 
@@ -73,17 +73,17 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_process_remark = () =>
         {
-            RemarkStateServiceMock.Verify(x => x.ProcessAsync(Command.RemarkId, Command.UserId, Description, Location), Times.Never());
+            RemarkStateServiceMock.Verify(x => x.ProcessAsync(Command.RemarkId, Command.UserId, Description, Location), Times.Never);
         };
 
         It should_not_fetch_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Never());
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Never);
         };
 
         It should_not_publish_remark_processed_event = () =>
         {
-            VerifyPublishAsync(Moq.It.IsAny<RemarkProcessed>(), Times.Never());
+            VerifyPublishAsync(Moq.It.IsAny<RemarkProcessed>(), Times.Never);
         };
 
         It should_publish_process_remark_rejected_message = () =>
@@ -92,7 +92,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.Error), Times.Once());
+                    && m.Code == OperationCodes.Error), Times.Once);
         };
     }
 }

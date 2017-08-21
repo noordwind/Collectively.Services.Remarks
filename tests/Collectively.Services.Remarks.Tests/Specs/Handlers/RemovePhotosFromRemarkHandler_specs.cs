@@ -72,7 +72,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.NoFiles), Times.Once());
+                    && m.Code == OperationCodes.NoFiles), Times.Once);
         };
     }
 
@@ -94,7 +94,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.UserNotAllowedToModifyRemark), Times.Once());
+                    && m.Code == OperationCodes.UserNotAllowedToModifyRemark), Times.Once);
         };
     }    
 }
