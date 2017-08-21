@@ -19,11 +19,10 @@ using System.Threading;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
-    public abstract class AddPhotosToRemarkHandler_specs
+    public abstract class AddPhotosToRemarkHandler_specs : SpecsBase
     {
         protected static AddPhotosToRemarkHandler AddPhotosToRemarkHandler;
         protected static IHandler Handler;
-        protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
@@ -37,9 +36,9 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
+            InitializeBus();
             ExceptionHandlerMock = new Mock<IExceptionHandler>();
             Handler = new Handler(ExceptionHandlerMock.Object);
-            BusClientMock = new Mock<IBusClient>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
             RemarkServiceMock = new Mock<IRemarkService>();
@@ -83,13 +82,11 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_publish_add_photos_to_remark_rejected_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<AddPhotosToRemarkRejected>(m =>
+            VerifyPublishAsync(Moq.It.Is<AddPhotosToRemarkRejected>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.NoFiles),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.Code == OperationCodes.NoFiles), Times.Once());
         };
     }
 
@@ -115,18 +112,16 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_call_add_photos_async_on_remark_photo_service = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId, File), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId, File), Times.Never());
         };
 
         It should_publish_add_photos_to_remark_rejected_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<AddPhotosToRemarkRejected>(m =>
+            VerifyPublishAsync(Moq.It.Is<AddPhotosToRemarkRejected>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.InvalidFile),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.Code == OperationCodes.InvalidFile), Times.Once());
         };
     }
 
@@ -161,18 +156,16 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_call_add_photos_async_on_remark_photo_service = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId, File), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId, File), Times.Never());
         };
 
         It should_publish_add_photos_to_remark_rejected_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<AddPhotosToRemarkRejected>(m =>
+            VerifyPublishAsync(Moq.It.Is<AddPhotosToRemarkRejected>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.TooManyFiles),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.Code == OperationCodes.TooManyFiles), Times.Once());
         };
     }
 
@@ -204,17 +197,15 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_add_photos_async_on_remark_photo_service = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId,  File), Times.Once);
+            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId,  File), Times.Once());
         };
 
         It should_publish_photos_to_remark_added_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<PhotosToRemarkAdded>(m =>
+            VerifyPublishAsync(Moq.It.Is<PhotosToRemarkAdded>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
-                    && m.UserId == Command.UserId),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.UserId == Command.UserId), Times.Once());
         };
     }
 }

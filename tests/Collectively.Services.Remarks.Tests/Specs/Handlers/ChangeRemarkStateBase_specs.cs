@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using RawRabbit;
+using RawRabbit.Pipe;
 using Collectively.Common.Files;
 using Collectively.Common.Services;
 using Collectively.Messages.Commands;
-using RawRabbit;
 using Moq;
 using Collectively.Services.Remarks.Services;
 using Collectively.Services.Remarks.Domain;
@@ -10,13 +13,12 @@ using Collectively.Messages.Commands.Remarks;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
-    public abstract class ChangeRemarkStateBase_specs<TCommand,THandler> 
+    public abstract class ChangeRemarkStateBase_specs<TCommand,THandler> : SpecsBase
         where TCommand : ChangeRemarkStateBase, new()
         where THandler : ICommandHandler<TCommand>
     {
         protected static THandler CommandHandler;
         protected static IHandler Handler;
-        protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IGroupService> GroupServiceMock;
         protected static Mock<IRemarkStateService> RemarkStateServiceMock;
@@ -37,6 +39,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         protected static void InitializeBase()
         {
+            InitializeBus();
             ExceptionHandlerMock = new Mock<IExceptionHandler>();
             Handler = new Handler(ExceptionHandlerMock.Object);
             BusClientMock = new Mock<IBusClient>();

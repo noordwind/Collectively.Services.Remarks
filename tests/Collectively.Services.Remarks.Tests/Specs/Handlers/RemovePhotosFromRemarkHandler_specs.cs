@@ -16,11 +16,10 @@ using RawRabbit.Pipe;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
-    public abstract class RemovePhotosFromRemarkHandler_specs
+    public abstract class RemovePhotosFromRemarkHandler_specs : SpecsBase
     {
         protected static RemovePhotosFromRemarkHandler RemovePhotosFromRemarkHandler;
         protected static IHandler Handler;
-        protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IRemarkPhotoService> RemarkPhotoServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
@@ -32,7 +31,6 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         {
             ExceptionHandlerMock = new Mock<IExceptionHandler>();
             Handler = new Handler(ExceptionHandlerMock.Object);
-            BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
             RemarkPhotoServiceMock = new Mock<IRemarkPhotoService>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
@@ -70,13 +68,11 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_publish_remove_photos_from_remark_rejected_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<RemovePhotosFromRemarkRejected>(m =>
+            VerifyPublishAsync(Moq.It.Is<RemovePhotosFromRemarkRejected>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.NoFiles),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.Code == OperationCodes.NoFiles), Times.Once());
         };
     }
 
@@ -94,13 +90,11 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_publish_remove_photos_from_remark_rejected_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<RemovePhotosFromRemarkRejected>(m =>
+            VerifyPublishAsync(Moq.It.Is<RemovePhotosFromRemarkRejected>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.UserNotAllowedToModifyRemark),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.Code == OperationCodes.UserNotAllowedToModifyRemark), Times.Once());
         };
     }    
 }

@@ -15,11 +15,10 @@ using System.Threading;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
-    public abstract class DeleteRemarkHandler_specs
+    public abstract class DeleteRemarkHandler_specs : SpecsBase
     {
         protected static DeleteRemarkHandler DeleteRemarkHandler;
         protected static IHandler Handler;
-        protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static Mock<IResourceFactory> ResourceFactoryMock;
@@ -28,9 +27,9 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
+            InitializeBus();
             ExceptionHandlerMock = new Mock<IExceptionHandler>();
             Handler = new Handler(ExceptionHandlerMock.Object);
-            BusClientMock = new Mock<IBusClient>();
             RemarkServiceMock = new Mock<IRemarkService>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
             Command = new DeleteRemark
@@ -63,14 +62,12 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_delete_async_on_remark_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once);
+            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once());
         };
 
         It should_publish_remark_deleted_event = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkDeleted>(), 
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+            VerifyPublishAsync(Moq.It.IsAny<RemarkDeleted>(), Times.Once());
         };
     }
 
@@ -91,25 +88,21 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_call_delete_async_on_remark_service = () =>
         {
-            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once);
+            RemarkServiceMock.Verify(x => x.DeleteAsync(Command.RemarkId), Times.Once());
         };
 
         It should_not_publish_remark_deleted_event = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkDeleted>(),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Never);
+            VerifyPublishAsync(Moq.It.IsAny<RemarkDeleted>(), Times.Never());
         };
 
         It should_publish_delete_remark_rejected_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<DeleteRemarkRejected>(m =>
+            VerifyPublishAsync(Moq.It.Is<DeleteRemarkRejected>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == ErrorCode),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.Code == ErrorCode), Times.Once());
         };
     }
 }

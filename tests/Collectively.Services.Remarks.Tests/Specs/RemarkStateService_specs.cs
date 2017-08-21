@@ -67,12 +67,12 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_update_remark = () =>
         {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Once);
+            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Once());
         };
 
         It should_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Once);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Once());
         };
     }
 
@@ -98,12 +98,12 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_not_update_remark = () =>
         {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never);
+            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never());
         };
 
         It should_not_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never());
         };
     }
 
@@ -129,12 +129,12 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_not_update_remark = () =>
         {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never);
+            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never());
         };
 
         It should_not_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never());
         };
     }
 
@@ -159,12 +159,12 @@ namespace Collectively.Services.Remarks.Tests.Specs
 
         It should_not_update_remark = () =>
         {
-            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never);
+            RemarkRepositoryMock.Verify(x => x.UpdateAsync(Moq.It.Is<Remark>(r => r.Resolved)), Times.Never());
         };
 
         It should_not_upload_file = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.UploadImagesWithDifferentSizesAsync(Remark, UserId, File, RemarkState.Names.Resolved), Times.Never());
         };
     }
 }

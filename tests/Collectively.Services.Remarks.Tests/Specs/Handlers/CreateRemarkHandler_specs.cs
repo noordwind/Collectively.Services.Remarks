@@ -18,11 +18,10 @@ using System.Threading;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
-    public abstract class CreateRemarkHandler_specs
+    public abstract class CreateRemarkHandler_specs : SpecsBase
     {
         protected static CreateRemarkHandler CreateRemarkHandler;
         protected static IHandler Handler;
-        protected static Mock<IBusClient> BusClientMock;
         protected static Mock<IFileResolver> FileResolverMock;
         protected static Mock<IFileValidator> FileValidatorMock;
         protected static Mock<IRemarkService> RemarkServiceMock;
@@ -36,9 +35,9 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         protected static void Initialize()
         {
+            InitializeBus();
             ExceptionHandlerMock = new Mock<IExceptionHandler>();
             Handler = new Handler(ExceptionHandlerMock.Object);
-            BusClientMock = new Mock<IBusClient>();
             FileResolverMock = new Mock<IFileResolver>();
             FileValidatorMock = new Mock<IFileValidator>();
             RemarkServiceMock = new Mock<IRemarkService>();
@@ -101,14 +100,12 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once);
+                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once());
         };
 
         It should_publish_remark_created_event = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkCreated>(),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+            VerifyPublishAsync(Moq.It.IsAny<RemarkCreated>(), Times.Once());
         };
     }
 
@@ -140,25 +137,21 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once);
+                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId), Times.Once());
         };
 
         It should_not_publish_remark_created_event = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.IsAny<RemarkCreated>(),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Never);
+            VerifyPublishAsync(Moq.It.IsAny<RemarkCreated>(), Times.Never());
         };
 
         It should_publish_create_remark_rejected_message = () =>
         {
-            BusClientMock.Verify(x => x.PublishAsync(Moq.It.Is<CreateRemarkRejected>(m =>
+            VerifyPublishAsync(Moq.It.Is<CreateRemarkRejected>(m =>
                     m.RequestId == Command.Request.Id
                     && m.RemarkId == Command.RemarkId
                     && m.UserId == Command.UserId
-                    && m.Code == OperationCodes.Error),
-                Moq.It.IsAny<Action<IPipeContext>>(),
-                Moq.It.IsAny<CancellationToken>()), Times.Once);
+                    && m.Code == OperationCodes.Error), Times.Once());
         };
     }
 }
