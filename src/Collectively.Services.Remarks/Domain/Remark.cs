@@ -247,6 +247,17 @@ namespace Collectively.Services.Remarks.Domain
         public Maybe<RemarkState> GetLatestStateOf(string state) 
             => States.OrderByDescending(x => x.CreatedAt).FirstOrDefault(x => x.State == state);
 
+        public RemarkState GetStateOrFail(Guid id)
+        {
+            var state = GetState(id);
+            if (state.HasNoValue)
+            {
+                throw new DomainException(OperationCodes.StateNotFound, "Cannot find state." +
+                    $" remarkId: {Id}, stateId: {id}");
+            }
+            return state.Value;
+        }
+
         public Maybe<RemarkState> GetState(Guid id)
             => States.SingleOrDefault(s => s.Id == id);
 
@@ -303,17 +314,6 @@ namespace Collectively.Services.Remarks.Domain
             }
             _states.Add(state);
             State = state;
-        }
-
-        private RemarkState GetStateOrFail(Guid id)
-        {
-            var state = GetState(id);
-            if (state.HasNoValue)
-            {
-                throw new DomainException(OperationCodes.StateNotFound, "Cannot find state." +
-                    $" remarkId: {Id}, stateId: {id}");
-            }
-            return state.Value;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using  Collectively.Common.Extensions;
-using  Collectively.Common.Mongo;
+using Collectively.Common.Extensions;
+using Collectively.Common.Mongo;
 using Collectively.Services.Remarks.Queries;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;

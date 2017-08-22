@@ -34,6 +34,7 @@ namespace Collectively.Services.Remarks
                 .SubscribeToCommand<DeleteFavoriteRemark>()
                 .SubscribeToCommand<TakeRemarkAction>()
                 .SubscribeToCommand<CancelRemarkAction>()
+                .SubscribeToCommand<ReportRemark>()
                 .SubscribeToEvent<SignedUp>()
                 .SubscribeToEvent<AccountDeleted>()
                 .SubscribeToEvent<UsernameChanged>()

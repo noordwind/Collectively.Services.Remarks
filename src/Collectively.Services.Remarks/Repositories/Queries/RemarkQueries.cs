@@ -15,6 +15,14 @@ namespace Collectively.Services.Remarks.Repositories.Queries
         public static IMongoCollection<Remark> Remarks(this IMongoDatabase database)
             => database.GetCollection<Remark>();
 
+        public static async Task<bool> ExistsAsync(this IMongoCollection<Remark> remarks, Guid id)
+        {
+            if (id == Guid.Empty)
+                return false;
+
+            return await remarks.AsQueryable().AnyAsync(x => x.Id == id);
+        }
+
         public static async Task<Remark> GetByIdAsync(this IMongoCollection<Remark> remarks, Guid id)
         {
             if (id == Guid.Empty)

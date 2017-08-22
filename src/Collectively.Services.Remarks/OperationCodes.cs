@@ -46,6 +46,10 @@ namespace Collectively.Services.Remarks
         public static string GroupMemberNotActive => "group_member_not_active";
         public static string UnknownGroupMemberCriteria => "unknown_group_member_criteria";
         public static string InsufficientGroupMemberCriteria => "insufficient_group_member_criteria"; 
+        public static string EmptyReportType => "empty_report_type";
+        public static string EmptyReportResource => "empty_report_resource";
+        public static string InvalidReportType => "invalid_report_type";
+        public static string ReportAlreadySent => "report_already_sent";
         public static string Error => "error";
     }
 }

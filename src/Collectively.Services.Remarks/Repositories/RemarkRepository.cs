@@ -18,6 +18,9 @@ namespace Collectively.Services.Remarks.Repositories
             _database = database;
         }
 
+        public async Task<bool> ExistsAsync(Guid id)
+            => await _database.Remarks().ExistsAsync(id);
+
         public async Task<Maybe<Remark>> GetByIdAsync(Guid id)
             => await _database.Remarks().GetByIdAsync(id);
 
@@ -48,5 +51,6 @@ namespace Collectively.Services.Remarks.Repositories
 
         public async Task DeleteAsync(Remark remark)
             => await _database.Remarks().DeleteOneAsync(x => x.Id == remark.Id);
-  }
+
+    }
 }

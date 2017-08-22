@@ -75,6 +75,7 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<TagRepository>().As<ITagRepository>();
                 builder.RegisterType<UserRepository>().As<IUserRepository>();
                 builder.RegisterType<GroupRepository>().As<IGroupRepository>();
+                builder.RegisterType<ReportRepository>().As<IReportRepository>();
                 builder.RegisterType<LocalizedResourceService>().As<ILocalizedResourceService>();
                 builder.RegisterType<RemarkService>().As<IRemarkService>();
                 builder.RegisterType<RemarkStateService>().As<IRemarkStateService>();
@@ -84,6 +85,7 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<RemarkCommentService>().As<IRemarkCommentService>();
                 builder.RegisterType<RemarkActionService>().As<IRemarkActionService>();
                 builder.RegisterType<GroupService>().As<IGroupService>();
+                builder.RegisterType<ReportService>().As<IReportService>();
                 builder.RegisterType<AddCommentPolicy>().As<IAddCommentPolicy>();
                 builder.RegisterType<CreateRemarkPolicy>().As<ICreateRemarkPolicy>();
                 builder.RegisterType<ProcessRemarkPolicy>().As<IProcessRemarkPolicy>();
