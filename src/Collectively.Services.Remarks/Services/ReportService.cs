@@ -55,7 +55,7 @@ namespace Collectively.Services.Remarks.Services
 
         private async Task<Report> ReportActivityAsync(Guid remarkId, Guid? activityId, string userId)
         {
-            if (activityId.HasValue || activityId == Guid.Empty)
+            if (activityId == null || activityId == Guid.Empty)
             {
                 throw new ServiceException(OperationCodes.EmptyReportResource, 
                     $"Empty report resource for activity type sent by user: '{userId}' "
@@ -69,7 +69,7 @@ namespace Collectively.Services.Remarks.Services
 
         private async Task<Report> ReportCommentAsync(Guid remarkId, Guid? commentId, string userId)
         {
-            if (commentId.HasValue || commentId == Guid.Empty)
+            if (commentId == null || commentId == Guid.Empty)
             {
                 throw new ServiceException(OperationCodes.EmptyReportResource, 
                     $"Empty report resource for comment type sent by user: '{userId}' "
