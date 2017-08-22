@@ -18,10 +18,11 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IHandler _handler;
         private readonly IReportService _reportService;
 
-        public ReportRemarkHandler(IBusClient busClient, 
+        public ReportRemarkHandler(IBusClient bus, 
             IHandler handler, 
             IReportService reportService)
         {
+            _bus = bus;
             _handler = handler;
             _reportService = reportService;
         }

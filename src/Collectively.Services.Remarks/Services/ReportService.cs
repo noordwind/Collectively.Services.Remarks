@@ -43,8 +43,8 @@ namespace Collectively.Services.Remarks.Services
             Report report = null;
             switch(type)
             {
-                case "activity": report = await ReportRemarkAsync(remarkId, userId); break;
-                case "comment": report = await ReportRemarkAsync(remarkId, userId); break;
+                case "activity": report = await ReportActivityAsync(remarkId, resourceId, userId); break;
+                case "comment": report = await ReportCommentAsync(remarkId, resourceId, userId); break;
                 case "remark": report = await ReportRemarkAsync(remarkId, userId); break;
                 default: throw new ServiceException(OperationCodes.InvalidReportType, 
                     $"Invalid report type: '{type}' sent by user: '{userId}' "
