@@ -13,6 +13,8 @@ using Lockbox.Client.Extensions;
 using NLog;
 using RawRabbit;
 using Collectively.Messages.Commands.Models;
+using Collectively.Common.Locations;
+using Collectively.Common.Domain;
 
 namespace Collectively.Services.Remarks.Handlers
 {
@@ -26,6 +28,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IRemarkService _remarkService;
         private readonly IGroupService _groupService;
         private readonly ISocialMediaService _socialMediaService;
+        private readonly ILocationService _locationService;
         private readonly IResourceFactory _resourceFactory;
         private readonly ICreateRemarkPolicy _policy;
 
@@ -36,6 +39,7 @@ namespace Collectively.Services.Remarks.Handlers
             IRemarkService remarkService,
             IGroupService groupService,
             ISocialMediaService socialMediaService,
+            ILocationService locationService,
             IResourceFactory resourceFactory,
             ICreateRemarkPolicy policy)
         {
@@ -46,12 +50,14 @@ namespace Collectively.Services.Remarks.Handlers
             _remarkService = remarkService;
             _groupService = groupService;
             _socialMediaService = socialMediaService;
+            _locationService = locationService;
             _resourceFactory = resourceFactory;
             _policy = policy;
         }
 
         public async Task HandleAsync(CreateRemark command)
         {
+            var address = "";
             await _handler
                 .Validate(async () =>  
                 {
@@ -61,6 +67,13 @@ namespace Collectively.Services.Remarks.Handlers
                         await _groupService.ValidateIfRemarkCanBeCreatedOrFailAsync(command.GroupId.Value,
                             command.UserId, command.Latitude, command.Longitude);
                     }
+                    var locations = await _locationService.GetAsync(command.Latitude, command.Longitude);
+                    if (locations.HasNoValue || locations.Value.FormattedAddress.Empty())
+                    {
+                        throw new ServiceException($"Address was not found for remark with id: '{command.RemarkId}' " +
+                            $"latitude: {command.Latitude}, longitude:  {command.Longitude}.");
+                    }
+                    address = locations.Value.FormattedAddress;
                 })
                 .Run(async () =>
                 {
@@ -68,7 +81,7 @@ namespace Collectively.Services.Remarks.Handlers
                                  $"category: {command.Category}, latitude: {command.Latitude}, " +
                                  $"longitude:  {command.Longitude}.");
 
-                    var location = Domain.Location.Create(command.Latitude, command.Longitude, command.Address);
+                    var location = Domain.Location.Create(command.Latitude, command.Longitude, address);
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
                             location, command.Description, command.Tags, command.GroupId);
                 })

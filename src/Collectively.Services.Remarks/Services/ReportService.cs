@@ -7,11 +7,13 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Queries;
 using Collectively.Services.Remarks.Repositories;
+using NLog;
 
 namespace Collectively.Services.Remarks.Services
 {
     public class ReportService : IReportService
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly IReportRepository _reportRepository;
         private readonly IRemarkRepository _remarkRepository;
 
@@ -27,6 +29,8 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task AddAsync(Guid remarkId, Guid? resourceId, string type, string userId)
         {
+            Logger.Info($"Adding a report for remark: '{remarkId}', type: '{type}', "
+                + $"resource: '{resourceId}', user: '{userId}'.");
             if (type.Empty())
             {
                 throw new ServiceException(OperationCodes.EmptyReportType, 

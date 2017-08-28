@@ -15,6 +15,7 @@ using It = Machine.Specifications.It;
 using System.Collections.Generic;
 using RawRabbit.Pipe;
 using System.Threading;
+using Collectively.Common.Locations;
 
 namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 {
@@ -27,6 +28,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static Mock<IRemarkService> RemarkServiceMock;
         protected static Mock<IGroupService> GroupServiceMock;
         protected static Mock<ISocialMediaService> SocialMediaServiceMock;
+        protected static Mock<ILocationService> LocationServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static Mock<ICreateRemarkPolicy> CreateRemarkPolicyMock;
@@ -43,6 +45,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             RemarkServiceMock = new Mock<IRemarkService>();
             GroupServiceMock = new Mock<IGroupService>();
             SocialMediaServiceMock = new Mock<ISocialMediaService>();
+            LocationServiceMock = new Mock<ILocationService>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
             CreateRemarkPolicyMock = new Mock<ICreateRemarkPolicy>();
             Command = new CreateRemark
@@ -69,9 +72,11 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                     ContentType = "image/png"
                 }
             };
+            LocationServiceMock.Setup(x => x.GetAsync(Moq.It.IsAny<double>(),Moq.It.IsAny<double>()))
+                .ReturnsAsync(new LocationResponse{ FormattedAddress = Command.Address });
             CreateRemarkHandler = new CreateRemarkHandler(Handler, BusClientMock.Object, FileResolverMock.Object,
                 FileValidatorMock.Object, RemarkServiceMock.Object, GroupServiceMock.Object, 
-                SocialMediaServiceMock.Object, ResourceFactoryMock.Object, CreateRemarkPolicyMock.Object);
+                SocialMediaServiceMock.Object, LocationServiceMock.Object, ResourceFactoryMock.Object, CreateRemarkPolicyMock.Object);
         }
     }
 
