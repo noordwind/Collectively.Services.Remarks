@@ -73,7 +73,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 }
             };
             LocationServiceMock.Setup(x => x.GetAsync(Moq.It.IsAny<double>(),Moq.It.IsAny<double>()))
-                .ReturnsAsync(new LocationResponse{ FormattedAddress = Command.Address });
+                .ReturnsAsync(new LocationResponse{ Results = new List<LocationResult>{new LocationResult{FormattedAddress = Command.Address}} });
             CreateRemarkHandler = new CreateRemarkHandler(Handler, BusClientMock.Object, FileResolverMock.Object,
                 FileValidatorMock.Object, RemarkServiceMock.Object, GroupServiceMock.Object, 
                 SocialMediaServiceMock.Object, LocationServiceMock.Object, ResourceFactoryMock.Object, CreateRemarkPolicyMock.Object);
