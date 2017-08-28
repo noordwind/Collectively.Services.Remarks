@@ -68,13 +68,12 @@ namespace Collectively.Services.Remarks.Handlers
                             command.UserId, command.Latitude, command.Longitude);
                     }
                     var locations = await _locationService.GetAsync(command.Latitude, command.Longitude);
-                    address = command.Address;
-                    // if (locations.HasNoValue || locations.Value.FormattedAddress.Empty())
-                    // {
-                    //     throw new ServiceException($"Address was not found for remark with id: '{command.RemarkId}' " +
-                    //         $"latitude: {command.Latitude}, longitude:  {command.Longitude}.");
-                    // }
-                    // address = locations.Value.FormattedAddress;
+                    if (locations.HasNoValue || locations.Value.Results == null || !locations.Value.Results.Any())
+                    {
+                        throw new ServiceException($"Address was not found for remark with id: '{command.RemarkId}' " +
+                            $"latitude: {command.Latitude}, longitude:  {command.Longitude}.");
+                    }
+                    address = locations.Value.Results.First().FormattedAddress;
                 })
                 .Run(async () =>
                 {
