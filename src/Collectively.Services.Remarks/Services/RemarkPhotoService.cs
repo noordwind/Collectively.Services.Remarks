@@ -9,13 +9,13 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
-using NLog;
+using Serilog;
 
 namespace Collectively.Services.Remarks.Services
 {
     public class RemarkPhotoService : IRemarkPhotoService
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private readonly IRemarkRepository _remarkRepository;
         private readonly IUserRepository _userRepository;
         private readonly IFileHandler _fileHandler;

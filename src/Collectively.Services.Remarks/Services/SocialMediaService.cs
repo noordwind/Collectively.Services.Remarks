@@ -5,14 +5,14 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Repositories;
 using Collectively.Services.Remarks.Settings;
 using Collectively.Messages.Commands.Users;
-using NLog;
+using Serilog;
 using RawRabbit;
 
 namespace Collectively.Services.Remarks.Services
 {
     public class SocialMediaService : ISocialMediaService
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private readonly IBusClient _bus;
         private readonly ILocalizedResourceService _localizedResourceService;
         private readonly IRemarkRepository _remarkRepository;

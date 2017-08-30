@@ -10,7 +10,7 @@ using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
 using Lockbox.Client.Extensions;
-using NLog;
+using Serilog;
 using RawRabbit;
 using Collectively.Messages.Commands.Models;
 using Collectively.Common.Locations;
@@ -20,7 +20,7 @@ namespace Collectively.Services.Remarks.Handlers
 {
     public class CreateRemarkHandler : ICommandHandler<CreateRemark>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IFileResolver _fileResolver;

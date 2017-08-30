@@ -8,14 +8,14 @@ using Collectively.Common.Locations;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Repositories;
-using NLog;
+using Serilog;
 
 namespace Collectively.Services.Remarks.Services
 {
     public class GroupService : IGroupService
     {
         private static readonly IList<string> RemarkMemberCriteria = new []{"member", "moderator", "administrator", "owner"};
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private readonly IUserRepository _userRepository;
         private readonly IGroupRepository _groupRepository;
         private readonly IRemarkRepository _remarkRepository;

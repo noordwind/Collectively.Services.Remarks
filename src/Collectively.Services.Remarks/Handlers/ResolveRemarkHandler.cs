@@ -7,7 +7,7 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
-using NLog;
+using Serilog;
 using RawRabbit;
 using RemarkState = Collectively.Services.Remarks.Domain.RemarkState;
 
@@ -15,7 +15,7 @@ namespace Collectively.Services.Remarks.Handlers
 {
     public class ResolveRemarkHandler : ICommandHandler<ResolveRemark>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
@@ -63,7 +63,7 @@ namespace Collectively.Services.Remarks.Handlers
                         var isImage = _fileValidator.IsImage(file);
                         if (isImage == false)
                         {
-                            Logger.Warn($"File is not an image! name:{file.Name}, contentType:{file.ContentType}, " +
+                            Logger.Warning($"File is not an image! name:{file.Name}, contentType:{file.ContentType}, " +
                                 $"userId:{command.UserId}");
                             throw new ServiceException(OperationCodes.InvalidFile);
                         }

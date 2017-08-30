@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
 using  Collectively.Common.Types;
 using Collectively.Services.Remarks.Repositories;
-using NLog;
+using Serilog;
 
 namespace Collectively.Services.Remarks.Services
 {
     public class LocalizedResourceService : ILocalizedResourceService
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private ILocalizedResourceRepository _localizedResourceRepository;
 
         public LocalizedResourceService(ILocalizedResourceRepository localizedResourceRepository)
@@ -20,7 +20,7 @@ namespace Collectively.Services.Remarks.Services
             var resource = await _localizedResourceRepository.GetAsync(name.ToLowerInvariant(), culture.ToLowerInvariant());
             if (resource.HasNoValue)
             {
-                Logger.Warn($"Localized resource for name: '{name}' and culture: '{culture}' was not found.");
+                Logger.Warning($"Localized resource for name: '{name}' and culture: '{culture}' was not found.");
                 
                 return new Maybe<string>();
             }

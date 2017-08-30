@@ -6,7 +6,7 @@ using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
-using NLog;
+using Serilog;
 using RawRabbit;
 using RemarkState = Collectively.Services.Remarks.Domain.RemarkState;
 
@@ -14,7 +14,7 @@ namespace Collectively.Services.Remarks.Handlers
 {
     public class RenewRemarkHandler : ICommandHandler<RenewRemark>
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;

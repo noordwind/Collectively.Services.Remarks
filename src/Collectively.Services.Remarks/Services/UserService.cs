@@ -3,13 +3,13 @@ using Collectively.Common.Domain;
 using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Extensions;
 using Collectively.Services.Remarks.Repositories;
-using NLog;
+using Serilog;
 
 namespace Collectively.Services.Remarks.Services
 {
     public class UserService : IUserService
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private readonly IUserRepository _userRepository;
 
         public UserService(IUserRepository userRepository)

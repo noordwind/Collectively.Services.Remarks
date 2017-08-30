@@ -4,7 +4,7 @@ using Collectively.Messages.Events;
 using Collectively.Common.Services;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Events.Users;
-using NLog;
+using Serilog;
 
 namespace Collectively.Services.Remarks.Handlers
 {

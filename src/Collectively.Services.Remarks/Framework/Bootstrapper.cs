@@ -23,7 +23,7 @@ using Nancy.Bootstrapper;
 using Nancy.Bootstrappers.Autofac;
 using Nancy.Configuration;
 using Newtonsoft.Json;
-using NLog;
+using Serilog;
 using RawRabbit.Configuration;
 using Collectively.Common.Extensions;
 using Collectively.Messages.Events.Remarks;
@@ -33,7 +33,7 @@ namespace Collectively.Services.Remarks.Framework
 {
     public class Bootstrapper : AutofacNancyBootstrapper
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger Logger = Log.Logger;
         private static IExceptionHandler _exceptionHandler;
         private readonly IConfiguration _configuration;
         private static readonly string DecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
@@ -144,7 +144,7 @@ namespace Collectively.Services.Remarks.Framework
             };
             pipelines.SetupTokenAuthentication(container);
             _exceptionHandler = container.Resolve<IExceptionHandler>();
-            Logger.Info("Collectively.Services.Remarks API has started.");
+            Logger.Information("Collectively.Services.Remarks API has started.");
         }
 
         private void FixNumberFormat(NancyContext ctx)
