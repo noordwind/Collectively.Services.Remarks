@@ -69,12 +69,12 @@ namespace Collectively.Services.Remarks.Handlers
                             throw new ServiceException(OperationCodes.CannotConvertFile);
                         }
                         var photo = resolvedFile.Value;
-                        var isImage = _fileValidator.IsImage(photo);
-                        if (!isImage)
-                        {
+                        // var isImage = _fileValidator.IsImage(photo);
+                        // if (!isImage)
+                        // {
                             
-                            throw new ServiceException(OperationCodes.InvalidFile);
-                        }
+                        //     throw new ServiceException(OperationCodes.InvalidFile);
+                        // }
                         photos.Add(photo);
                     }
                     await _remarkPhotoService.AddPhotosAsync(command.RemarkId, command.UserId, photos.ToArray());
