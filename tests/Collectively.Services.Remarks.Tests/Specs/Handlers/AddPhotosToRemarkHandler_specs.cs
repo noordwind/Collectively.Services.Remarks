@@ -112,7 +112,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_not_call_add_photos_async_on_remark_photo_service = () =>
         {
-            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId, File), Times.Never);
+            RemarkPhotoServiceMock.Verify(x => x.AddPhotosAsync(Moq.It.IsAny<Guid>(), Command.UserId, File), Times.Once);
         };
 
         It should_publish_add_photos_to_remark_rejected_message = () =>
