@@ -28,6 +28,8 @@ using RawRabbit.Configuration;
 using Collectively.Common.Extensions;
 using Collectively.Messages.Events.Remarks;
 using Collectively.Common.Locations;
+using Microsoft.Extensions.DependencyInjection;
+using Autofac.Extensions.DependencyInjection;
 
 namespace Collectively.Services.Remarks.Framework
 {
@@ -38,11 +40,13 @@ namespace Collectively.Services.Remarks.Framework
         private readonly IConfiguration _configuration;
         private static readonly string DecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
         private static readonly string InvalidDecimalSeparator = DecimalSeparator == "." ? "," : ".";
+        private readonly IServiceCollection _services;
         public static ILifetimeScope LifetimeScope { get; private set; }
 
-        public Bootstrapper(IConfiguration configuration)
+        public Bootstrapper(IConfiguration configuration, IServiceCollection services)
         {
             _configuration = configuration;
+            _services = services;
         }
 
 #if DEBUG
@@ -59,6 +63,7 @@ namespace Collectively.Services.Remarks.Framework
 
             container.Update(builder =>
             {
+                builder.Populate(_services);
                 builder.RegisterType<CustomJsonSerializer>().As<JsonSerializer>().SingleInstance();
                 var generalSettings = _configuration.GetSettings<GeneralSettings>();
                 builder.RegisterInstance(_configuration.GetSettings<MongoDbSettings>()).SingleInstance();
@@ -67,28 +72,28 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterInstance(generalSettings).SingleInstance();
                 builder.RegisterInstance(AutoMapperConfig.InitializeMapper());
                 builder.RegisterModule<MongoDbModule>();
-                builder.RegisterType<MongoDbInitializer>().As<IDatabaseInitializer>();
-                builder.RegisterType<DatabaseSeeder>().As<IDatabaseSeeder>();
-                builder.RegisterType<RemarkRepository>().As<IRemarkRepository>();
-                builder.RegisterType<CategoryRepository>().As<ICategoryRepository>();
-                builder.RegisterType<LocalizedResourceRepository>().As<ILocalizedResourceRepository>();
-                builder.RegisterType<TagRepository>().As<ITagRepository>();
-                builder.RegisterType<UserRepository>().As<IUserRepository>();
-                builder.RegisterType<GroupRepository>().As<IGroupRepository>();
-                builder.RegisterType<ReportRepository>().As<IReportRepository>();
-                builder.RegisterType<LocalizedResourceService>().As<ILocalizedResourceService>();
-                builder.RegisterType<RemarkService>().As<IRemarkService>();
-                builder.RegisterType<RemarkStateService>().As<IRemarkStateService>();
-                builder.RegisterType<RemarkPhotoService>().As<IRemarkPhotoService>();
-                builder.RegisterType<UserService>().As<IUserService>();
-                builder.RegisterType<SocialMediaService>().As<ISocialMediaService>();
-                builder.RegisterType<RemarkCommentService>().As<IRemarkCommentService>();
-                builder.RegisterType<RemarkActionService>().As<IRemarkActionService>();
-                builder.RegisterType<GroupService>().As<IGroupService>();
-                builder.RegisterType<ReportService>().As<IReportService>();
-                builder.RegisterType<AddCommentPolicy>().As<IAddCommentPolicy>();
-                builder.RegisterType<CreateRemarkPolicy>().As<ICreateRemarkPolicy>();
-                builder.RegisterType<ProcessRemarkPolicy>().As<IProcessRemarkPolicy>();
+                builder.RegisterType<MongoDbInitializer>().As<IDatabaseInitializer>().InstancePerLifetimeScope();
+                builder.RegisterType<DatabaseSeeder>().As<IDatabaseSeeder>().InstancePerLifetimeScope();
+                builder.RegisterType<RemarkRepository>().As<IRemarkRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<CategoryRepository>().As<ICategoryRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<LocalizedResourceRepository>().As<ILocalizedResourceRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<TagRepository>().As<ITagRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<GroupRepository>().As<IGroupRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<ReportRepository>().As<IReportRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<LocalizedResourceService>().As<ILocalizedResourceService>().InstancePerLifetimeScope();
+                builder.RegisterType<RemarkService>().As<IRemarkService>().InstancePerLifetimeScope();
+                builder.RegisterType<RemarkStateService>().As<IRemarkStateService>().InstancePerLifetimeScope();
+                builder.RegisterType<RemarkPhotoService>().As<IRemarkPhotoService>().InstancePerLifetimeScope();
+                builder.RegisterType<UserService>().As<IUserService>().InstancePerLifetimeScope();
+                builder.RegisterType<SocialMediaService>().As<ISocialMediaService>().InstancePerLifetimeScope();
+                builder.RegisterType<RemarkCommentService>().As<IRemarkCommentService>().InstancePerLifetimeScope();
+                builder.RegisterType<RemarkActionService>().As<IRemarkActionService>().InstancePerLifetimeScope();
+                builder.RegisterType<GroupService>().As<IGroupService>().InstancePerLifetimeScope();
+                builder.RegisterType<ReportService>().As<IReportService>().InstancePerLifetimeScope();
+                builder.RegisterType<AddCommentPolicy>().As<IAddCommentPolicy>().InstancePerLifetimeScope();
+                builder.RegisterType<CreateRemarkPolicy>().As<ICreateRemarkPolicy>().InstancePerLifetimeScope();
+                builder.RegisterType<ProcessRemarkPolicy>().As<IProcessRemarkPolicy>().InstancePerLifetimeScope();
                 builder.RegisterType<UniqueNumberGenerator>().As<IUniqueNumberGenerator>().SingleInstance();
                 builder.RegisterInstance(_configuration.GetSettings<ExceptionlessSettings>()).SingleInstance();
                 builder.RegisterType<ExceptionlessExceptionHandler>().As<IExceptionHandler>().SingleInstance();
@@ -99,8 +104,8 @@ namespace Collectively.Services.Remarks.Framework
                 RegisterResourceFactory(builder);
 
                 var assembly = typeof(Startup).GetTypeInfo().Assembly;
-                builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(IEventHandler<>));
-                builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(ICommandHandler<>));
+                builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(IEventHandler<>)).InstancePerLifetimeScope();
+                builder.RegisterAssemblyTypes(assembly).AsClosedTypesOf(typeof(ICommandHandler<>)).InstancePerLifetimeScope();
                 SecurityContainer.Register(builder, _configuration);
                 RabbitMqContainer.Register(builder, _configuration.GetSettings<RawRabbitConfiguration>());
             });

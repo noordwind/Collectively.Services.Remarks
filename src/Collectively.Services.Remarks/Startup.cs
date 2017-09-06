@@ -18,7 +18,7 @@ namespace Collectively.Services.Remarks
     {
         public string EnvironmentName {get;set;}
         public IConfiguration Configuration { get; set; }
-        public IContainer ApplicationContainer { get; set; }
+        public IServiceCollection Services { get; set; }
 
         public Startup(IHostingEnvironment env)
         {
@@ -37,14 +37,12 @@ namespace Collectively.Services.Remarks
             Configuration = builder.Build();
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddSerilog(Configuration);
             services.AddWebEncoders();
             services.AddCors();
-            ApplicationContainer = GetServiceContainer(services);
-
-            return new AutofacServiceProvider(ApplicationContainer);
+            Services = services;
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -54,15 +52,7 @@ namespace Collectively.Services.Remarks
 	            .AllowAnyMethod()
 	            .AllowAnyOrigin()
 	            .AllowCredentials());
-            app.UseOwin().UseNancy(x => x.Bootstrapper = new Bootstrapper(Configuration));
-        }
-
-        protected static IContainer GetServiceContainer(IEnumerable<ServiceDescriptor> services)
-        {
-            var builder = new ContainerBuilder();
-            builder.Populate(services);
-
-            return builder.Build();
+            app.UseOwin().UseNancy(x => x.Bootstrapper = new Bootstrapper(Configuration, Services));
         }
     }
 }
