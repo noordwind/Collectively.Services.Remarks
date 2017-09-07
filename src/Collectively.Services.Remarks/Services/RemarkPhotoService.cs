@@ -19,20 +19,18 @@ namespace Collectively.Services.Remarks.Services
         private readonly IRemarkRepository _remarkRepository;
         private readonly IUserRepository _userRepository;
         private readonly IFileHandler _fileHandler;
-        private readonly IImageService _imageService;
         private readonly IUniqueNumberGenerator _uniqueNumberGenerator;
         private readonly GeneralSettings _settings;
 
         public RemarkPhotoService(IRemarkRepository remarkRepository, 
             IUserRepository userRepository,
-            IFileHandler fileHandler, IImageService imageService,
+            IFileHandler fileHandler,
             IUniqueNumberGenerator uniqueNumberGenerator,
             GeneralSettings settings)
         {
             _remarkRepository = remarkRepository;
             _userRepository = userRepository;
             _fileHandler = fileHandler;
-            _imageService = imageService;
             _uniqueNumberGenerator = uniqueNumberGenerator;
             _settings = settings;
         }
@@ -73,34 +71,16 @@ namespace Collectively.Services.Remarks.Services
         private async Task UploadImagesWithDifferentSizesAsync(Remark remark, RemarkUser user, File originalPhoto, string metadata = null)
         {
             var extension = originalPhoto.Name.Split('.').Last();
-            var photos = _imageService.ProcessImage(originalPhoto);
             var uniqueNumber = _uniqueNumberGenerator.Generate();
             var groupId = Guid.NewGuid();
-            var tasks = new List<Task>();
-            //Rethink if it's a good solution...
-            // var processingPhotos = photos.Select(x => RemarkPhoto.AsProcessing(groupId, user));
-            // foreach (var photo in processingPhotos)
-            // {
-            //     remark.AddPhoto(photo);
-            // }
-            // await _remarkRepository.UpdateAsync(remark);
-            // foreach (var photo in processingPhotos)
-            // {
-            //     remark.RemovePhoto(photo.Name);
-            // }
-            foreach (var photo in photos)
+            var size = "big";
+            var fileName = metadata == null 
+                ? $"{remark.Id:N}_{size}_{uniqueNumber}.{extension}"
+                : $"{remark.Id:N}_{size}_{metadata}_{uniqueNumber}.{extension}";
+            await _fileHandler.UploadAsync(originalPhoto, fileName, url =>
             {
-                var size = photo.Key;
-                var fileName = metadata == null 
-                    ? $"{remark.Id:N}_{size}_{uniqueNumber}.{extension}"
-                    : $"{remark.Id:N}_{size}_{metadata}_{uniqueNumber}.{extension}";
-                var task = _fileHandler.UploadAsync(photo.Value, fileName, url =>
-                {
-                    remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, size, url, user, metadata));
-                });
-                tasks.Add(task);
-            }
-            await Task.WhenAll(tasks);
+                remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, size, url, user, metadata));
+            });
         }
 
         public async Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid remarkId, params Guid[] groupIds)
