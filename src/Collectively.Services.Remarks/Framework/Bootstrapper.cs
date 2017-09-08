@@ -114,6 +114,7 @@ namespace Collectively.Services.Remarks.Framework
 
         protected override void RequestStartup(ILifetimeScope container, IPipelines pipelines, NancyContext context)
         {
+            pipelines.SetupTokenAuthentication(container.Resolve<IJwtTokenHandler>());
             pipelines.OnError.AddItemToEndOfPipeline((ctx, ex) =>
             {
                 _exceptionHandler.Handle(ex, ctx.ToExceptionData(),
@@ -147,7 +148,6 @@ namespace Collectively.Services.Remarks.Framework
                 ctx.Response.Headers.Add("Access-Control-Allow-Headers",
                     "Authorization, Origin, X-Requested-With, Content-Type, Accept");
             };
-            pipelines.SetupTokenAuthentication(container);
             _exceptionHandler = container.Resolve<IExceptionHandler>();
             Logger.Information("Collectively.Services.Remarks API has started.");
         }
