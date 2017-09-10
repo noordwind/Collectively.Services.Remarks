@@ -8,7 +8,7 @@ using Collectively.Messages.Commands;
 using Collectively.Messages.Events;
 using Collectively.Common.Exceptionless;
 using Collectively.Common.Mongo;
-using Collectively.Common.Nancy;
+using Collectively.Common.NancyFx;
 using Collectively.Common.RabbitMq;
 using Collectively.Common.Security;
 using Collectively.Common.Services;
