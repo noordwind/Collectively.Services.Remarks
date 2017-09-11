@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Collectively.Common.Domain;
 using Collectively.Common.Files;
@@ -21,6 +22,7 @@ namespace Collectively.Services.Remarks.Services
         private readonly IFileHandler _fileHandler;
         private readonly IUniqueNumberGenerator _uniqueNumberGenerator;
         private readonly GeneralSettings _settings;
+        private readonly HttpClient _httpClient = new HttpClient();
 
         public RemarkPhotoService(IRemarkRepository remarkRepository, 
             IUserRepository userRepository,
@@ -75,13 +77,29 @@ namespace Collectively.Services.Remarks.Services
             var groupId = Guid.NewGuid();
             var size = "big";
             var fileName = metadata == null 
-                ? $"{remark.Id:N}_{size}_{uniqueNumber}.{extension}"
-                : $"{remark.Id:N}_{size}_{metadata}_{uniqueNumber}.{extension}";
-            await _fileHandler.UploadAsync(originalPhoto, fileName, url =>
+                ? $"remark_{remark.Id:N}_{uniqueNumber}.{extension}"
+                : $"remark_{remark.Id:N}_{metadata}_{uniqueNumber}.{extension}";
+            var baseImageUrl = "";
+            await _fileHandler.UploadAsync(originalPhoto, fileName, (baseUrl, fullUrl) =>
             {
-                remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, size, url, user, metadata));
+                baseImageUrl = baseUrl;
+                remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, size, fullUrl, user, metadata));
+            });
+            var smallImageUrl = $"{baseImageUrl}/200x200/{fileName}";
+            var mediumImageUrl = $"{baseImageUrl}/600x600/{fileName}";
+            remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, "small", smallImageUrl, user, metadata));
+            remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, "medium", mediumImageUrl, user, metadata));
+            
+            //Trigger resizing images using AWS Lambda, so they shall be accessible with https.
+            await Task.WhenAll(new List<Task>
+            {
+                TriggerImageResizeAsync(smallImageUrl),
+                TriggerImageResizeAsync(mediumImageUrl)
             });
         }
+
+        private async Task TriggerImageResizeAsync(string url) 
+        => await _httpClient.GetAsync($"{url.Replace("https", "http").Replace(".s3.", ".s3-website.")}");
 
         public async Task<Maybe<IEnumerable<string>>> GetPhotosForGroupsAsync(Guid remarkId, params Guid[] groupIds)
         {

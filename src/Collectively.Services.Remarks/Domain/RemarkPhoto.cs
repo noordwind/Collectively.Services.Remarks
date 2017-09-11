@@ -71,8 +71,8 @@ namespace Collectively.Services.Remarks.Domain
             RemarkUser user, string metadata = null)
             => new RemarkPhoto(groupId, name, size, url, user, metadata);
 
-        protected override bool EqualsCore(RemarkPhoto other) => Name.Equals(other.Name);
+        protected override bool EqualsCore(RemarkPhoto other) => Url.Equals(other.Url);
 
-        protected override int GetHashCodeCore() => Name.GetHashCode();
+        protected override int GetHashCodeCore() => Url.GetHashCode();
     }
 }
