@@ -85,10 +85,12 @@ namespace Collectively.Services.Remarks.Services
                 baseImageUrl = baseUrl;
                 remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, size, fullUrl, user, metadata));
             });
-            var smallImageUrl = $"{baseImageUrl}/200x200/{fileName}";
-            var mediumImageUrl = $"{baseImageUrl}/600x600/{fileName}";
-            remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, "small", smallImageUrl, user, metadata));
-            remark.AddPhoto(RemarkPhoto.Create(groupId, fileName, "medium", mediumImageUrl, user, metadata));
+            var smallImageFileName = $"200x200/{fileName}";
+            var mediumImageFileName = $"600x600/{fileName}";
+            var smallImageUrl = $"{baseImageUrl}/{smallImageFileName}";
+            var mediumImageUrl = $"{baseImageUrl}/{mediumImageFileName}";
+            remark.AddPhoto(RemarkPhoto.Create(groupId, smallImageFileName, "small", smallImageUrl, user, metadata));
+            remark.AddPhoto(RemarkPhoto.Create(groupId, mediumImageFileName, "medium", mediumImageUrl, user, metadata));
             
             //Trigger resizing images using AWS Lambda, so they shall be accessible with https.
             await Task.WhenAll(new List<Task>
@@ -97,7 +99,6 @@ namespace Collectively.Services.Remarks.Services
                 TriggerImageResizeAsync(mediumImageUrl)
             });
         }
-
         private async Task TriggerImageResizeAsync(string url) 
         => await _httpClient.GetAsync($"{url.Replace("https", "http").Replace(".s3.", ".s3-website.")}");
 
