@@ -74,7 +74,8 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task CreateAsync(Guid id, string userId, string category, 
             Location location, string description = null, IEnumerable<string> tags = null,
-            Guid? groupId = null)
+            Guid? groupId = null, decimal? price = null, string currency = null,
+            DateTime? startDate = null, DateTime? endDate = null)
         {
             Logger.Debug($"Create remark, id:{id}, userId: {userId}, category: {category}, " +
                          $"latitude: {location.Latitude}, longitude: {location.Longitude}.");
@@ -87,11 +88,15 @@ namespace Collectively.Services.Remarks.Services
             }
             var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
             Group group = null;
-            if(groupId != null)
+            if (groupId != null)
             {
                 group = await _groupRepository.GetOrFailAsync(groupId.Value);
             }
             var remark = new Remark(id, user, remarkCategory.Value, location, encodedDescription, group);
+            if (price.HasValue)
+            {
+                remark.SetOffering(Offering.Create(price.Value, currency, startDate, endDate));
+            }
             if (tags == null || !tags.Any())
             {
                 await _remarkRepository.AddAsync(remark);
@@ -101,7 +106,7 @@ namespace Collectively.Services.Remarks.Services
             {
                 Results = 1000
             });
-            if(availableTags.HasValue)
+            if (availableTags.HasValue)
             {
                 var selectedTags = availableTags.Value.Items
                                     .Select(x => x.Name)

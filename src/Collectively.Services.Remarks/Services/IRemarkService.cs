@@ -16,7 +16,8 @@ namespace Collectively.Services.Remarks.Services
         Task ValidateEditorAccessOrFailAsync(Guid remarkId, string userId);
         Task CreateAsync(Guid id, string userId, string category,
             Location location, string description = null, IEnumerable<string> tags = null,
-            Guid? groupId = null);
+            Guid? groupId = null, decimal? price = null, string currency = null,
+            DateTime? startDate = null, DateTime? endDate = null);
         Task UpdateUserNamesAsync(string userId, string name);
         Task DeleteAsync(Guid id);
         Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt);

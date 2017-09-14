@@ -11,6 +11,9 @@ namespace Collectively.Services.Remarks
         public static string RemarkLocationNotProvided => "remark_location_not_provided";
         public static string RemarkStateNotProvided => "remark_state_not_provided";
         public static string CommentUserNotProvided => "comment_user_not_provided";
+        public static string OfferingNotProvided => "offering_not_provided";
+        public static string OfferingProposalAlreadySent => "offering_proposal_already_sent";
+        public static string OfferingProposalAlreadyUpdated => "offering_proposal_already_updated";
         public static string TooManyComments => "comment_not_found";
         public static string EmptyComment => "empty_comment";
         public static string CommentNotFound => "comment_not_found";

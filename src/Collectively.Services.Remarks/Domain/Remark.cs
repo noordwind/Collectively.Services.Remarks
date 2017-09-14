@@ -21,6 +21,7 @@ namespace Collectively.Services.Remarks.Domain
         public RemarkState State { get; protected set; }
         public string Description { get; protected set; }
         public RemarkGroup Group { get; protected set; }
+        public Offering Offering { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
         public bool Resolved => State?.State == RemarkState.Names.Resolved;
 
@@ -203,6 +204,16 @@ namespace Collectively.Services.Remarks.Domain
         public void RemoveUserFavorite(User user)
         {
             _userFavorites.Remove(user.UserId);
+        }
+
+        public void SetOffering(Offering offering)
+        {
+            if (offering == null)
+            {
+                throw new DomainException(OperationCodes.OfferingNotProvided,
+                    "Offering can not be null.");
+            }
+            Offering = offering;
         }
 
         public void Participate(User user, string description)

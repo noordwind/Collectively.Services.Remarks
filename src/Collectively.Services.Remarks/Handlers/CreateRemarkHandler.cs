@@ -82,8 +82,16 @@ namespace Collectively.Services.Remarks.Handlers
                                  $"longitude:  {command.Longitude}.");
 
                     var location = Domain.Location.Create(command.Latitude, command.Longitude, address);
+                    var offering = command.Offering;
+                    if (offering != null)
+                    {
+                        Logger.Information($"Offering for remark: '{command.RemarkId}' " + 
+                            $"with price: '{offering.Price} {offering.Currency}'.");
+                    }
+
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
-                            location, command.Description, command.Tags, command.GroupId);
+                            location, command.Description, command.Tags, command.GroupId,
+                            offering?.Price, offering?.Currency, offering?.StartDate, offering?.EndDate);
                 })
                 .OnSuccess(async () =>
                 {

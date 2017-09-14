@@ -17,5 +17,6 @@ namespace Collectively.Services.Remarks.Dto
         public bool Resolved { get; set; }
         public int CommentsCount { get; set; }
         public int ParticipantsCount { get; set; }
+        public OfferingDto Offering { get; set; }
     }
 }

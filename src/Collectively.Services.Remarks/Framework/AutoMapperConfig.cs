@@ -32,6 +32,8 @@ namespace Collectively.Services.Remarks.Framework
                 cfg.CreateMap<Category, RemarkCategoryDto>();
                 cfg.CreateMap<Tag, TagDto>();
                 cfg.CreateMap<Vote, VoteDto>();
+                cfg.CreateMap<Offering, OfferingDto>();
+                cfg.CreateMap<OfferingProposal, OfferingProposalDto>();
             });
 
             return config.CreateMapper();
