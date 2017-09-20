@@ -23,6 +23,7 @@ namespace Collectively.Services.Remarks.Domain
         public RemarkGroup Group { get; protected set; }
         public Offering Offering { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
+        public DateTime UpdatedAt { get; protected set; }
         public bool Resolved => State?.State == RemarkState.Names.Resolved;
 
         public IEnumerable<RemarkPhoto> Photos
@@ -76,6 +77,7 @@ namespace Collectively.Services.Remarks.Domain
             SetState(RemarkState.New(Author, location, description));
             Group = group == null ? null : RemarkGroup.Create(group);
             CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void SetAuthor(User author)
@@ -86,6 +88,7 @@ namespace Collectively.Services.Remarks.Domain
                     "Remark author can not be null.");
             }
             Author = RemarkUser.Create(author);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void SetCategory(Category category)
@@ -96,6 +99,7 @@ namespace Collectively.Services.Remarks.Domain
                     "Remark category can not be null.");
             }
             Category = RemarkCategory.Create(category);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void SetLocation(Location location)
@@ -106,6 +110,7 @@ namespace Collectively.Services.Remarks.Domain
                     "Remark location can not be null.");
             }
             Location = location;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void AddPhoto(RemarkPhoto photo)
@@ -115,6 +120,7 @@ namespace Collectively.Services.Remarks.Domain
                 return;
             }
             _photos.Add(photo);
+            UpdatedAt = DateTime.UtcNow;
         }
         
         public Maybe<RemarkPhoto> GetPhoto(string name) => Photos.FirstOrDefault(x => x.Name == name);
@@ -127,16 +133,19 @@ namespace Collectively.Services.Remarks.Domain
                 return;
             }
             _photos.Remove(photo.Value);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void AddTag(string tag)
         {
             _tags.Add(tag);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void RemoveTag(string tag)
         {
             _tags.Remove(tag);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void SetDescription(string description)
@@ -144,6 +153,7 @@ namespace Collectively.Services.Remarks.Domain
             if (description.Empty())
             {
                 Description = string.Empty;
+                UpdatedAt = DateTime.UtcNow;
 
                 return;
             }
@@ -157,6 +167,7 @@ namespace Collectively.Services.Remarks.Domain
                 return;
             }
             Description = description;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void AddComment(Guid id, User user, string text)
@@ -167,18 +178,21 @@ namespace Collectively.Services.Remarks.Domain
                     $"Limit of 1000 remark comments was reached.");
             }
             _comments.Add(new Comment(id, user, text));
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void EditComment(Guid id,  string text)
         {
             var comment = GetCommentOrFail(id);
             comment.Edit(text);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void RemoveComment(Guid id)
         {
             var comment = GetCommentOrFail(id);
             _comments.Remove(comment);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public Comment GetCommentOrFail(Guid id)
@@ -214,6 +228,7 @@ namespace Collectively.Services.Remarks.Domain
                     "Offering can not be null.");
             }
             Offering = offering;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void Participate(User user, string description)
@@ -225,6 +240,7 @@ namespace Collectively.Services.Remarks.Domain
                     $"User: '{user.UserId}' already participates in a remark: '{Id}'.");
             }
             _participants.Add(Participant.Create(user, description));
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void CancelParticipation(string userId)
@@ -235,6 +251,7 @@ namespace Collectively.Services.Remarks.Domain
                 return;
             }
             _participants.Remove(participant.Value);
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public Maybe<Participant> GetParticipant(string userId)
@@ -325,6 +342,7 @@ namespace Collectively.Services.Remarks.Domain
             }
             _states.Add(state);
             State = state;
+            UpdatedAt = DateTime.UtcNow;
         }
     }
 }
