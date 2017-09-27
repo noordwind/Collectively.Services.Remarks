@@ -101,13 +101,14 @@ namespace Collectively.Services.Remarks.Services
 
         private void ValidateRemarkMemberCriteriaOrFail(ISet<string> criteria, string role, string operation)
         {
-            var roleIndex = RemarkMemberCriteria.IndexOf(role);
-            if(!criteria.Any() || roleIndex < 0)
+            var memberRoleIndex = RemarkMemberCriteria.IndexOf(role);
+            if(!criteria.Any() || memberRoleIndex < 0)
             {
                 throw new ServiceException(OperationCodes.UnknownGroupMemberCriteria, 
                     $"Unknown group member criteria: '{role}', required: '{criteria}' for: '{operation}'.");                
             }
-            if(criteria.Contains(role))
+            var requiredRoleIndex = RemarkMemberCriteria.IndexOf(criteria.First());
+            if(memberRoleIndex >= requiredRoleIndex)
             {
                 return;
             }
