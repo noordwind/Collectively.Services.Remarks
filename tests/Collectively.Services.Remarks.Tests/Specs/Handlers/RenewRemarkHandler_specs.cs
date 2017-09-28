@@ -19,6 +19,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             CommandHandler = new RenewRemarkHandler(Handler,
                 BusClientMock.Object, 
                 RemarkServiceMock.Object,
+                GroupServiceMock.Object,
                 RemarkStateServiceMock.Object,
                 FileResolverMock.Object,
                 FileValidatorMock.Object,

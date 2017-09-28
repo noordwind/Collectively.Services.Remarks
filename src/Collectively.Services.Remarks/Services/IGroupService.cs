@@ -11,6 +11,7 @@ namespace Collectively.Services.Remarks.Services
         Task ValidateIfRemarkCanBeCreatedOrFailAsync(Guid groupId, string userId, 
             double latitude, double longitude);
         Task ValidateIfRemarkCanBeResolvedOrFailAsync(Guid groupId, string userId);
+        Task ValidateIfRemarkCanBeRenewedOrFailAsync(Guid groupId, string userId);
         Task ValidateIfRemarkCanBeDeletedOrFailAsync(Guid groupId, string userId, Guid remarkId);
         Task ValidateIfRemarkCommentCanBeDeletedOrFailAsync(Guid groupId, string userId, Guid remarkId, Guid commentId);
         Task AddMemberAsync(Guid groupId, string memberId, string role);

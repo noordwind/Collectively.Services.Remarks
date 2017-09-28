@@ -18,6 +18,7 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IHandler _handler;
         private readonly IBusClient _bus;
         private readonly IRemarkService _remarkService;
+        private readonly IGroupService _groupService;
         private readonly IRemarkStateService _remarkStateService;
         private readonly IFileResolver _fileResolver;
         private readonly IFileValidator _fileValidator;
@@ -26,6 +27,7 @@ namespace Collectively.Services.Remarks.Handlers
         public RenewRemarkHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
+            IGroupService groupService,
             IRemarkStateService remarkStateService,
             IFileResolver fileResolver,
             IFileValidator fileValidator,
@@ -34,6 +36,7 @@ namespace Collectively.Services.Remarks.Handlers
             _handler = handler;
             _bus = bus;
             _remarkService = remarkService;
+            _groupService = groupService;
             _remarkStateService = remarkStateService;
             _fileResolver = fileResolver;
             _fileValidator = fileValidator;
@@ -42,7 +45,17 @@ namespace Collectively.Services.Remarks.Handlers
 
         public async Task HandleAsync(RenewRemark command)
         {
-            await _handler.Run(async () =>
+            await _handler
+                .Validate(async () => 
+                {
+                    var remark = await _remarkService.GetAsync(command.RemarkId);
+                    if(remark.Value.Group == null)
+                    {
+                        return;
+                    }
+                    await _groupService.ValidateIfRemarkCanBeRenewedOrFailAsync(remark.Value.Group.Id, command.UserId);
+                })
+                .Run(async () =>
                 {
                     Location location = null;
                     if (command.Latitude != 0 && command.Longitude != 0)

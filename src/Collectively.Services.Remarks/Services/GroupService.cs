@@ -70,6 +70,17 @@ namespace Collectively.Services.Remarks.Services
             ValidateRemarkCriteriaOrFail(group, user, "remark_resolve");
         }
 
+        public async Task ValidateIfRemarkCanBeRenewedOrFailAsync(Guid groupId, string userId)
+        {
+            if(groupId == Guid.Empty)
+            {
+                return;
+            }
+            var group = await _groupRepository.GetOrFailAsync(groupId);
+            var user = await _userRepository.GetOrFailAsync(userId);
+            ValidateRemarkCriteriaOrFail(group, user, "remark_renew");
+        }
+
         private void ValidateRemarkCriteriaOrFail(Group group, User user, string operation)
         {
             var criteria = AreDefaultRemarkCriteriaMet(group, user, operation);
