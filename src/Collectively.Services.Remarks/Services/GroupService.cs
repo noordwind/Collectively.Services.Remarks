@@ -49,36 +49,37 @@ namespace Collectively.Services.Remarks.Services
         public async Task ValidateIfRemarkCanBeCreatedOrFailAsync(Guid groupId, string userId,
             double latitude, double longitude)
         {
-            if(groupId == Guid.Empty)
+            var groupAndUser = await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_create");
+            if (groupAndUser.group == null)
             {
                 return;
             }
-            var group = await _groupRepository.GetOrFailAsync(groupId);
-            var user = await _userRepository.GetOrFailAsync(userId);
-            ValidateRemarkCriteriaOrFail(group, user, "remark_create");
-            await ValidateLocationOrFailAsync(group, latitude, longitude);
+            await ValidateLocationOrFailAsync(groupAndUser.group, latitude, longitude);
         }
 
         public async Task ValidateIfRemarkCanBeResolvedOrFailAsync(Guid groupId, string userId)
-        {
-            if(groupId == Guid.Empty)
-            {
-                return;
-            }
-            var group = await _groupRepository.GetOrFailAsync(groupId);
-            var user = await _userRepository.GetOrFailAsync(userId);
-            ValidateRemarkCriteriaOrFail(group, user, "remark_resolve");
-        }
+            => await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_resolve");
 
         public async Task ValidateIfRemarkCanBeRenewedOrFailAsync(Guid groupId, string userId)
+            => await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_renew");
+
+        public async Task ValidateIfRemarkCanBeProcessedOrFailAsync(Guid groupId, string userId)
+            => await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_process");
+
+        public async Task ValidateIfRemarkCanBeCanceledOrFailAsync(Guid groupId, string userId)
+            => await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_cancel");
+
+        private async Task<(Group group,User user)> GetGroupAndUserAndValidateDefaultCriteriaAsync(Guid groupId, string userId, string criteria)
         {
             if(groupId == Guid.Empty)
             {
-                return;
+                return (null, null);
             }
             var group = await _groupRepository.GetOrFailAsync(groupId);
-            var user = await _userRepository.GetOrFailAsync(userId);
-            ValidateRemarkCriteriaOrFail(group, user, "remark_renew");
+            var user = await _userRepository.GetOrFailAsync(userId);  
+            ValidateRemarkCriteriaOrFail(group, user, criteria);
+
+            return (group, user);          
         }
 
         private void ValidateRemarkCriteriaOrFail(Group group, User user, string operation)
