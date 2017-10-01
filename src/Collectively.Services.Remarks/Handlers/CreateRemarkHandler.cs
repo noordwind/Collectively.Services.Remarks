@@ -70,7 +70,8 @@ namespace Collectively.Services.Remarks.Handlers
                     var locations = await _locationService.GetAsync(command.Latitude, command.Longitude);
                     if (locations.HasNoValue || locations.Value.Results == null || !locations.Value.Results.Any())
                     {
-                        throw new ServiceException($"Address was not found for remark with id: '{command.RemarkId}' " +
+                        throw new ServiceException(OperationCodes.AddressNotFound, 
+                            $"Address was not found for remark with id: '{command.RemarkId}' " +
                             $"latitude: {command.Latitude}, longitude:  {command.Longitude}.");
                     }
                     address = locations.Value.Results.First().FormattedAddress;

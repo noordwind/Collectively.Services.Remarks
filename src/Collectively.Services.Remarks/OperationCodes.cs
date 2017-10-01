@@ -42,6 +42,7 @@ namespace Collectively.Services.Remarks
         public static string CannotSetStateTooOften => "cannot_set_state_too_often";
         public static string CannotRemoveNonProcessingState => "cannot_remove_non_processing_state";
         public static string UserNotAllowedToRemoveState => "user_not_allowed_to_remove_state";
+        public static string AddressNotFound => "address_not_found";
         public static string StateNotFound => "state_not_found";
         public static string StateRemoved => "state_removed";
         public static string GroupNotFound => "group_not_found";
