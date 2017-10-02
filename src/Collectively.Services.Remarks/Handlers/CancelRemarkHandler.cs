@@ -53,7 +53,7 @@ namespace Collectively.Services.Remarks.Handlers
                     {
                         return;
                     }
-                    await _groupService.ValidateIfRemarkCanBeProcessedOrFailAsync(remark.Value.Group.Id, command.UserId);
+                    await _groupService.ValidateIfRemarkCanBeCanceledOrFailAsync(remark.Value.Group.Id, command.UserId);
                 })             
                 .Run(async () =>
                 {
