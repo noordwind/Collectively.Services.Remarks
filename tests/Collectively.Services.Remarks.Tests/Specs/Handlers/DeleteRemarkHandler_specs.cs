@@ -20,6 +20,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         protected static DeleteRemarkHandler DeleteRemarkHandler;
         protected static IHandler Handler;
         protected static Mock<IRemarkService> RemarkServiceMock;
+        protected static Mock<IGroupService> GroupServiceMock;
         protected static Mock<IExceptionHandler> ExceptionHandlerMock;
         protected static Mock<IResourceFactory> ResourceFactoryMock;
         protected static DeleteRemark Command;
@@ -31,6 +32,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             ExceptionHandlerMock = new Mock<IExceptionHandler>();
             Handler = new Handler(ExceptionHandlerMock.Object);
             RemarkServiceMock = new Mock<IRemarkService>();
+            GroupServiceMock = new Mock<IGroupService>();
             ResourceFactoryMock = new Mock<IResourceFactory>();
             Command = new DeleteRemark
             {
@@ -46,7 +48,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
                 RemarkId = Guid.NewGuid()
             };
             DeleteRemarkHandler = new DeleteRemarkHandler(Handler, BusClientMock.Object, 
-                RemarkServiceMock.Object, ResourceFactoryMock.Object);
+                RemarkServiceMock.Object, GroupServiceMock.Object, ResourceFactoryMock.Object);
         }
     }
 
