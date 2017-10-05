@@ -30,7 +30,8 @@ namespace Collectively.Services.Remarks.Domain
         }
 
         protected RemarkState(string state, RemarkUser user, 
-            string description = null, Location location = null, RemarkPhoto photo = null)
+            string description = null, Location location = null, 
+            RemarkPhoto photo = null, DateTime? createdAt = null)
         {
             if (state.Empty())
             {
@@ -51,7 +52,7 @@ namespace Collectively.Services.Remarks.Domain
             Description = description?.Trim() ?? string.Empty;
             Location = location;
             Photo = photo;
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = createdAt.HasValue ? createdAt.Value : DateTime.UtcNow;
         }
 
         public void Remove()
@@ -59,19 +60,19 @@ namespace Collectively.Services.Remarks.Domain
             if (Removed)
             {
                 throw new DomainException(OperationCodes.StateRemoved,
-                    $"State: '{Id} was removed at {RemovedAt}");
+                    $"State: '{Id}' was removed at {RemovedAt}.");
             }
             if (State != Names.Processing)
             {
                 throw new DomainException(OperationCodes.CannotRemoveNonProcessingState, 
-                    "Cannot remove state different than processing");
+                    "Cannot remove state different than processing.");
             }
             RemovedAt = DateTime.UtcNow;
         }
 
         public static RemarkState New(RemarkUser user, Location location, 
-            string description = null) 
-            => new RemarkState(Names.New, user, description, location);
+            string description = null, DateTime? createdAt = null) 
+            => new RemarkState(Names.New, user, description, location, createdAt: createdAt);
 
         public static RemarkState Processing(RemarkUser user, 
             string description = null, RemarkPhoto photo = null) 

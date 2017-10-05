@@ -67,7 +67,7 @@ namespace Collectively.Services.Remarks.Services
             if (remark.Author.UserId != user.UserId)
             {
                 throw new ServiceException(OperationCodes.UserNotAllowedToModifyRemark,
-                    $"User with id: '{userId}' is not allowed" +
+                    $"User with id: '{userId}' is not allowed " +
                     $"to modify the remark with id: '{remarkId}'.");
             }
         }
@@ -84,7 +84,7 @@ namespace Collectively.Services.Remarks.Services
             if (remarkCategory.HasNoValue)
             {
                 throw new ServiceException(OperationCodes.CategoryNotFound,
-                    $"Category: '{userId}' does not exist!");
+                    $"Category: '{category}' does not exist!");
             }
             var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
             Group group = null;
@@ -118,6 +118,40 @@ namespace Collectively.Services.Remarks.Services
                 }
             }
             await _remarkRepository.AddAsync(remark);
+        }
+
+        public async Task EditAsync(Guid remarkId, string userId, Guid? groupId, 
+            string category, string description, Location location)
+        {
+            Logger.Debug($"Editing remark with id: '{remarkId}'.");
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+            var user = await _userRepository.GetOrFailAsync(userId);
+            var state = remark.States.First();
+            if (groupId != null)
+            {
+                var group = await _groupRepository.GetOrFailAsync(groupId.Value);
+                remark.SetGroup(group);
+            }
+            if (category.NotEmpty())
+            {
+                var remarkCategory = await _categoryRepository.GetByNameAsync(category);
+                if (remarkCategory.HasNoValue)
+                {
+                    throw new ServiceException(OperationCodes.CategoryNotFound,
+                        $"Category: '{category}' does not exist!");
+                }
+                remark.SetCategory(remarkCategory.Value);
+            }
+            if (description.NotEmpty())
+            {
+                remark.SetDescription(WebUtility.HtmlEncode(description));
+            }
+            if (location != null)
+            {
+                remark.SetLocation(location);
+            }
+            remark.EditFirstState();
+            await _remarkRepository.UpdateAsync(remark);
         }
 
         public async Task UpdateUserNamesAsync(string userId, string name)

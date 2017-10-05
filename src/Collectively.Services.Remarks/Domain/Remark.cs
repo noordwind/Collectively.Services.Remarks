@@ -74,9 +74,15 @@ namespace Collectively.Services.Remarks.Domain
             SetCategory(category);
             SetLocation(location);
             SetDescription(description);
+            SetGroup(group);
             SetState(RemarkState.New(Author, location, description));
-            Group = group == null ? null : RemarkGroup.Create(group);
             CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void SetGroup(Group group)
+        {
+            Group = group == null ? null : RemarkGroup.Create(group);
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -120,6 +126,18 @@ namespace Collectively.Services.Remarks.Domain
                 return;
             }
             _photos.Add(photo);
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void EditFirstState()
+        {
+            var previousState = _states.First();
+            var currentState = RemarkState.New(previousState.User, Location, 
+                Description, createdAt: previousState.CreatedAt);
+            _states.Remove(previousState);
+            _states.Add(currentState);
+            _states = new HashSet<RemarkState>(_states.OrderBy(x => x.CreatedAt));
+            State = currentState;
             UpdatedAt = DateTime.UtcNow;
         }
         
