@@ -37,7 +37,7 @@ namespace Collectively.Services.Remarks.Services
             }
 
             var user = await _userRepository.GetOrFailAsync(userId);
-            if (user.Role == "moderator" || user.Role == "administrator")
+            if (user.Role == "moderator" || user.Role == "administrator" || user.Role == "owner")
             {
                 return;
             }

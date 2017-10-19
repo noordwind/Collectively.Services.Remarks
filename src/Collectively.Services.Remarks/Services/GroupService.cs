@@ -95,7 +95,7 @@ namespace Collectively.Services.Remarks.Services
 
         private Tuple<bool,ISet<string>> AreDefaultRemarkCriteriaMet(Group group, User user, string operation)
         {
-            if (user.Role == "moderator" || user.Role == "administrator")
+            if (user.Role == "moderator" || user.Role == "administrator" || user.Role == "owner")
             {
                 return new Tuple<bool,ISet<string>>(true, null);
             }
@@ -196,7 +196,7 @@ namespace Collectively.Services.Remarks.Services
 
         private void ValidateUserOrFail(User user)
         {
-            if (user.Role == "moderator" || user.Role == "administrator")
+            if (user.Role == "moderator" || user.Role == "administrator" || user.Role == "owner")
             {
                 return;
             }

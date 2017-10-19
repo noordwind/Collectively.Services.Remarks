@@ -60,7 +60,7 @@ namespace Collectively.Services.Remarks.Services
         {
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             var user = await _userRepository.GetOrFailAsync(userId);
-            if (user.Role == "moderator" || user.Role == "administrator")
+            if (user.Role == "moderator" || user.Role == "administrator" || user.Role == "owner")
             {
                 return;
             }
