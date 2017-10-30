@@ -95,6 +95,14 @@ namespace Collectively.Services.Remarks.Handlers
                             remarkLocation, command.Description, command.Tags, command.GroupId,
                             offering?.Price, offering?.Currency, offering?.StartDate, offering?.EndDate);
                 })
+                .OnCustomError(ex => _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
+                    command.RemarkId, command.UserId, ex.Code, ex.Message)))
+                .OnError(async (ex, logger) =>
+                {
+                    logger.Error(ex, "Error occured while creating remark.");
+                    await _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
+                        command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
+                })
                 .Next()
                 .Run(async () =>
                 {

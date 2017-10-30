@@ -251,7 +251,7 @@ namespace Collectively.Services.Remarks.Services
 
         public IEnumerable<GroupLocation> FilterGroupLocationsByTags(IEnumerable<GroupLocation> groupLocations, 
             IEnumerable<string> tags)
-            => groupLocations.Where(x => x.Tags.Any(t => tags.Contains(t)));
+            => groupLocations?.Where(x => x.Tags.Any(t => tags.Contains(t))) ?? Enumerable.Empty<GroupLocation>();
 
         public async Task AddRemarkToGroupsAsync(Guid remarkId, IEnumerable<Guid> groupIds)
             => await _groupRemarkRepository.AddRemarksAsync(remarkId, groupIds);
