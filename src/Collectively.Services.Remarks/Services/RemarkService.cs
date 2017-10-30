@@ -77,8 +77,8 @@ namespace Collectively.Services.Remarks.Services
             Guid? groupId = null, decimal? price = null, string currency = null,
             DateTime? startDate = null, DateTime? endDate = null)
         {
-            Logger.Debug($"Create remark, id:{id}, userId: {userId}, category: {category}, " +
-                         $"latitude: {location.Latitude}, longitude: {location.Longitude}.");
+            Logger.Debug($"Creating a remark, id: '{id}', user id: '{userId}', category: '{category}', " +
+                         $"latitude: '{location.Latitude}', longitude: '{location.Longitude}'.");
             var user = await _userRepository.GetOrFailAsync(userId);
             var remarkCategory = await _categoryRepository.GetByNameAsync(category);
             if (remarkCategory.HasNoValue)
@@ -97,25 +97,9 @@ namespace Collectively.Services.Remarks.Services
             {
                 remark.SetOffering(Offering.Create(price.Value, currency, startDate, endDate));
             }
-            if (tags == null || !tags.Any())
+            foreach (var tag in tags ?? Enumerable.Empty<string>())
             {
-                await _remarkRepository.AddAsync(remark);
-                return;
-            }
-            var availableTags = await _tagRepository.BrowseAsync(new BrowseTags
-            {
-                Results = 1000
-            });
-            if (availableTags.HasValue)
-            {
-                var selectedTags = availableTags.Value.Items
-                                    .Select(x => x.Name)
-                                    .Intersect(tags);
-
-                foreach (var tag in selectedTags)
-                {
-                    remark.AddTag(tag);
-                }
+                remark.AddTag(tag);
             }
             await _remarkRepository.AddAsync(remark);
         }
@@ -151,6 +135,13 @@ namespace Collectively.Services.Remarks.Services
                 remark.SetLocation(location);
             }
             remark.EditFirstState();
+            await _remarkRepository.UpdateAsync(remark);
+        }
+
+        public async Task SetAvailableGroupsAsync(Guid remarkId, IEnumerable<Guid> groups)
+        {
+            var remark = await _remarkRepository.GetOrFailAsync(remarkId);
+            remark.SetAvailableGroups(groups);
             await _remarkRepository.UpdateAsync(remark);
         }
 

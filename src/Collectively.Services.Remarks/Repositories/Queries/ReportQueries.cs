@@ -17,7 +17,7 @@ namespace Collectively.Services.Remarks.Repositories.Queries
         public static async Task<bool> ExistsAsync(this IMongoCollection<Report> reports,
             Guid remarkId, Guid? resourceId, string type, string userId)
         {
-            if(resourceId == Guid.Empty)
+            if (resourceId == Guid.Empty)
             {
                 resourceId = null;
             }
@@ -30,7 +30,7 @@ namespace Collectively.Services.Remarks.Repositories.Queries
             BrowseReports query)
         {
             var values = reports.AsQueryable();
-            if(query.Type.NotEmpty())
+            if (query.Type.NotEmpty())
             {
                 values = values.Where(x => x.Type == query.Type);
             }

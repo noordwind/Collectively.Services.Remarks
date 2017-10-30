@@ -17,7 +17,7 @@ namespace Collectively.Services.Remarks.Policies
         public async Task ValidateAsync(string userId)
         {
             var latestRemark = await _remarkRepository.GetLatestUserRemarkAsync(userId);
-            if(latestRemark.HasNoValue)
+            if (latestRemark.HasNoValue)
             {
                 return;
             }

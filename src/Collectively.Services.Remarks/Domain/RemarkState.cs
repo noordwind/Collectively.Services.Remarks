@@ -8,6 +8,7 @@ namespace Collectively.Services.Remarks.Domain
     {
         public Guid Id { get; protected set; }
         public string State { get; protected set; }
+        public string Assignee { get; protected set; }
         public RemarkUser User { get; protected set; }
         public string Description { get; protected set; }
         public Location Location { get; protected set; }
@@ -19,6 +20,8 @@ namespace Collectively.Services.Remarks.Domain
         public static class Names
         {
             public static string New => "new";
+            public static string Assigned => "assigned";
+            public static string Unassigned => "unassigned";
             public static string Processing => "processing";
             public static string Resolved => "resolved";
             public static string Renewed => "renewed";
@@ -31,7 +34,8 @@ namespace Collectively.Services.Remarks.Domain
 
         protected RemarkState(string state, RemarkUser user, 
             string description = null, Location location = null, 
-            RemarkPhoto photo = null, DateTime? createdAt = null)
+            RemarkPhoto photo = null, DateTime? createdAt = null,
+            string assignee = null)
         {
             if (state.Empty())
             {
@@ -53,6 +57,7 @@ namespace Collectively.Services.Remarks.Domain
             Location = location;
             Photo = photo;
             CreatedAt = createdAt.HasValue ? createdAt.Value : DateTime.UtcNow;
+            Assignee = assignee?.ToLowerInvariant();
         }
 
         public void Remove()
@@ -73,6 +78,18 @@ namespace Collectively.Services.Remarks.Domain
         public static RemarkState New(RemarkUser user, Location location, 
             string description = null, DateTime? createdAt = null) 
             => new RemarkState(Names.New, user, description, location, createdAt: createdAt);
+
+        public static RemarkState AssignedToGroup(RemarkUser user, Guid groupId,
+            string description = null) 
+            => new RemarkState(Names.Assigned, user, description, assignee: $"group:{groupId}");
+
+        public static RemarkState AssignedToUser(RemarkUser user, string userId,
+            string description = null) 
+            => new RemarkState(Names.Assigned, user, description, assignee: $"user:{userId}");
+
+        public static RemarkState Unassigned(RemarkUser user,
+            string description = null) 
+            => new RemarkState(Names.Unassigned, user, description);
 
         public static RemarkState Processing(RemarkUser user, 
             string description = null, RemarkPhoto photo = null) 

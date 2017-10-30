@@ -12,7 +12,7 @@ using RemarkState = Collectively.Services.Remarks.Domain.RemarkState;
 
 namespace Collectively.Services.Remarks.Handlers
 {
-    public class RenewRemarkHandler : ICommandHandler<RenewRemark>
+    public class RemoveRemarkAssignmentHandler : ICommandHandler<RemoveRemarkAssignment>
     {
         private static readonly ILogger Logger = Log.Logger;
         private readonly IHandler _handler;
@@ -20,17 +20,13 @@ namespace Collectively.Services.Remarks.Handlers
         private readonly IRemarkService _remarkService;
         private readonly IGroupService _groupService;
         private readonly IRemarkStateService _remarkStateService;
-        private readonly IFileResolver _fileResolver;
-        private readonly IFileValidator _fileValidator;
         private readonly IResourceFactory _resourceFactory;
 
-        public RenewRemarkHandler(IHandler handler,
+        public RemoveRemarkAssignmentHandler(IHandler handler,
             IBusClient bus,
             IRemarkService remarkService,
             IGroupService groupService,
             IRemarkStateService remarkStateService,
-            IFileResolver fileResolver,
-            IFileValidator fileValidator,
             IResourceFactory resourceFactory)
         {
             _handler = handler;
@@ -38,47 +34,41 @@ namespace Collectively.Services.Remarks.Handlers
             _remarkService = remarkService;
             _groupService = groupService;
             _remarkStateService = remarkStateService;
-            _fileResolver = fileResolver;
-            _fileValidator = fileValidator;
             _resourceFactory = resourceFactory;
         }
 
-        public async Task HandleAsync(RenewRemark command)
+        public async Task HandleAsync(RemoveRemarkAssignment command)
         {
+            var assignee = "";
             await _handler
                 .Validate(async () => 
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
+                    assignee = remark.Value.Assignee;
                     if (remark.Value.Group == null)
                     {
                         return;
                     }
-                    await _groupService.ValidateIfRemarkCanBeRenewedOrFailAsync(remark.Value.Group.Id, command.UserId);
+                    await _groupService.ValidateIfRemarkAssignmentCanBeRemovedOrFailAsync(remark.Value.Group.Id,
+                        command.UserId);
                 })
-                .Run(async () =>
-                {
-                    Location location = null;
-                    if (command.Latitude != 0 && command.Longitude != 0)
-                    {
-                        location = Location.Create(command.Latitude, command.Longitude, command.Address);
-                    }
-                    await _remarkStateService.RenewAsync(command.RemarkId, command.UserId, command.Description, location);
-                })
+                .Run(async () => await _remarkStateService.RemoveAssignmentAsync(command.RemarkId, 
+                        command.UserId, command.Description))
                 .OnSuccess(async () =>
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
                     var state = remark.Value.GetLatestStateOf(RemarkState.Names.Renewed).Value;
-                    var resource = _resourceFactory.Resolve<RemarkRenewed>(command.RemarkId);
-                    await _bus.PublishAsync(new RemarkRenewed(command.Request.Id, resource, 
-                        command.UserId, command.RemarkId));
+                    var resource = _resourceFactory.Resolve<RemarkAssignmentRemoved>(command.RemarkId);
+                    await _bus.PublishAsync(new RemarkAssignmentRemoved(command.Request.Id, resource, 
+                        command.UserId, command.RemarkId, assignee));
                 })
-                .OnCustomError(async ex => await _bus.PublishAsync(new RenewRemarkRejected(command.Request.Id,
-                    command.UserId, command.RemarkId, ex.Code, ex.Message)))
+                .OnCustomError(async ex => await _bus.PublishAsync(new RemoveRemarkAssignmentRejected(command.Request.Id,
+                    command.UserId, ex.Code, ex.Message, command.RemarkId, assignee)))
                 .OnError(async (ex, logger) =>
                 {
-                    logger.Error(ex, "Error occured while renewing a remark.");
-                    await _bus.PublishAsync(new RenewRemarkRejected(command.Request.Id,
-                        command.UserId, command.RemarkId, OperationCodes.Error, ex.Message));
+                    logger.Error(ex, "Error occured while removing a remark assignment.");
+                    await _bus.PublishAsync(new RemoveRemarkAssignmentRejected(command.Request.Id,
+                        command.UserId, OperationCodes.Error, ex.Message, command.RemarkId, assignee));
                 })
                 .ExecuteAsync();
         }

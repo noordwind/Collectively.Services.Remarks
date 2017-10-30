@@ -24,7 +24,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public void SetName(string name)
         {
-            if(name.Empty())
+            if (name.Empty())
             {
                 throw new ArgumentException("Name can not be empty.", nameof(name));
             }
@@ -34,7 +34,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public void SetCulture(string culture)
         {
-            if(culture.Empty())
+            if (culture.Empty())
             {
                 throw new ArgumentException("Culture can not be empty.", nameof(culture));
             }
@@ -44,7 +44,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public void SetText(string text)
         {
-            if(text.Empty())
+            if (text.Empty())
             {
                 throw new ArgumentException("Text can not be empty.", nameof(text));
             }

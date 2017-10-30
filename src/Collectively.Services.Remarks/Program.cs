@@ -14,6 +14,8 @@ namespace Collectively.Services.Remarks
                 .Create<Startup>(args: args)
                 .UseAutofac(Bootstrapper.LifetimeScope)
                 .UseRabbitMq(queueName: typeof(Program).Namespace)
+                .SubscribeToCommand<AssignRemarkToGroup>()
+                .SubscribeToCommand<RemoveRemarkAssignment>()
                 .SubscribeToCommand<CreateRemark>()
                 .SubscribeToCommand<DeleteRemark>()
                 .SubscribeToCommand<ProcessRemark>()

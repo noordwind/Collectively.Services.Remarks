@@ -16,6 +16,8 @@ namespace Collectively.Services.Remarks.Dto
         public DateTime UpdatedAt { get; set; }
         public int Rating { get; set; }
         public bool Resolved { get; set; }
+        public string Assignee { get; set; }
+        public bool Assigned { get; set; }
         public int CommentsCount { get; set; }
         public int ParticipantsCount { get; set; }
         public OfferingDto Offering { get; set; }

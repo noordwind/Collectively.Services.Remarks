@@ -58,7 +58,7 @@ namespace Collectively.Services.Remarks.Handlers
                 {
                     await _policy.ValidateAsync(command.RemarkId, command.UserId);
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    if(remark.Value.Group == null)
+                    if (remark.Value.Group == null)
                     {
                         return;
                     }
@@ -93,13 +93,13 @@ namespace Collectively.Services.Remarks.Handlers
                 .Next()
                 .Run(async () => 
                 {
-                    if(!remarkProcessed)
+                    if (!remarkProcessed)
                     {
                         return;
                     }
 
                     var participant = await _remarkActionService.GetParticipantAsync(command.RemarkId, command.UserId);
-                    if(participant.HasValue)
+                    if (participant.HasValue)
                     {
                         return;
                     }

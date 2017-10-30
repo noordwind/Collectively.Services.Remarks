@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Collectively.Services.Remarks.Dto
 {
@@ -11,5 +12,6 @@ namespace Collectively.Services.Remarks.Dto
         public IList<CommentDto> Comments { get; set; }
         public IList<string> UserFavorites { get; set; }
         public IList<ParticipantDto> Participants { get; set; }
+        public IList<Guid> AvailableGroups { get; set; }
     }
 }

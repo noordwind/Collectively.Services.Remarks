@@ -87,7 +87,7 @@ namespace Collectively.Services.Remarks.Services
 
         private async Task<Report> ReportRemarkAsync(Guid remarkId, string userId)
         {
-            if(await _remarkRepository.ExistsAsync(remarkId) == false)
+            if (await _remarkRepository.ExistsAsync(remarkId) == false)
             {
                 throw new ServiceException(OperationCodes.RemarkNotFound,
                     $"Remark with id: '{remarkId}' does not exist!");

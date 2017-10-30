@@ -35,12 +35,12 @@ namespace Collectively.Services.Remarks.Domain
 
         public void Edit(string text)
         {
-            if(Removed)
+            if (Removed)
             {
                 throw new DomainException(OperationCodes.CommentRemoved,
                     $"Comment: '{Id}' was removed at {RemovedAt}.");
             }
-            if(History.Count() >= 5)
+            if (History.Count() >= 5)
             {
                 throw new DomainException(OperationCodes.CommentEditedTooManyTimes,
                     $"Comment: '{Id}' can not be edited more than 5 times.");
@@ -52,7 +52,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public void Remove()
         {
-            if(Removed)
+            if (Removed)
             {
                 throw new DomainException(OperationCodes.CommentRemoved,
                     $"Comment: '{Id}' was removed at {RemovedAt}.");
@@ -70,12 +70,12 @@ namespace Collectively.Services.Remarks.Domain
 
         private void ValidateText(string text)
         {
-            if(text.Empty())
+            if (text.Empty())
             {
                 throw new DomainException(OperationCodes.EmptyComment,
                     $"Comment: '{Id}' can not be empty.");
             }
-            if(text.Length > 1000)
+            if (text.Length > 1000)
             {
                 throw new DomainException(OperationCodes.EmptyComment,
                     $"Comment: '{Id}' is too long ({text.Length} characters).");

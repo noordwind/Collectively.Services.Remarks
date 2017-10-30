@@ -55,6 +55,18 @@ namespace Collectively.Services.Remarks.Services
          => await UpdateRemarkStateAsync(RemarkState.Names.Resolved, 
             (r,u,d) => r.SetResolvedState(u,d, location), id, userId, description, location, photo, validateLocation);
 
+        public async Task AssignToGroupAsync(Guid id, string userId, Guid assignedGroupId, string description = null)
+         => await UpdateRemarkStateAsync(RemarkState.Names.Assigned, 
+            (r,u,d) => r.SetAssignedToGroupState(u, assignedGroupId, d), id, userId, description);
+
+        public async Task AssignToUserAsync(Guid id, string userId, string assignedUserId, string description = null)
+         => await UpdateRemarkStateAsync(RemarkState.Names.Assigned, 
+            (r,u,d) => r.SetAssignedToUserState(u, assignedUserId, d), id, userId, description);
+
+        public async Task RemoveAssignmentAsync(Guid id, string userId, string description = null)
+         => await UpdateRemarkStateAsync(RemarkState.Names.Assigned, 
+            (r,u,d) => r.SetUnassignedState(u, d), id, userId, description);
+
         public async Task ProcessAsync(Guid id, string userId, string description = null, Location location = null)
          => await UpdateRemarkStateAsync(RemarkState.Names.Processing, 
             (r,u,d) => r.SetProcessingState(u,d), id, userId, description, location);
@@ -100,6 +112,6 @@ namespace Collectively.Services.Remarks.Services
             var encodedDescription = description.Empty() ? description : WebUtility.HtmlEncode(description);
             updateStateAction(remark, user, encodedDescription);
             await _remarkRepository.UpdateAsync(remark);              
-        }        
+        }
     }
 }

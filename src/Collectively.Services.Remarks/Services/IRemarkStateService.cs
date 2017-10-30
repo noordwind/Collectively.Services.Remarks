@@ -10,6 +10,9 @@ namespace Collectively.Services.Remarks.Services
         Task ValidateRemoveStateAccessOrFailAsync(Guid remarkId, Guid stateId, string userId);
         Task ResolveAsync(Guid id, string userId, string description = null, Location location = null, 
             File photo = null, bool validateLocation = false);
+        Task AssignToGroupAsync(Guid id, string userId, Guid assignedGroupId, string description = null);
+        Task AssignToUserAsync(Guid id, string userId, string assignedUserId, string description = null);
+        Task RemoveAssignmentAsync(Guid id, string userId, string description = null);
         Task ProcessAsync(Guid id, string userId, string description = null, Location location = null);
         Task RenewAsync(Guid id, string userId, string description = null, Location location = null);
         Task CancelAsync(Guid id, string userId, string description = null, Location location = null);

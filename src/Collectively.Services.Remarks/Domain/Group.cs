@@ -9,11 +9,12 @@ namespace Collectively.Services.Remarks.Domain
     {
         private IDictionary<string,ISet<string>> _criteria = new Dictionary<string,ISet<string>>();
         private ISet<GroupMember> _members = new HashSet<GroupMember>();
+        private ISet<string> _tags = new HashSet<string>();
         public string Name { get; protected set; } 
         public Guid? OrganizationId { get; protected set; } 
         public bool IsPublic { get; protected set; }
         public string State { get; protected set; }
-        public ISet<GroupMember> Members
+        public IEnumerable<GroupMember> Members
         {
             get { return _members; }
             protected set { _members =  new HashSet<GroupMember>(value); }
@@ -23,13 +24,19 @@ namespace Collectively.Services.Remarks.Domain
             get { return _criteria; }
             protected set { _criteria = new Dictionary<string,ISet<string>>(value); }
         }
+        public IEnumerable<string> Tags
+        {
+            get { return _tags; }
+            protected set { _tags =  new HashSet<string>(value); }
+        }
 
         protected Group()
         {
         }
 
         public Group(Guid id, string name, bool isPublic, string state, 
-            string userId, IDictionary<string, ISet<string>> criteria, Guid? organizationId = null)
+            string userId, IDictionary<string, ISet<string>> criteria, 
+            IEnumerable<string> tags, Guid? organizationId = null)
         {
             Id = id;
             Name = name;
@@ -37,7 +44,18 @@ namespace Collectively.Services.Remarks.Domain
             State = state;
             OrganizationId = organizationId;
             _members.Add(new GroupMember(userId, "owner", true));
-            _criteria = criteria ?? new Dictionary<string,ISet<string>>();
+            Criteria = criteria ?? new Dictionary<string,ISet<string>>();
+            Tags = tags ?? Enumerable.Empty<string>();
+        }
+
+        public void AddMember(string userId, string role, bool isActive)
+        {
+            if (_members.Any(x => x.UserId == userId))
+            {
+                throw new DomainException(OperationCodes.GroupMemberAlreadyExists, 
+                    $"User: '{userId}' is already a group: '{Id}' [{Name}] member.");
+            }
+            _members.Add(new GroupMember(userId, role, isActive));
         }
     }
 }

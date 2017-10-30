@@ -17,7 +17,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public void VotePositive(string userId, DateTime createdAt)
         {
-            if(Votes.Any(x => x.UserId == userId && x.Positive))
+            if (Votes.Any(x => x.UserId == userId && x.Positive))
             {
                 throw new DomainException(OperationCodes.CannotSubmitVote,
                     $"User with id: '{userId}' has already " + 
@@ -36,7 +36,7 @@ namespace Collectively.Services.Remarks.Domain
 
         public void VoteNegative(string userId, DateTime createdAt)
         {
-            if(Votes.Any(x => x.UserId == userId && !x.Positive))
+            if (Votes.Any(x => x.UserId == userId && !x.Positive))
             {
                 throw new DomainException(OperationCodes.CannotSubmitVote,
                     $"User with id: '{userId}' has already " + 

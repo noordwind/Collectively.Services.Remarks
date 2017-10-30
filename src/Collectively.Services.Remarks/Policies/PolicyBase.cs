@@ -17,11 +17,11 @@ namespace Collectively.Services.Remarks.Policies
         protected void Validate(Maybe<ITimestampable> latestResource, 
             string code, string errorMessage)
         {
-            if(latestResource.HasNoValue)
+            if (latestResource.HasNoValue)
             {
                 return;
             }
-            if(latestResource.Value.CreatedAt.AddSeconds(_secondsBreak) <= DateTime.UtcNow)
+            if (latestResource.Value.CreatedAt.AddSeconds(_secondsBreak) <= DateTime.UtcNow)
             {
                 return;
             }

@@ -9,12 +9,12 @@ using Collectively.Services.Remarks.Policies;
 using Collectively.Services.Remarks.Services;
 using Collectively.Messages.Commands.Remarks;
 using Collectively.Messages.Events.Remarks;
-using Lockbox.Client.Extensions;
 using Serilog;
 using RawRabbit;
 using Collectively.Messages.Commands.Models;
 using Collectively.Common.Locations;
 using Collectively.Common.Domain;
+using Collectively.Common.Extensions;
 
 namespace Collectively.Services.Remarks.Handlers
 {
@@ -58,23 +58,25 @@ namespace Collectively.Services.Remarks.Handlers
         public async Task HandleAsync(CreateRemark command)
         {
             var address = "";
+            LocationResponse location = null;
             await _handler
                 .Validate(async () =>  
                 {
                     await _policy.ValidateAsync(command.UserId);
-                    if(command.GroupId.HasValue)
+                    if (command.GroupId.HasValue)
                     {
                         await _groupService.ValidateIfRemarkCanBeCreatedOrFailAsync(command.GroupId.Value,
                             command.UserId, command.Latitude, command.Longitude);
                     }
-                    var locations = await _locationService.GetAsync(command.Latitude, command.Longitude);
-                    if (locations.HasNoValue || locations.Value.Results == null || !locations.Value.Results.Any())
+                    var maybeLocation = await _locationService.GetAsync(command.Latitude, command.Longitude);
+                    if (maybeLocation.HasNoValue || maybeLocation.Value.Results == null || !maybeLocation.Value.Results.Any())
                     {
                         throw new ServiceException(OperationCodes.AddressNotFound, 
                             $"Address was not found for remark with id: '{command.RemarkId}' " +
                             $"latitude: {command.Latitude}, longitude:  {command.Longitude}.");
                     }
-                    address = locations.Value.Results.First().FormattedAddress;
+                    location = maybeLocation.Value;
+                    address = location.Results.First().FormattedAddress;
                 })
                 .Run(async () =>
                 {
@@ -82,17 +84,44 @@ namespace Collectively.Services.Remarks.Handlers
                                  $"category: {command.Category}, latitude: {command.Latitude}, " +
                                  $"longitude:  {command.Longitude}.");
 
-                    var location = Domain.Location.Create(command.Latitude, command.Longitude, address);
+                    var remarkLocation = Domain.Location.Create(command.Latitude, command.Longitude, address);
                     var offering = command.Offering;
                     if (offering != null)
                     {
                         Logger.Information($"Offering for remark: '{command.RemarkId}' " + 
                             $"with price: '{offering.Price} {offering.Currency}'.");
                     }
-
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
-                            location, command.Description, command.Tags, command.GroupId,
+                            remarkLocation, command.Description, command.Tags, command.GroupId,
                             offering?.Price, offering?.Currency, offering?.StartDate, offering?.EndDate);
+                })
+                .Next()
+                .Run(async () =>
+                {
+                    if (command.Photo == null)
+                    {
+                        return;
+                    }
+                    await _bus.PublishAsync(new AddPhotosToRemark
+                    {
+                        RemarkId = command.RemarkId,
+                        Request = Request.New<AddPhotosToRemark>(),
+                        UserId = command.UserId,
+                        Photos = new List<Collectively.Messages.Commands.Models.File>
+                        {
+                            command.Photo
+                        }
+                    });
+                })
+                .Next()
+                .Run(async () =>
+                {
+                    var tags = command.Tags?.Select(x => x.TrimToLower().Replace(" ", string.Empty)) ?? Enumerable.Empty<string>();
+                    var groupLocations = await _groupService.GetGroupLocationsAsync(location);
+                    var groups = _groupService.FilterGroupLocationsByTags(groupLocations, tags)
+                        .Select(x => x.GroupId);
+                    await _groupService.AddRemarkToGroupsAsync(command.RemarkId, groups);
+                    await _remarkService.SetAvailableGroupsAsync(command.RemarkId, groups);
                 })
                 .OnSuccess(async () =>
                 {
@@ -108,25 +137,6 @@ namespace Collectively.Services.Remarks.Handlers
                     logger.Error(ex, "Error occured while creating remark.");
                     await _bus.PublishAsync(new CreateRemarkRejected(command.Request.Id,
                         command.RemarkId, command.UserId, OperationCodes.Error, ex.Message));
-                })
-                .Next()
-                .Run(async () =>
-                {
-                    if(command.Photo == null)
-                    {
-                        return;
-                    }
-
-                    await _bus.PublishAsync(new AddPhotosToRemark
-                    {
-                        RemarkId = command.RemarkId,
-                        Request = Request.New<AddPhotosToRemark>(),
-                        UserId = command.UserId,
-                        Photos = new List<Collectively.Messages.Commands.Models.File>
-                        {
-                            command.Photo
-                        }
-                    });
                 })
                 .Next()
                 .ExecuteAllAsync();

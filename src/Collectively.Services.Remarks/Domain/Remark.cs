@@ -15,6 +15,7 @@ namespace Collectively.Services.Remarks.Domain
         private ISet<Comment> _comments = new HashSet<Comment>();
         private ISet<string> _userFavorites = new HashSet<string>();
         private ISet<string> _tags = new HashSet<string>();
+        private ISet<Guid> _availableGroups = new HashSet<Guid>();
         public RemarkUser Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
         public Location Location { get; protected set; }
@@ -24,6 +25,8 @@ namespace Collectively.Services.Remarks.Domain
         public Offering Offering { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
         public DateTime UpdatedAt { get; protected set; }
+        public string Assignee { get; protected set; }
+        public bool Assigned => !Assignee.Empty();
         public bool Resolved => State?.State == RemarkState.Names.Resolved;
 
         public IEnumerable<RemarkPhoto> Photos
@@ -42,6 +45,12 @@ namespace Collectively.Services.Remarks.Domain
         {
             get { return _tags; }
             protected set { _tags = new HashSet<string>(value); }
+        }
+
+        public IEnumerable<Guid> AvailableGroups
+        {
+            get { return _availableGroups; }
+            protected set { _availableGroups = new HashSet<Guid>(value); }
         }
 
         public IEnumerable<string> UserFavorites
@@ -146,7 +155,7 @@ namespace Collectively.Services.Remarks.Domain
         public void RemovePhoto(string name)
         {
             var photo = GetPhoto(name);
-            if(photo.HasNoValue)
+            if (photo.HasNoValue)
             {
                 return;
             }
@@ -156,15 +165,18 @@ namespace Collectively.Services.Remarks.Domain
 
         public void AddTag(string tag)
         {
-            _tags.Add(tag);
+            _tags.Add(ParseTag(tag));
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void RemoveTag(string tag)
         {
-            _tags.Remove(tag);
+            _tags.Remove(ParseTag(tag));
             UpdatedAt = DateTime.UtcNow;
         }
+
+        private static string ParseTag(string tag)
+            => tag.TrimToLower().Replace(" ", string.Empty);
 
         public void SetDescription(string description)
         {
@@ -178,7 +190,7 @@ namespace Collectively.Services.Remarks.Domain
             if (description.Length > 2000)
             {
                 throw new DomainException(OperationCodes.InvalidRemarkDescription, 
-                    "Remark description is too long.");
+                    $"Remark '{Id}' description is too long.");
             }
             if (Description.EqualsCaseInvariant(description))
             {
@@ -190,10 +202,10 @@ namespace Collectively.Services.Remarks.Domain
 
         public void AddComment(Guid id, User user, string text)
         {
-            if(_comments.Count >= 1000)
+            if (_comments.Count >= 1000)
             {
                 throw new DomainException(OperationCodes.TooManyComments, 
-                    $"Limit of 1000 remark comments was reached.");
+                    $"Limit of 1000 remark comments was reached for remark '{Id}'.");
             }
             _comments.Add(new Comment(id, user, text));
             UpdatedAt = DateTime.UtcNow;
@@ -216,7 +228,7 @@ namespace Collectively.Services.Remarks.Domain
         public Comment GetCommentOrFail(Guid id)
         {
             var comment = GetComment(id);
-            if(comment.HasNoValue)
+            if (comment.HasNoValue)
             {
                 throw new DomainException(OperationCodes.CommentNotFound, 
                     $"Remark comment with id: '{id}' was not found.");
@@ -264,11 +276,17 @@ namespace Collectively.Services.Remarks.Domain
         public void CancelParticipation(string userId)
         {
             var participant = GetParticipant(userId);
-            if(participant.HasNoValue)
+            if (participant.HasNoValue)
             {
                 return;
             }
             _participants.Remove(participant.Value);
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void SetAvailableGroups(IEnumerable<Guid> groups)
+        {
+            AvailableGroups = groups;
             UpdatedAt = DateTime.UtcNow;
         }
 
@@ -278,6 +296,15 @@ namespace Collectively.Services.Remarks.Domain
         public void SetProcessingState(User user, string description = null, 
             RemarkPhoto photo = null)
             => SetState(RemarkState.Processing(RemarkUser.Create(user), description, photo));
+
+        public void SetAssignedToUserState(User user, string userId, string description = null)
+            => SetState(RemarkState.AssignedToUser(RemarkUser.Create(user), userId, description));
+
+        public void SetAssignedToGroupState(User user, Guid groupId, string description = null)
+            => SetState(RemarkState.AssignedToGroup(RemarkUser.Create(user), groupId, description));
+
+        public void SetUnassignedState(User user, string description = null)
+            => SetState(RemarkState.Unassigned(RemarkUser.Create(user), description));
 
         public void SetResolvedState(User user, string description = null, 
             Location location = null, RemarkPhoto photo = null)
@@ -332,34 +359,75 @@ namespace Collectively.Services.Remarks.Domain
 
         private void SetState(RemarkState state)
         {
-            if(state == null)
+            if (state == null)
             {
                 throw new DomainException(OperationCodes.RemarkStateNotProvided, 
                     "Remark state can not be null.");
             }
-
             var latestState = _states.LastOrDefault();
-            if(latestState == null)
+            if (latestState == null)
             {
                 _states.Add(state);
                 State = state;
 
                 return;
             }
-            if(latestState.State == RemarkState.Names.Canceled)
+            TrySetState(state);
+        }
+
+        private void TrySetState(RemarkState state)
+        {
+            var latestState = _states.Last();
+            if (latestState.State == RemarkState.Names.Canceled)
             {
                 throw new DomainException(OperationCodes.CannotSetState,
-                    $"Can not set state to '{state}' for remark with id: '{Id}'" +
+                    $"Can not set state to '{state.State}' for remark with id: '{Id}'" +
                      "as it was canceled.");                
             }
-            if(latestState.State == state.State &&  latestState.State != RemarkState.Names.Processing)
+            if (latestState.State == RemarkState.Names.New && state.State == RemarkState.Names.Unassigned)
             {
                 throw new DomainException(OperationCodes.CannotSetState,
-                    $"Can not set state to '{state}' for remark with id: '{Id}'" +
+                    $"Can not set state to '{state.State}' for remark with id: '{Id}'" +
+                    $"as it has state '{latestState.State}'.");     
+            }
+            if (latestState.State == state.State &&  latestState.State != RemarkState.Names.Processing)
+            {
+                throw new DomainException(OperationCodes.CannotSetState,
+                    $"Can not set state to '{state.State}' for remark with id: '{Id}'" +
                      "as it's the same as the previous one.");
+            }
+            if (state.State == RemarkState.Names.Assigned)
+            {
+                Assign(state.Assignee);
+            }
+            else if (state.State == RemarkState.Names.Unassigned)
+            {
+                RemoveAssignment();
             }
             _states.Add(state);
             State = state;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        private void Assign(string assignee)
+        {
+            if (Assigned)
+            {
+                throw new DomainException(OperationCodes.RemarkAlreadyAssigned, 
+                    $"Remark '{Id}' is already assigned.");
+            }
+            Assignee = assignee;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        private void RemoveAssignment()
+        {
+            if (!Assigned)
+            {
+                throw new DomainException(OperationCodes.RemarkAlreadyUnassigned, 
+                    $"Remark '{Id}' is already unassigned.");
+            }
+            Assignee = null;
             UpdatedAt = DateTime.UtcNow;
         }
     }

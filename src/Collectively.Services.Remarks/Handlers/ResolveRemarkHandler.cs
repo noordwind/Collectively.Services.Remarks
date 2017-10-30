@@ -69,7 +69,7 @@ namespace Collectively.Services.Remarks.Handlers
                         }
                     }
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    if(remark.Value.Group == null)
+                    if (remark.Value.Group == null)
                     {
                         return;
                     }

@@ -20,6 +20,7 @@ namespace Collectively.Services.Remarks.Services
             DateTime? startDate = null, DateTime? endDate = null);
         Task EditAsync(Guid remarkId, string userId, Guid? groupId, 
             string category, string description, Location location);
+        Task SetAvailableGroupsAsync(Guid remarkId, IEnumerable<Guid> groups);
         Task UpdateUserNamesAsync(string userId, string name);
         Task DeleteAsync(Guid id);
         Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt);

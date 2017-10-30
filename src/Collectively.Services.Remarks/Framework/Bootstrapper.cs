@@ -80,6 +80,8 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<TagRepository>().As<ITagRepository>().InstancePerLifetimeScope();
                 builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerLifetimeScope();
                 builder.RegisterType<GroupRepository>().As<IGroupRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<GroupLocationRepository>().As<IGroupLocationRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<GroupRemarkRepository>().As<IGroupRemarkRepository>().InstancePerLifetimeScope();
                 builder.RegisterType<ReportRepository>().As<IReportRepository>().InstancePerLifetimeScope();
                 builder.RegisterType<LocalizedResourceService>().As<ILocalizedResourceService>().InstancePerLifetimeScope();
                 builder.RegisterType<RemarkService>().As<IRemarkService>().InstancePerLifetimeScope();
@@ -187,7 +189,9 @@ namespace Collectively.Services.Remarks.Framework
                 [typeof(RemarkRenewed)] = remarkEndpoint,
                 [typeof(RemarkCanceled)] = remarkEndpoint,
                 [typeof(PhotosToRemarkAdded)] = remarkEndpoint,
-                [typeof(PhotosFromRemarkRemoved)] = remarkEndpoint
+                [typeof(PhotosFromRemarkRemoved)] = remarkEndpoint,
+                [typeof(RemarkAssignedToGroup)] = remarkEndpoint,
+                [typeof(RemarkAssignmentRemoved)] = remarkEndpoint
             };
             builder.RegisterModule(new ResourceFactory.Module(resources));
         }

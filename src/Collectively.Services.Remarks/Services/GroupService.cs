@@ -15,18 +15,25 @@ namespace Collectively.Services.Remarks.Services
     public class GroupService : IGroupService
     {
         private static readonly IList<string> RemarkMemberCriteria = new []{"member", "moderator", "administrator", "owner"};
+        private readonly static string RemarkLocationCriterion = "remark_location";
         private static readonly ILogger Logger = Log.Logger;
-        private readonly IUserRepository _userRepository;
         private readonly IGroupRepository _groupRepository;
+        private readonly IGroupLocationRepository _groupLocationRepository;
+        private readonly IGroupRemarkRepository _groupRemarkRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IRemarkRepository _remarkRepository;
         private readonly ILocationService _locationService;
 
-
         public GroupService(IGroupRepository groupRepository, 
-            IUserRepository userRepository, IRemarkRepository remarkRepository,
+            IGroupLocationRepository groupLocationRepository,
+            IGroupRemarkRepository groupRemarkRepository,
+            IUserRepository userRepository, 
+            IRemarkRepository remarkRepository,
             ILocationService locationService)
         {
             _groupRepository = groupRepository;
+            _groupLocationRepository = groupLocationRepository;
+            _groupRemarkRepository = groupRemarkRepository;
             _userRepository = userRepository;
             _remarkRepository = remarkRepository;
             _locationService = locationService;
@@ -34,16 +41,21 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task CreateIfNotFoundAsync(Guid id, string name, bool isPublic, 
             string state, string userId, IDictionary<string, ISet<string>> criteria, 
-            Guid? organizationId = null)
+            IEnumerable<string> tags, Guid? organizationId = null)
         {
             var group = await _groupRepository.GetAsync(id);
-            if(group.HasValue)
+            if (group.HasValue)
             {
                 return;
             }
             Logger.Debug($"Creating a new group: '{id}', name: '{name}', public: '{isPublic}'.");
-            group = new Group(id, name, isPublic, state, userId, criteria, organizationId);
+            group = new Group(id, name, isPublic, state, userId, criteria, tags, organizationId);
             await _groupRepository.AddAsync(group.Value);
+            var locations = criteria.ContainsKey(RemarkLocationCriterion) ? 
+                criteria[RemarkLocationCriterion] : 
+                Enumerable.Empty<string>();
+            await _groupLocationRepository.AddAsync(new GroupLocation(id,locations,tags));
+            await _groupRemarkRepository.AddAsync(new GroupRemark(id));
         }
 
         public async Task ValidateIfRemarkCanBeCreatedOrFailAsync(Guid groupId, string userId,
@@ -56,6 +68,20 @@ namespace Collectively.Services.Remarks.Services
             }
             await ValidateLocationOrFailAsync(groupAndUser.group, latitude, longitude);
         }
+
+        public async Task ValidateIfRemarkCanBeAssignedOrFailAsync(Guid groupId, string userId,
+            double latitude, double longitude)
+        {
+            var groupAndUser = await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_assign");
+            if (groupAndUser.group == null)
+            {
+                return;
+            }
+            await ValidateLocationOrFailAsync(groupAndUser.group, latitude, longitude);
+        }
+
+        public async Task ValidateIfRemarkAssignmentCanBeRemovedOrFailAsync(Guid groupId, string userId)
+            => await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_remove_assignment");
 
         public async Task ValidateIfRemarkCanBeResolvedOrFailAsync(Guid groupId, string userId)
             => await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_resolve");
@@ -71,7 +97,7 @@ namespace Collectively.Services.Remarks.Services
 
         private async Task<(Group group,User user)> GetGroupAndUserAndValidateDefaultCriteriaAsync(Guid groupId, string userId, string criteria)
         {
-            if(groupId == Guid.Empty)
+            if (groupId == Guid.Empty)
             {
                 return (null, null);
             }
@@ -85,7 +111,7 @@ namespace Collectively.Services.Remarks.Services
         private void ValidateRemarkCriteriaOrFail(Group group, User user, string operation)
         {
             var criteria = AreDefaultRemarkCriteriaMet(group, user, operation);
-            if(criteria.Item1)
+            if (criteria.Item1)
             {
                 return;
             }
@@ -100,11 +126,11 @@ namespace Collectively.Services.Remarks.Services
                 return new Tuple<bool,ISet<string>>(true, null);
             }
             ISet<string> criteria = null;
-            if(!group.Criteria.TryGetValue(operation, out criteria))
+            if (!group.Criteria.TryGetValue(operation, out criteria))
             {
                 return new Tuple<bool,ISet<string>>(true, null);
             }
-            if(criteria == null || !criteria.Any() || criteria.Contains("public"))
+            if (criteria == null || !criteria.Any() || criteria.Contains("public"))
             {
                 return new Tuple<bool,ISet<string>>(true, criteria);
             }
@@ -114,13 +140,13 @@ namespace Collectively.Services.Remarks.Services
         private void ValidateRemarkMemberCriteriaOrFail(ISet<string> criteria, string role, string operation)
         {
             var memberRoleIndex = RemarkMemberCriteria.IndexOf(role);
-            if(!criteria.Any() || memberRoleIndex < 0)
+            if (!criteria.Any() || memberRoleIndex < 0)
             {
                 throw new ServiceException(OperationCodes.UnknownGroupMemberCriteria, 
                     $"Unknown group member criteria: '{role}', required: '{criteria}' for: '{operation}'.");                
             }
             var requiredRoleIndex = RemarkMemberCriteria.IndexOf(criteria.First());
-            if(memberRoleIndex >= requiredRoleIndex)
+            if (memberRoleIndex >= requiredRoleIndex)
             {
                 return;
             }
@@ -131,17 +157,17 @@ namespace Collectively.Services.Remarks.Services
         private async Task ValidateLocationOrFailAsync(Group group, double latitude, double longitude)
         {
             ISet<string> locations;
-            if(!group.Criteria.TryGetValue("remark_location", out locations))
+            if (!group.Criteria.TryGetValue(RemarkLocationCriterion, out locations))
             {
                 return;
             }
-            if(!locations.Any())
+            if (!locations.Any())
             {
                 return;
             }
             var availableLocalities = locations.Select(x => x.ToLowerInvariant());
             var response = await _locationService.GetAsync(latitude, longitude);
-            if(response.HasNoValue || response.Value.Results == null)
+            if (response.HasNoValue || response.Value.Results == null)
             {
                 throw new ServiceException(OperationCodes.InvalidLocality, "Invalid locality.");
             }
@@ -149,7 +175,7 @@ namespace Collectively.Services.Remarks.Services
                 .Where(x => x.Types.Contains("locality"))
                 .Select(x => x.LongName.ToLowerInvariant());
             
-            if(availableLocalities.Intersect(foundLocalitiles).Any())
+            if (availableLocalities.Intersect(foundLocalitiles).Any())
             {
                 return;
             }
@@ -159,12 +185,12 @@ namespace Collectively.Services.Remarks.Services
         private string GetActiveMemberRoleOrFail(Group group, User user)
         {
             var member = group.Members.FirstOrDefault(x => x.UserId == user.UserId);
-            if(member == null)
+            if (member == null)
             {
                 throw new ServiceException(OperationCodes.GroupMemberNotFound, "Group member: " + 
                     $"'{group.Name}', id: '{group.Id}', was not found '{user.Name}', id: '{user.UserId}'.");
             }
-            if(!member.IsActive)
+            if (!member.IsActive)
             {
                 throw new ServiceException(OperationCodes.GroupMemberNotActive, "Group member: " + 
                     $"'{group.Name}', id: '{group.Id}', is not active '{user.Name}', id: '{user.UserId}'.");
@@ -206,8 +232,28 @@ namespace Collectively.Services.Remarks.Services
         {
             var group = await _groupRepository.GetOrFailAsync(groupId);
             var member = await _userRepository.GetOrFailAsync(memberId);
-            group.Members.Add(new GroupMember(member.UserId, role, true));
+            group.AddMember(member.UserId, role, true);
             await _groupRepository.UpdateAsync(group);
         }
+
+        public async Task<IEnumerable<GroupLocation>> GetGroupLocationsAsync(LocationResponse location)
+        {
+            if (location == null || location.Results == null || !location.Results.Any())
+            {
+                return Enumerable.Empty<GroupLocation>();
+            }
+            var locations = location.Results.SelectMany(x => x.AddressComponents)
+                .Where(x => x.Types.Contains("locality"))
+                .Select(x => x.LongName.ToLowerInvariant());
+            
+            return await _groupLocationRepository.GetAllWithLocationsAsync(locations);
+        }
+
+        public IEnumerable<GroupLocation> FilterGroupLocationsByTags(IEnumerable<GroupLocation> groupLocations, 
+            IEnumerable<string> tags)
+            => groupLocations.Where(x => x.Tags.Any(t => tags.Contains(t)));
+
+        public async Task AddRemarkToGroupsAsync(Guid remarkId, IEnumerable<Guid> groupIds)
+            => await _groupRemarkRepository.AddRemarksAsync(remarkId, groupIds);
     }
 }

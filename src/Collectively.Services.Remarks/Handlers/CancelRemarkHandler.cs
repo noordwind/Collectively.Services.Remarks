@@ -49,7 +49,7 @@ namespace Collectively.Services.Remarks.Handlers
                 .Validate(async () => 
                 {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
-                    if(remark.Value.Group == null)
+                    if (remark.Value.Group == null)
                     {
                         return;
                     }

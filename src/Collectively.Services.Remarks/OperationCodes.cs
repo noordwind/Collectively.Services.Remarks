@@ -6,6 +6,8 @@ namespace Collectively.Services.Remarks
         public static string RemarkNotFound => "remark_not_found";
         public static string CannotCreateRemarkTooOften => "cannot_create_remark_too_often";
         public static string InvalidRemarkDescription => "invalid_remark_description";
+        public static string RemarkAlreadyAssigned => "remark_already_assigned";
+        public static string RemarkAlreadyUnassigned => "remark_already_unassigned";
         public static string RemarkAuthorNotProvided => "remark_author_not_provided";
         public static string RemarkCategoryNotProvided => "remark_category_not_provided";
         public static string RemarkLocationNotProvided => "remark_location_not_provided";
@@ -48,6 +50,7 @@ namespace Collectively.Services.Remarks
         public static string GroupNotFound => "group_not_found";
         public static string GroupMemberNotFound => "group_member_not_found";
         public static string GroupMemberNotActive => "group_member_not_active";
+        public static string GroupMemberAlreadyExists => "group_member_already_exists";
         public static string UnknownGroupMemberCriteria => "unknown_group_member_criteria";
         public static string InsufficientGroupMemberCriteria => "insufficient_group_member_criteria"; 
         public static string EmptyReportType => "empty_report_type";

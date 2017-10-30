@@ -48,7 +48,7 @@ namespace Collectively.Services.Remarks.Services
             var user = await _userRepository.GetOrFailAsync(userId);
             Logger.Debug($"Adding {photos.Count()} photos to remark with id: '{remarkId}'.");
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
-            if(remark.Photos.GroupBy(x => x.Size).Count() + photos.Count() > _settings.PhotosLimit) 
+            if (remark.Photos.GroupBy(x => x.Size).Count() + photos.Count() > _settings.PhotosLimit) 
             {
                 throw new ServiceException(OperationCodes.TooManyFiles,
                     $"There are too many photos ({photos.Count()}) to be added to the remark with id: '{remarkId}'.");
@@ -133,7 +133,7 @@ namespace Collectively.Services.Remarks.Services
             Logger.Debug($"Removing {names.Count()} photos from the remark with id: '{remarkId}'.");
             foreach (var name in names)
             {
-                if(remark.GetPhoto(name).HasNoValue)
+                if (remark.GetPhoto(name).HasNoValue)
                 {
                     throw new ServiceException(OperationCodes.FileNotFound,
                         $"Remark photo with name: '{name}' was not found in the remark with id: '{remarkId}'.");

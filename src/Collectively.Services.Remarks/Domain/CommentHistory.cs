@@ -3,8 +3,8 @@ using Collectively.Common.Domain;
 
 namespace Collectively.Services.Remarks.Domain
 {
-  public class CommentHistory : ValueObject<CommentHistory>
-  {
+    public class CommentHistory : ValueObject<CommentHistory>
+    {
         public string Text { get; protected set; }
         public DateTime CreatedAt { get; protected set; }
 
@@ -25,5 +25,5 @@ namespace Collectively.Services.Remarks.Domain
             => Text == other.Text && CreatedAt == other.CreatedAt;
         protected override int GetHashCodeCore()
             => Text.GetHashCode() ^ CreatedAt.GetHashCode();
-  }
+    }
 }

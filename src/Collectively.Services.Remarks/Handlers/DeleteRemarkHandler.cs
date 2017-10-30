@@ -42,7 +42,7 @@ namespace Collectively.Services.Remarks.Handlers
                     }
                     catch
                     {
-                        if(remark.Value.Group == null)
+                        if (remark.Value.Group == null)
                         {
                             throw;
                         }

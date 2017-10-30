@@ -34,7 +34,7 @@ namespace Collectively.Services.Remarks.Handlers
                     var group = maybeGroup.Value;
                     await _groupService.CreateIfNotFoundAsync(group.Id, group.Name,
                         group.IsPublic, group.State, @event.UserId, group.Criteria, 
-                        @event.OrganizationId);
+                        group.Tags, @event.OrganizationId);
                 })
                 .OnError((ex, logger) =>
                 {

@@ -30,7 +30,7 @@ namespace Collectively.Services.Remarks.Services
         public async Task ValidateEditorAccessOrFailAsync(Guid remarkId, Guid commentId, string userId)
         {
             var comment = await GetAsync(remarkId, commentId);
-            if(comment.HasNoValue)
+            if (comment.HasNoValue)
             {
                 throw new ServiceException(OperationCodes.CommentNotFound, 
                     $"Remark comment with id: '{commentId}' was not found.");
@@ -89,7 +89,7 @@ namespace Collectively.Services.Remarks.Services
         {
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             var comment = remark.GetComment(commentId);
-            if(comment.HasNoValue)
+            if (comment.HasNoValue)
             {
                 throw new ServiceException(OperationCodes.CommentNotFound, 
                     $"Remark comment with id: '{commentId}' was not found.");
@@ -109,7 +109,7 @@ namespace Collectively.Services.Remarks.Services
         {
             var remark = await _remarkRepository.GetOrFailAsync(remarkId);
             var comment = remark.GetComment(commentId);
-            if(comment.HasNoValue)
+            if (comment.HasNoValue)
             {
                 throw new ServiceException(OperationCodes.CommentNotFound, 
                     $"Remark comment with id: '{commentId}' was not found.");
