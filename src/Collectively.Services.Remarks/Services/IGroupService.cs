@@ -10,7 +10,7 @@ namespace Collectively.Services.Remarks.Services
     {
         Task CreateIfNotFoundAsync(Guid id, string name, bool isPublic, string state,
             string userId, IDictionary<string,ISet<string>> criteria,
-            IEnumerable<string> tags, Guid? organizationId = null);
+            IEnumerable<Guid> tags, Guid? organizationId = null);
         Task ValidateIfRemarkCanBeCreatedOrFailAsync(Guid groupId, string userId, 
             double latitude, double longitude);
         Task ValidateIfRemarkCanBeAssignedOrFailAsync(Guid groupId, string userId,
@@ -24,8 +24,8 @@ namespace Collectively.Services.Remarks.Services
         Task ValidateIfRemarkCommentCanBeDeletedOrFailAsync(Guid groupId, string userId, Guid remarkId, Guid commentId);
         Task AddMemberAsync(Guid groupId, string memberId, string role);
         Task<IEnumerable<GroupLocation>> GetGroupLocationsAsync(LocationResponse location);
-        IEnumerable<GroupLocation> FilterGroupLocationsByTags(IEnumerable<GroupLocation> groupLocations,
-            IEnumerable<string> tags);
+        Task<IEnumerable<GroupLocation>> FilterGroupLocationsByTagsAsync(IEnumerable<GroupLocation> groupLocations,
+            IEnumerable<Guid> tags);
         Task AddRemarkToGroupsAsync(Guid remarkId, IEnumerable<Guid> groupIds);
     }
 }

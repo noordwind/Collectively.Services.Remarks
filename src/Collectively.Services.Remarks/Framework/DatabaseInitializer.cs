@@ -37,13 +37,13 @@ namespace Collectively.Services.Remarks.Framework
             await _database.LocalizedResources().InsertOneAsync(new LocalizedResource("facebook:new_remark", "pl-pl",
                 "Nowe zgłoszenie zostało przeze mnie dodane za pomocą Collectively. Możesz je zobaczyć tutaj: {0}"));
             
-            var tags = new List<Tag>
-            {
-                new Tag("junk"), new Tag("small"), new Tag("medium"),
-                new Tag("big"), new Tag("crash"), new Tag("stink"),
-                new Tag("dirty"), new Tag("glass"), new Tag("plastic")
-            };
-            await _database.Tags().InsertManyAsync(tags);
+            // var tags = new List<Tag>
+            // {
+            //     new Tag("junk"), new Tag("small"), new Tag("medium"),
+            //     new Tag("big"), new Tag("crash"), new Tag("stink"),
+            //     new Tag("dirty"), new Tag("glass"), new Tag("plastic")
+            // };
+            // await _database.Tags().InsertManyAsync(tags);
         }
     }
 }

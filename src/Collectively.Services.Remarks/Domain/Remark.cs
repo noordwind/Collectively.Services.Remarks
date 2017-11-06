@@ -14,7 +14,7 @@ namespace Collectively.Services.Remarks.Domain
         private ISet<RemarkState> _states = new HashSet<RemarkState>();
         private ISet<Comment> _comments = new HashSet<Comment>();
         private ISet<string> _userFavorites = new HashSet<string>();
-        private ISet<string> _tags = new HashSet<string>();
+        private ISet<RemarkTag> _tags = new HashSet<RemarkTag>();
         private ISet<Guid> _availableGroups = new HashSet<Guid>();
         public RemarkUser Author { get; protected set; }
         public RemarkCategory Category { get; protected set; }
@@ -41,10 +41,10 @@ namespace Collectively.Services.Remarks.Domain
             protected set { _states = new HashSet<RemarkState>(value); }
         }
 
-        public IEnumerable<string> Tags
+        public IEnumerable<RemarkTag> Tags
         {
             get { return _tags; }
-            protected set { _tags = new HashSet<string>(value); }
+            protected set { _tags = new HashSet<RemarkTag>(value); }
         }
 
         public IEnumerable<Guid> AvailableGroups
@@ -76,7 +76,7 @@ namespace Collectively.Services.Remarks.Domain
         }
 
         public Remark(Guid id, User author, Category category, Location location,
-            string description = null, Group group = null)
+            IEnumerable<RemarkTag> tags, string description = null, Group group = null)
         {
             Id = id;
             SetAuthor(author);
@@ -85,6 +85,7 @@ namespace Collectively.Services.Remarks.Domain
             SetDescription(description);
             SetGroup(group);
             SetState(RemarkState.New(Author, location, description));
+            Tags = tags ?? Enumerable.Empty<RemarkTag>();
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
         }
@@ -163,20 +164,17 @@ namespace Collectively.Services.Remarks.Domain
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void AddTag(string tag)
+        public void AddTag(RemarkTag tag)
         {
-            _tags.Add(ParseTag(tag));
+            _tags.Add(tag);
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void RemoveTag(string tag)
+        public void RemoveTag(Guid id)
         {
-            _tags.Remove(ParseTag(tag));
+            _tags.Remove(_tags.SingleOrDefault(x => x.Id == id));
             UpdatedAt = DateTime.UtcNow;
         }
-
-        private static string ParseTag(string tag)
-            => tag.TrimToLower().Replace(" ", string.Empty);
 
         public void SetDescription(string description)
         {
@@ -389,6 +387,12 @@ namespace Collectively.Services.Remarks.Domain
                 throw new DomainException(OperationCodes.CannotSetState,
                     $"Can not set state to '{state.State}' for remark with id: '{Id}'" +
                     $"as it has state '{latestState.State}'.");     
+            }
+            if (state.State == RemarkState.Names.Unassigned && States.All(x => x.State != RemarkState.Names.Assigned))
+            {
+                throw new DomainException(OperationCodes.CannotSetState,
+                    $"Can not set state to '{state.State}' for remark with id: '{Id}'" +
+                    $"as it was never in a state: '{RemarkState.Names.Assigned}'.");     
             }
             if (latestState.State == state.State &&  latestState.State != RemarkState.Names.Processing)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using  Collectively.Common.Domain;
 using  Collectively.Common.Extensions;
 
@@ -7,10 +8,12 @@ namespace Collectively.Services.Remarks.Domain
 {
     public class User : IdentifiableEntity, ITimestampable
     {
+        private static readonly string[] _administrativeRoles = new [] {"moderator", "administrator", "owner"};
         private ISet<Guid> _favoriteRemarks = new HashSet<Guid>();
         public string UserId { get; protected set; }
         public string Name { get; protected set; }
         public string Role { get; protected set; }
+        public bool HasAdministrativeRole => _administrativeRoles.Contains(Role);
         public DateTime CreatedAt { get; protected set; }
         public IEnumerable<Guid> FavoriteRemarks
         {

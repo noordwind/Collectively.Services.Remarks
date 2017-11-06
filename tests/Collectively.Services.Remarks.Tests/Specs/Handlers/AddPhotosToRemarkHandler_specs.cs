@@ -179,7 +179,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         {
             Initialize();
             Remark = new Remark(Guid.NewGuid(), new User(Command.UserId, "user", "user"),
-                new Category("test"), Location.Create(1, 1, "Address"), "Test");
+                new Category("test"), Location.Create(1, 1, "Address"), null, "Test");
             Command.Photos.Add(new Collectively.Messages.Commands.Models.File
                 {
                     Base64 = "base64",

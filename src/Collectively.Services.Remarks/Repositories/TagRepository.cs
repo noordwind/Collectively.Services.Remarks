@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using  Collectively.Common.Mongo;
-using  Collectively.Common.Types;
+using Collectively.Common.Mongo;
+using Collectively.Common.Types;
+using Collectively.Services.Remarks.Domain;
 using Collectively.Services.Remarks.Queries;
 using Collectively.Services.Remarks.Repositories.Queries;
 using MongoDB.Driver;
@@ -23,9 +25,12 @@ namespace Collectively.Services.Remarks.Repositories
         public async Task<Maybe<PagedResult<Tag>>> BrowseAsync(BrowseTags query)
             => await _database.Tags()
                     .Query(query)
-                    .PaginateAsync();
+                    .PaginateAsync(query);
 
         public async Task AddAsync(Tag tag)
             => await _database.Tags().InsertOneAsync(tag);
+
+        public async Task AddAsync(IEnumerable<Tag> tags)
+            => await _database.Tags().InsertManyAsync(tags);
     }
 }

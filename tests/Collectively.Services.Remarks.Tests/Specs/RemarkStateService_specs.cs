@@ -45,7 +45,7 @@ namespace Collectively.Services.Remarks.Tests.Specs
             var user = new User(UserId, "name", "user");
             var category = new Category("category");
             Description = "test";
-            Remark = new Remark(RemarkId, user, category, Location);
+            Remark = new Remark(RemarkId, user, category, Location, null);
             Remark.AddPhoto(RemarkPhoto.Small(Guid.NewGuid(), "test.jpg", "http://my-test-image.com", RemarkUser.Create(user)));
 
             RemarkRepositoryMock.Setup(x => x.GetByIdAsync(Moq.It.IsAny<Guid>()))

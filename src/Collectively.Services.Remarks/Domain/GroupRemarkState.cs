@@ -5,6 +5,7 @@ namespace Collectively.Services.Remarks.Domain
 {
     public class GroupRemarkState
     {
+        private static readonly string DeniedState = "denied";
         public Guid Id { get; protected set; }
         public string State { get; protected set; }
 
@@ -25,12 +26,25 @@ namespace Collectively.Services.Remarks.Domain
 
         public void Deny()
         {
-            State = "unassigned";
+            State = DeniedState;
         }        
 
         public void Take()
         {
+            if (State == DeniedState)
+            {
+                return;
+            }            
             State = "taken";
+        }
+
+        public void Clear()
+        {
+            if (State == DeniedState)
+            {
+                return;
+            }
+            State = null;
         }
 
         public static GroupRemarkState Create(Guid id)

@@ -7,6 +7,7 @@ using Collectively.Services.Remarks.Repositories;
 using Collectively.Common.ServiceClients;
 using Collectively.Services.Remarks.Dto;
 using Collectively.Services.Remarks.Services;
+using System.Linq;
 
 namespace Collectively.Services.Remarks.Handlers
 {
@@ -34,7 +35,7 @@ namespace Collectively.Services.Remarks.Handlers
                     var group = maybeGroup.Value;
                     await _groupService.CreateIfNotFoundAsync(group.Id, group.Name,
                         group.IsPublic, group.State, @event.UserId, group.Criteria, 
-                        group.Tags, @event.OrganizationId);
+                        group.Tags.Select(x => x.Id), @event.OrganizationId);
                 })
                 .OnError((ex, logger) =>
                 {

@@ -124,12 +124,11 @@ namespace Collectively.Services.Remarks.Handlers
                 .Next()
                 .Run(async () =>
                 {
-                    var tags = command.Tags?.Select(x => x.TrimToLower().Replace(" ", string.Empty)) ?? Enumerable.Empty<string>();
                     var groupLocations = await _groupService.GetGroupLocationsAsync(location);
-                    var groups = _groupService.FilterGroupLocationsByTags(groupLocations, tags)
-                        .Select(x => x.GroupId);
-                    await _groupService.AddRemarkToGroupsAsync(command.RemarkId, groups);
-                    await _remarkService.SetAvailableGroupsAsync(command.RemarkId, groups);
+                    var groups = await _groupService.FilterGroupLocationsByTagsAsync(groupLocations, command.Tags);
+                    var groupIds = groups.Select(x => x.GroupId);
+                    await _groupService.AddRemarkToGroupsAsync(command.RemarkId, groupIds);
+                    await _remarkService.SetAvailableGroupsAsync(command.RemarkId, groupIds);
                 })
                 .OnSuccess(async () =>
                 {

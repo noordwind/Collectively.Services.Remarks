@@ -7,7 +7,7 @@ namespace Collectively.Services.Remarks.Dto
     {
         public IList<FileDto> Photos { get; set; }
         public IList<RemarkStateDto> States { get; set; }
-        public IList<string> Tags { get; set; }
+        public IList<RemarkTagDto> Tags { get; set; }
         public IList<VoteDto> Votes { get; set; }
         public IList<CommentDto> Comments { get; set; }
         public IList<string> UserFavorites { get; set; }

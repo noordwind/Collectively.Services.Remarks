@@ -8,17 +8,17 @@ namespace Collectively.Services.Remarks.Domain
     public class GroupLocation : IdentifiableEntity
     {
         private ISet<string> _locations = new HashSet<string>();
-        private ISet<string> _tags = new HashSet<string>();
+        private ISet<Guid> _tags = new HashSet<Guid>();
         public Guid GroupId { get; protected set; }
         public IEnumerable<string> Locations
         {
             get { return _locations; }
             protected set { _locations =  new HashSet<string>(value); }
         }
-        public IEnumerable<string> Tags
+        public IEnumerable<Guid> Tags
         {
             get { return _tags; }
-            protected set { _tags = new HashSet<string>(value); }
+            protected set { _tags = new HashSet<Guid>(value); }
         }
 
         protected GroupLocation()
@@ -26,7 +26,7 @@ namespace Collectively.Services.Remarks.Domain
         }
 
         public GroupLocation(Guid groupId, IEnumerable<string> locations,
-            IEnumerable<string> tags)
+            IEnumerable<Guid> tags)
         {
             Id = Guid.NewGuid();
             GroupId = groupId;

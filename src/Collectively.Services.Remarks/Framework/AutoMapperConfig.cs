@@ -23,6 +23,7 @@ namespace Collectively.Services.Remarks.Framework
                 cfg.CreateMap<RemarkState, RemarkStateDto>();
                 cfg.CreateMap<RemarkUser, RemarkUserDto>();
                 cfg.CreateMap<RemarkCategory, RemarkCategoryDto>();
+                cfg.CreateMap<RemarkTag, RemarkTagDto>();
                 cfg.CreateMap<Participant, ParticipantDto>();
                 cfg.CreateMap<Comment, CommentDto>();
                 cfg.CreateMap<CommentHistory, CommentHistoryDto>();
@@ -31,6 +32,7 @@ namespace Collectively.Services.Remarks.Framework
                 cfg.CreateMap<RemarkGroup, RemarkGroupDto>();
                 cfg.CreateMap<Category, RemarkCategoryDto>();
                 cfg.CreateMap<Tag, TagDto>();
+                cfg.CreateMap<TranslatedTag, TranslatedTagDto>();
                 cfg.CreateMap<Vote, VoteDto>();
                 cfg.CreateMap<Offering, OfferingDto>();
                 cfg.CreateMap<OfferingProposal, OfferingProposalDto>();

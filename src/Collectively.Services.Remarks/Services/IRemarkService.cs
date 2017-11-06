@@ -15,7 +15,7 @@ namespace Collectively.Services.Remarks.Services
         Task<Maybe<PagedResult<Tag>>> BrowseTagsAsync(BrowseTags query);
         Task ValidateEditorAccessOrFailAsync(Guid remarkId, string userId);
         Task CreateAsync(Guid id, string userId, string category,
-            Location location, string description = null, IEnumerable<string> tags = null,
+            Location location, string description = null, IEnumerable<Guid> tags = null,
             Guid? groupId = null, decimal? price = null, string currency = null,
             DateTime? startDate = null, DateTime? endDate = null);
         Task EditAsync(Guid remarkId, string userId, Guid? groupId, 
@@ -27,5 +27,8 @@ namespace Collectively.Services.Remarks.Services
         Task DeleteVoteAsync(Guid remarkId, string userId);
         Task AddFavoriteRemarkAsync(Guid remarkId, string userId);
         Task DeleteFavoriteRemarkAsync(Guid remarkId, string userId);
+        Task AssignToGroupAsync(Guid remarkId, Guid groupId, string userId);
+        Task DenyAssignmentToGroupAsync(Guid remarkId, Guid groupId, string userId);
+        Task RemoveAssignmentAsync(Guid remarkId, string userId);
     }
 }

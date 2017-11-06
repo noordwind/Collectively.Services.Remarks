@@ -69,7 +69,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
             User = new User(UserId, "user", "user");
             Category = new Category("test");
             Location = Location.Create(Command.Latitude, Command.Longitude, "address");
-            Remark = new Remark(RemarkId, User, Category, Location, Description);
+            Remark = new Remark(RemarkId, User, Category, Location, null, Description);
             RemarkServiceMock.Setup(x => x.GetAsync(Moq.It.IsAny<Guid>())).ReturnsAsync(Remark);
         }
     }

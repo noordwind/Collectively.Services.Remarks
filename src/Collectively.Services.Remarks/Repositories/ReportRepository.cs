@@ -26,7 +26,7 @@ namespace Collectively.Services.Remarks.Repositories
         public async Task<Maybe<PagedResult<Report>>> BrowseAsync(BrowseReports query)
             => await _database.Reports()
                     .Query(query)
-                    .PaginateAsync();
+                    .PaginateAsync(query);
 
         public async Task AddAsync(Report report)
             => await _database.Reports().InsertOneAsync(report);

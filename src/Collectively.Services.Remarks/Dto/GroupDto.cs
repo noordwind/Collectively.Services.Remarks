@@ -10,7 +10,7 @@ namespace Collectively.Services.Remarks.Dto
         public string Name { get; set; }  
         public bool IsPublic { get; set; }
         public string State { get; set; }  
-        public IList<string> Tags { get; set; }
+        public IList<RemarkTagDto> Tags { get; set; }
         public IList<GroupMemberDto> Members { get; set; }
         public IDictionary<string, ISet<string>> Criteria { get; set; }
     }

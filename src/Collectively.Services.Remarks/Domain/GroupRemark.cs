@@ -28,7 +28,10 @@ namespace Collectively.Services.Remarks.Domain
         public void AddRemark(Guid id)
             => _remarks.Add(GroupRemarkState.Create(id));
 
-        public void AssignRemark(Guid id)
+        public void DeleteRemark(Guid id)
+            => _remarks.Remove(_remarks.SingleOrDefault(x => x.Id == id));
+
+        public void Assign(Guid id)
             => _remarks.SingleOrDefault(x => x.Id == id)?.Assign();
 
         public void Deny(Guid id)
@@ -36,5 +39,8 @@ namespace Collectively.Services.Remarks.Domain
 
         public void Take(Guid id)
             => _remarks.SingleOrDefault(x => x.Id == id)?.Take();
+
+        public void Clear(Guid id)
+            => _remarks.SingleOrDefault(x => x.Id == id)?.Clear();
     }
 }

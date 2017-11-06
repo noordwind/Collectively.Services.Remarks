@@ -93,6 +93,8 @@ namespace Collectively.Services.Remarks.Framework
                 builder.RegisterType<RemarkActionService>().As<IRemarkActionService>().InstancePerLifetimeScope();
                 builder.RegisterType<GroupService>().As<IGroupService>().InstancePerLifetimeScope();
                 builder.RegisterType<ReportService>().As<IReportService>().InstancePerLifetimeScope();
+                builder.RegisterType<TagManager>().As<ITagManager>().InstancePerLifetimeScope();
+                builder.RegisterType<TagService>().As<ITagService>().InstancePerLifetimeScope();
                 builder.RegisterType<AddCommentPolicy>().As<IAddCommentPolicy>().InstancePerLifetimeScope();
                 builder.RegisterType<CreateRemarkPolicy>().As<ICreateRemarkPolicy>().InstancePerLifetimeScope();
                 builder.RegisterType<ProcessRemarkPolicy>().As<IProcessRemarkPolicy>().InstancePerLifetimeScope();
@@ -191,6 +193,7 @@ namespace Collectively.Services.Remarks.Framework
                 [typeof(PhotosToRemarkAdded)] = remarkEndpoint,
                 [typeof(PhotosFromRemarkRemoved)] = remarkEndpoint,
                 [typeof(RemarkAssignedToGroup)] = remarkEndpoint,
+                [typeof(RemarkAssignmentDenied)] = remarkEndpoint,
                 [typeof(RemarkAssignmentRemoved)] = remarkEndpoint
             };
             builder.RegisterModule(new ResourceFactory.Module(resources));

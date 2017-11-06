@@ -23,9 +23,11 @@ namespace Collectively.Services.Remarks.Tests.Specs
         protected static Mock<IUserRepository> UserRepositoryMock;
         protected static Mock<ICategoryRepository> CategoryRepositoryMock;
         protected static Mock<IGroupRepository> GroupRepositoryMock;
+        protected static Mock<IGroupRemarkRepository> GroupRemarkRepositoryMock;
         protected static Mock<IImageService> ImageServiceMock;
         protected static Mock<IRemarkPhotoService> RemarkPhotoServiceMock;
         protected static Mock<IUniqueNumberGenerator> UniqueNumberGeneratorMock;
+        protected static Mock<ITagManager> TagManagerMock;
         protected static GeneralSettings GeneralSettings;
         protected static string UserId = "userId";
         protected static User User = new User(UserId, "TestUser", "user");
@@ -44,9 +46,11 @@ namespace Collectively.Services.Remarks.Tests.Specs
             UserRepositoryMock = new Mock<IUserRepository>();
             CategoryRepositoryMock = new Mock<ICategoryRepository>();
             GroupRepositoryMock = new Mock<IGroupRepository>();
+            GroupRemarkRepositoryMock = new Mock<IGroupRemarkRepository>();
             ImageServiceMock = new Mock<IImageService>();
             RemarkPhotoServiceMock = new Mock<IRemarkPhotoService>();
             UniqueNumberGeneratorMock = new Mock<IUniqueNumberGenerator>();
+            TagManagerMock = new Mock<ITagManager>();
             GeneralSettings = new GeneralSettings
             {
                 AllowedDistance = 15.0
@@ -57,12 +61,14 @@ namespace Collectively.Services.Remarks.Tests.Specs
                 CategoryRepositoryMock.Object,
                 TagRepositoryMock.Object,
                 GroupRepositoryMock.Object,
+                GroupRemarkRepositoryMock.Object,
                 RemarkPhotoServiceMock.Object,
+                TagManagerMock.Object,
                 GeneralSettings);
 
             var user = new User(UserId, "name", "user");
             var category = new Category("category");
-            Remark = new Remark(RemarkId, user, category, Location);
+            Remark = new Remark(RemarkId, user, category, Location, null);
             Remark.AddPhoto(RemarkPhoto.Small(Guid.NewGuid(), "test.jpg", "http://my-test-image.com", RemarkUser.Create(user)));
 
             RemarkRepositoryMock.Setup(x => x.GetByIdAsync(Moq.It.IsAny<Guid>()))

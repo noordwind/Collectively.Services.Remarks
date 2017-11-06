@@ -26,6 +26,7 @@ namespace Collectively.Services.Remarks
         public static string UserNotAllowedToModifyComment => "user_not_allowed_to_modify_comment";
         public static string UserNotAllowedToModifyRemark => "user_not_allowed_to_modify_remark";
         public static string UserAlreadyParticipatesInRemark => "user_already_participates_in_remark";
+        public static string TagsNotProvided => "tags_not_provided";
         public static string UserNotFound => "user_not_found";
         public static string UserNotActive => "user_not_active";
         public static string CategoryNotFound => "category_not_found";
@@ -53,6 +54,7 @@ namespace Collectively.Services.Remarks
         public static string GroupMemberAlreadyExists => "group_member_already_exists";
         public static string UnknownGroupMemberCriteria => "unknown_group_member_criteria";
         public static string InsufficientGroupMemberCriteria => "insufficient_group_member_criteria"; 
+        public static string InsufficientGroupMemberRole => "insufficient_group_member_role"; 
         public static string EmptyReportType => "empty_report_type";
         public static string EmptyReportResource => "empty_report_resource";
         public static string InvalidReportType => "invalid_report_type";
