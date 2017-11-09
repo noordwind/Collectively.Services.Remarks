@@ -171,17 +171,8 @@ namespace Collectively.Services.Remarks.Services
                 await _remarkPhotoService.RemovePhotosAsync(remark.Id, photoNames);
             }
             await _remarkRepository.DeleteAsync(remark);
+            await _groupRemarkRepository.DeleteAllForRemarkAsync(remarkId);
             Logger.Debug($"Remark with id: '{remarkId}' was deleted.");
-            if (remark.Group == null)
-            {
-                return;
-            }
-            var groupRemarks = await _groupRemarkRepository.GetAllAsync(remark.Group.Id);
-            foreach (var groupRemark in groupRemarks)
-            {
-                groupRemark.DeleteRemark(remarkId);
-            }
-            await _groupRemarkRepository.UpdateManyAsync(groupRemarks);  
         }
 
         public async Task SubmitVoteAsync(Guid remarkId, string userId, bool positive, DateTime createdAt)
@@ -232,19 +223,9 @@ namespace Collectively.Services.Remarks.Services
             var group = await _groupRepository.GetOrFailAsync(groupId);
             var user = await _userRepository.GetOrFailAsync(userId);
             ValidateGroupMemberRoleOrFail(group, user);
-            remark.SetAssignedToGroupState(user, groupId);
+            remark.AssignToGroup(group, user);
             await _remarkRepository.UpdateAsync(remark);
-            var groupRemarks = await _groupRemarkRepository.GetAllAsync(remarkId);
-            foreach (var groupRemark in groupRemarks)
-            {
-                if (groupRemark.GroupId == groupId)
-                {
-                    groupRemark.Assign(remarkId);
-                    continue;
-                }
-                groupRemark.Take(remarkId);
-            }
-            await _groupRemarkRepository.UpdateManyAsync(groupRemarks);  
+            await _groupRemarkRepository.DeleteAllForRemarkAsync(remarkId);
         }
 
         public async Task DenyAssignmentToGroupAsync(Guid remarkId, Guid groupId, string userId)
@@ -253,16 +234,7 @@ namespace Collectively.Services.Remarks.Services
             var group = await _groupRepository.GetOrFailAsync(groupId);
             var user = await _userRepository.GetOrFailAsync(userId);
             ValidateGroupMemberRoleOrFail(group, user);
-            var groupRemark = await _groupRemarkRepository.GetAsync(groupId);
-            foreach (var remarkState in groupRemark.Value.Remarks)
-            {
-                if (remarkState.Id == groupId)
-                {
-                    remarkState.Deny();
-                    break;
-                }
-            }
-            await _groupRemarkRepository.UpdateAsync(groupRemark.Value);  
+            await _groupRemarkRepository.DeleteAsync(groupId, remarkId);
         }
 
         public async Task RemoveAssignmentAsync(Guid remarkId, string userId)
@@ -280,17 +252,7 @@ namespace Collectively.Services.Remarks.Services
             {
                 return;
             }
-            var groupRemarks = await _groupRemarkRepository.GetAllAsync(remarkId);
-            foreach (var groupRemark in groupRemarks)
-            {
-                if (groupRemark.GroupId == remark.Group.Id)
-                {
-                    groupRemark.Deny(remarkId);
-                    continue;
-                }
-                groupRemark.Clear(remarkId);
-            }
-            await _groupRemarkRepository.UpdateManyAsync(groupRemarks); 
+            await _groupRemarkRepository.AddRemarksAsync(remarkId, remark.AvailableGroups); 
         }
 
         private void ValidateGroupMemberRoleOrFail(Group group, User user)

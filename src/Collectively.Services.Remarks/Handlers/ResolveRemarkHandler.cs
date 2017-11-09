@@ -10,6 +10,7 @@ using Collectively.Messages.Events.Remarks;
 using Serilog;
 using RawRabbit;
 using RemarkState = Collectively.Services.Remarks.Domain.RemarkState;
+using System.Linq;
 
 namespace Collectively.Services.Remarks.Handlers
 {
@@ -84,6 +85,7 @@ namespace Collectively.Services.Remarks.Handlers
                     }
                     await _remarkStateService.ResolveAsync(command.RemarkId, command.UserId, command.Description, 
                             location, file, command.ValidateLocation);
+                    await _groupService.DeleteRemarkFromGroupsAsync(command.RemarkId);
                 })
                 .OnSuccess(async () =>
                 {

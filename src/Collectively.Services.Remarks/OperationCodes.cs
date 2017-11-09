@@ -8,6 +8,7 @@ namespace Collectively.Services.Remarks
         public static string InvalidRemarkDescription => "invalid_remark_description";
         public static string RemarkAlreadyAssigned => "remark_already_assigned";
         public static string RemarkAlreadyUnassigned => "remark_already_unassigned";
+        public static string RemarkCanNotBeAssigned => "remark_can_not_be_assigned";
         public static string RemarkAuthorNotProvided => "remark_author_not_provided";
         public static string RemarkCategoryNotProvided => "remark_category_not_provided";
         public static string RemarkLocationNotProvided => "remark_location_not_provided";
@@ -46,6 +47,7 @@ namespace Collectively.Services.Remarks
         public static string CannotRemoveNonProcessingState => "cannot_remove_non_processing_state";
         public static string UserNotAllowedToRemoveState => "user_not_allowed_to_remove_state";
         public static string AddressNotFound => "address_not_found";
+        public static string TagsNotSupported => "tags_not_supported";
         public static string StateNotFound => "state_not_found";
         public static string StateRemoved => "state_removed";
         public static string GroupNotFound => "group_not_found";

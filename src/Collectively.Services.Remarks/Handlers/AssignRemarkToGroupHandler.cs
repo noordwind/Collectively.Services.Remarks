@@ -36,8 +36,7 @@ namespace Collectively.Services.Remarks.Handlers
 
         public async Task HandleAsync(AssignRemarkToGroup command)
             => await _handler
-                .Validate(async () => await _groupService.ValidateIfRemarkCanBeAssignedOrFailAsync(command.GroupId,
-                        command.UserId, command.Latitude, command.Longitude))
+                .Validate(async () => await _groupService.ValidateIfRemarkCanBeAssignedOrFailAsync(command.GroupId, command.UserId))
                 .Run(async () => await _remarkService.AssignToGroupAsync(command.RemarkId, 
                     command.GroupId, command.UserId))
                 .OnSuccess(async () =>

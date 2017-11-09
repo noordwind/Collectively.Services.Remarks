@@ -64,7 +64,6 @@ namespace Collectively.Services.Remarks.Services
                 criteria[RemarkLocationCriterion] : 
                 Enumerable.Empty<string>();
             await _groupLocationRepository.AddAsync(new GroupLocation(id,locations,groupTags.Value.Select(x => x.DefaultId)));
-            await _groupRemarkRepository.AddAsync(new GroupRemark(id));
         }
 
         public async Task ValidateIfRemarkCanBeCreatedOrFailAsync(Guid groupId, string userId,
@@ -78,15 +77,13 @@ namespace Collectively.Services.Remarks.Services
             await ValidateLocationOrFailAsync(groupAndUser.group, latitude, longitude);
         }
 
-        public async Task ValidateIfRemarkCanBeAssignedOrFailAsync(Guid groupId, string userId,
-            double latitude, double longitude)
+        public async Task ValidateIfRemarkCanBeAssignedOrFailAsync(Guid groupId, string userId)
         {
             var groupAndUser = await GetGroupAndUserAndValidateDefaultCriteriaAsync(groupId, userId, "remark_assign");
             if (groupAndUser.group == null)
             {
                 return;
             }
-            await ValidateLocationOrFailAsync(groupAndUser.group, latitude, longitude);
         }
 
         public async Task ValidateIfRemarkAssignmentCanBeRemovedOrFailAsync(Guid groupId, string userId)
@@ -261,5 +258,8 @@ namespace Collectively.Services.Remarks.Services
 
         public async Task AddRemarkToGroupsAsync(Guid remarkId, IEnumerable<Guid> groupIds)
             => await _groupRemarkRepository.AddRemarksAsync(remarkId, groupIds);
+
+        public async Task DeleteRemarkFromGroupsAsync(Guid remarkId)
+            => await _groupRemarkRepository.DeleteAllForRemarkAsync(remarkId);
     }
 }

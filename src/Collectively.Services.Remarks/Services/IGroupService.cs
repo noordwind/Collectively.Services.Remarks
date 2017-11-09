@@ -13,8 +13,7 @@ namespace Collectively.Services.Remarks.Services
             IEnumerable<Guid> tags, Guid? organizationId = null);
         Task ValidateIfRemarkCanBeCreatedOrFailAsync(Guid groupId, string userId, 
             double latitude, double longitude);
-        Task ValidateIfRemarkCanBeAssignedOrFailAsync(Guid groupId, string userId,
-            double latitude, double longitude);
+        Task ValidateIfRemarkCanBeAssignedOrFailAsync(Guid groupId, string userId);
         Task ValidateIfRemarkAssignmentCanBeRemovedOrFailAsync(Guid groupId, string userId);
         Task ValidateIfRemarkCanBeProcessedOrFailAsync(Guid groupId, string userId);
         Task ValidateIfRemarkCanBeResolvedOrFailAsync(Guid groupId, string userId);
@@ -27,5 +26,6 @@ namespace Collectively.Services.Remarks.Services
         Task<IEnumerable<GroupLocation>> FilterGroupLocationsByTagsAsync(IEnumerable<GroupLocation> groupLocations,
             IEnumerable<Guid> tags);
         Task AddRemarkToGroupsAsync(Guid remarkId, IEnumerable<Guid> groupIds);
+        Task DeleteRemarkFromGroupsAsync(Guid remarkId);
     }
 }

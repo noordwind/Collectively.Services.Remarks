@@ -127,6 +127,11 @@ namespace Collectively.Services.Remarks.Handlers
                     var groupLocations = await _groupService.GetGroupLocationsAsync(location);
                     var groups = await _groupService.FilterGroupLocationsByTagsAsync(groupLocations, command.Tags);
                     var groupIds = groups.Select(x => x.GroupId);
+                    if (!groupIds.Any())
+                    {
+                        throw new ServiceException(OperationCodes.TagsNotSupported, 
+                            "Provided tags are not supported.");                    
+                    }
                     await _groupService.AddRemarkToGroupsAsync(command.RemarkId, groupIds);
                     await _remarkService.SetAvailableGroupsAsync(command.RemarkId, groupIds);
                 })

@@ -288,6 +288,17 @@ namespace Collectively.Services.Remarks.Domain
             UpdatedAt = DateTime.UtcNow;
         }
 
+        public void AssignToGroup(Group group, User user, string description = null)
+        {
+            if (!AvailableGroups.Contains(group.Id))
+            {
+                throw new DomainException(OperationCodes.RemarkCanNotBeAssigned, 
+                    $"Remark: '{Id}' can not be assigned to the unavailabe group: '{group.Id}'.");
+            }
+            SetGroup(group);
+            SetAssignedToGroupState(user, group.Id, description);
+        }
+
         public Maybe<Participant> GetParticipant(string userId)
             => Participants.SingleOrDefault(x => x.User.UserId == userId);
 
