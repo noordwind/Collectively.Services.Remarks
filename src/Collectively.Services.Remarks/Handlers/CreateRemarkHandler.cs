@@ -129,8 +129,7 @@ namespace Collectively.Services.Remarks.Handlers
                     var groupIds = groups.Select(x => x.GroupId);
                     if (!groupIds.Any())
                     {
-                        throw new ServiceException(OperationCodes.TagsNotSupported, 
-                            "Provided tags are not supported.");                    
+                        return;
                     }
                     await _groupService.AddRemarkToGroupsAsync(command.RemarkId, groupIds);
                     await _remarkService.SetAvailableGroupsAsync(command.RemarkId, groupIds);
