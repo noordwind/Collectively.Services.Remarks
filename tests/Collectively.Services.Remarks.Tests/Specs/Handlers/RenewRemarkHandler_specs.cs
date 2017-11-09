@@ -42,7 +42,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
 
         It should_fetch_remark = () =>
         {
-            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Exactly(2));
+            RemarkServiceMock.Verify(x => x.GetAsync(Command.RemarkId), Times.Exactly(3));
         };
 
         It should_publish_remark_renewed_event = () =>

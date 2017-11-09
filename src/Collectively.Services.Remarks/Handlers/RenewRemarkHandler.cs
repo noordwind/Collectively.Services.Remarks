@@ -64,10 +64,6 @@ namespace Collectively.Services.Remarks.Handlers
                         location = Location.Create(command.Latitude, command.Longitude, command.Address);
                     }
                     await _remarkStateService.RenewAsync(command.RemarkId, command.UserId, command.Description, location);
-                })
-                .Next()
-                .Run(async () =>
-                {
                     var remark = await _remarkService.GetAsync(command.RemarkId);
                     if (remark.Value.AvailableGroups?.Any() == true)
                     {
