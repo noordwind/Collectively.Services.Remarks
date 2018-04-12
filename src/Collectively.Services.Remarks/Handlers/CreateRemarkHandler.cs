@@ -90,8 +90,9 @@ namespace Collectively.Services.Remarks.Handlers
                             $"with price: '{offering.Price} {offering.Currency}'.");
                     }
 
+                    //TODO: Pass GUID tags 
                     await _remarkService.CreateAsync(command.RemarkId, command.UserId, command.Category,
-                            location, command.Description, command.Tags, command.GroupId,
+                            location, command.Description, Enumerable.Empty<string>(), command.GroupId,
                             offering?.Price, offering?.Currency, offering?.StartDate, offering?.EndDate);
                 })
                 .OnSuccess(async () =>

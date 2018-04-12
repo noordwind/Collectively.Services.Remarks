@@ -105,7 +105,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId, 
+                Command.Category, Location, Command.Description, Moq.It.IsAny<IEnumerable<string>>(), Command.GroupId, 
                 null, null, null, null), Times.Once);
         };
 
@@ -143,7 +143,7 @@ namespace Collectively.Services.Remarks.Tests.Specs.Handlers
         It should_call_create_async_on_remark_service = () =>
         {
             RemarkServiceMock.Verify(x => x.CreateAsync(Moq.It.IsAny<Guid>(), Command.UserId,
-                Command.Category, Location, Command.Description, Command.Tags, Command.GroupId,
+                Command.Category, Location, Command.Description, Moq.It.IsAny<IEnumerable<string>>(), Command.GroupId,
                 null, null, null, null), Times.Once);
         };
 
