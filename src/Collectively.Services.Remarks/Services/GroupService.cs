@@ -146,7 +146,6 @@ namespace Collectively.Services.Remarks.Services
                 throw new ServiceException(OperationCodes.InvalidLocality, "Invalid locality.");
             }
             var foundLocalitiles = response.Value.Results.SelectMany(x => x.AddressComponents)
-                .Where(x => x.Types.Contains("locality"))
                 .Select(x => x.LongName.ToLowerInvariant());
             
             if(availableLocalities.Intersect(foundLocalitiles).Any())
