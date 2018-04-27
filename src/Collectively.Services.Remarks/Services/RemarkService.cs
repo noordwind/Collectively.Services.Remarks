@@ -89,8 +89,9 @@ namespace Collectively.Services.Remarks.Services
             var remarkTags = await _tagManager.FindAsync(tags);
             if (remarkTags.HasNoValue || !remarkTags.Value.Any())
             {
-                throw new ServiceException(OperationCodes.TagsNotProvided,
-                    $"Tags were not provided for remark: '{id}'.");
+                remarkTags = new List<RemarkTag>();
+                // throw new ServiceException(OperationCodes.TagsNotProvided,
+                //     $"Tags were not provided for remark: '{id}'.");
             }
             var user = await _userRepository.GetOrFailAsync(userId);
             var remarkCategory = await _categoryRepository.GetByNameAsync(category);
